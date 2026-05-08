@@ -694,11 +694,24 @@ function doLogin(){
   CUR_GER=ger; CUR_UNI=uni; IS_ADMIN=false;
   cargarPlanDesdeSheets(ger, uni);
 }
-function openAdminModal(){
+window.openAdminModal = function(){
+
+  const modal = document.getElementById('modal-admin');
+
+  if(!modal){
+    alert('No se encontró modal-admin');
+    return;
+  }
+
   document.getElementById('admin-pwd').value='';
-  const m = document.getElementById('modal-admin');
-  m.classList.add('open');
-  m.style.cssText = 'display:flex !important; position:fixed !important; inset:0 !important; background:rgba(20,30,60,.5) !important; z-index:99999 !important; align-items:center !important; justify-content:center !important;';
+
+  modal.style.display='flex';
+  modal.style.position='fixed';
+  modal.style.inset='0';
+  modal.style.background='rgba(20,30,60,0.5)';
+  modal.style.zIndex='99999';
+  modal.style.alignItems='center';
+  modal.style.justifyContent='center';
 }
 function doAdmin(){
   const pwd=document.getElementById('admin-pwd').value;
