@@ -40,17 +40,7 @@ body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-si
   font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}
 .btn-login:hover{background:var(--blue2)}
 .login-footer{text-align:center;margin-top:16px;font-size:11px;color:var(--text3)}
-.admin-link{
-  font-size:11px;
-  color:var(--text3);
-  text-align:center;
-  margin-top:10px;
-  cursor:pointer;
-  text-decoration:underline;
-
-  position:relative;
-  z-index:999999;
-}
+.admin-link{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline}
 
 /* NAV */
 #screen-app{display:none}
@@ -186,8 +176,12 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 .res-lbl{font-size:12px;color:var(--text2);font-weight:600}
 
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,30,60,.5);z-index:9999;
-  align-items:center;justify-content:center}
+.modal-overlay.open {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 99999 !important; /* El valor más alto posible */
+}
 .modal-overlay.open{display:flex !important;visibility:visible !important;opacity:1 !important}
 .modal{background:#fff;border-radius:14px;padding:28px;max-width:540px;width:92%;
   box-shadow:0 16px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto;border-top:4px solid var(--yellow)}
@@ -268,12 +262,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
       <button class="btn-login" onclick="doLogin()">Ingresar a mi planificación</button>
       <div class="login-footer">Pluz Energía Perú S.A.A. — Solo para uso interno</div>
-<a href="#" 
-   style="position:relative;z-index:99999999;display:block;margin-top:10px;color:#666;text-align:center"
-   onclick="alert('CLICK FUNCIONA'); openAdminModal(); return false;">
-
-   Acceso administrador QA
-</a>
+      <div class="admin-link" onclick="openAdminModal()">Acceso administrador QA</div>
     </div>
   </div>
 </div>
@@ -654,7 +643,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 <!-- MODAL ADMIN -->
 <div class="modal-overlay" id="modal-admin">
   <div class="modal" style="max-width:360px">
-    <div class="modal-title">Acceso administrador QA</div>
+  <div class="admin-link" onclick="window.openAdminModal()">Acceso administrador QA</div>
     <p>Ingresa la clave para acceder al panel completo.</p>
     <div class="fgrp"><label>Clave</label>
       <input type="password" id="admin-pwd" placeholder="••••••" onkeydown="if(event.key==='Enter')doAdmin()"></div>
@@ -709,25 +698,24 @@ function doLogin(){
   CUR_GER=ger; CUR_UNI=uni; IS_ADMIN=false;
   cargarPlanDesdeSheets(ger, uni);
 }
-window.openAdminModal = function(){
-
+window.openAdminModal = function() {
   const modal = document.getElementById('modal-admin');
-
-  if(!modal){
-    alert('No se encontró modal-admin');
-    return;
+  if (modal) {
+    modal.style.display = 'flex'; // Forzamos la visibilidad
+    modal.classList.add('open');
+    console.log("Modal QA abierto correctamente");
+  } else {
+    alert("Error: No se encontró el modal en el sistema.");
   }
+};
 
-  document.getElementById('admin-pwd').value='';
-
-  modal.style.display='flex';
-  modal.style.position='fixed';
-  modal.style.inset='0';
-  modal.style.background='rgba(20,30,60,0.5)';
-  modal.style.zIndex='99999';
-  modal.style.alignItems='center';
-  modal.style.justifyContent='center';
-}
+window.closeAdminModal = function() {
+  const modal = document.getElementById('modal-admin');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.style.display = 'none';
+  }
+};
 function doAdmin(){
   const pwd=document.getElementById('admin-pwd').value;
   if(pwd!=='pluz2026'){ showToast('Clave incorrecta','#c0392b'); return; }
@@ -1077,8 +1065,7 @@ function guardarNuevo(){
   renderNewDocs();
 }
 function delNuevo(idx){ nuevos.splice(idx,1); renderNewDocs(); }
-function closeModal(id){const modal = document.getElementById(id);if(!modal) return; modal.classList.remove('open'); modal.style.display = 'none';
-}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ADMIN SELECTS
 function initAdminSelects(){
@@ -1606,46 +1593,6 @@ function renderEstadoTabla(){
   }).join('');
 }
 
-<script>
-
-document.addEventListener('DOMContentLoaded',()=>{
-
-  const adminBtn = document.querySelector('.admin-link');
-
-  if(adminBtn){
-
-    adminBtn.addEventListener('click',()=>{
-
-  window.openAdminModal = function(){
-
-  alert('ENTRÓ A OPEN MODAL');
-
-  const modal = document.getElementById('modal-admin');
-
-  if(!modal){
-    alert('NO EXISTE modal-admin');
-    return;
-  }
-
-  const pwd = document.getElementById('admin-pwd');
-
-  if(pwd){
-    pwd.value='';
-  }
-
-  modal.style.display='flex';
-  modal.style.position='fixed';
-  modal.style.inset='0';
-  modal.style.background='rgba(20,30,60,0.5)';
-  modal.style.zIndex='999999';
-
-  modal.style.alignItems='center';
-  modal.style.justifyContent='center';
-});
-
-  }
-
-});
 
 </script>
 </body>
