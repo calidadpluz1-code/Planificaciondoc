@@ -18,7 +18,7 @@
 body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
 
 /* LOGIN */
-#screen-login{display:flex;min-height:100vh;flex-direction:column;position:relative;z-index:1}
+#screen-login{display:flex;min-height:100vh;flex-direction:column}
 .login-top{background:var(--yellow);height:4px}
 .login-header{background:var(--blue);padding:0 40px;height:62px;display:flex;align-items:center;justify-content:space-between}
 .login-body{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;
@@ -178,7 +178,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,30,60,.5);z-index:9999;
   align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
+.modal-overlay.open{display:flex !important;visibility:visible !important;opacity:1 !important}
 .modal{background:#fff;border-radius:14px;padding:28px;max-width:540px;width:92%;
   box-shadow:0 16px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto;border-top:4px solid var(--yellow)}
 .modal-title{font-size:17px;font-weight:800;color:var(--blue);margin-bottom:6px}
@@ -694,7 +694,12 @@ function doLogin(){
   CUR_GER=ger; CUR_UNI=uni; IS_ADMIN=false;
   cargarPlanDesdeSheets(ger, uni);
 }
-function openAdminModal(){ document.getElementById('admin-pwd').value=''; document.getElementById('modal-admin').classList.add('open'); }
+function openAdminModal(){
+  document.getElementById('admin-pwd').value='';
+  const m = document.getElementById('modal-admin');
+  m.classList.add('open');
+  m.style.cssText = 'display:flex !important; position:fixed !important; inset:0 !important; background:rgba(20,30,60,.5) !important; z-index:99999 !important; align-items:center !important; justify-content:center !important;';
+}
 function doAdmin(){
   const pwd=document.getElementById('admin-pwd').value;
   if(pwd!=='pluz2026'){ showToast('Clave incorrecta','#c0392b'); return; }
