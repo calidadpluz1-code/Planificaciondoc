@@ -1616,9 +1616,32 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     adminBtn.addEventListener('click',()=>{
 
-      window.openAdminModal();
+  window.openAdminModal = function(){
 
-    });
+  alert('ENTRÓ A OPEN MODAL');
+
+  const modal = document.getElementById('modal-admin');
+
+  if(!modal){
+    alert('NO EXISTE modal-admin');
+    return;
+  }
+
+  const pwd = document.getElementById('admin-pwd');
+
+  if(pwd){
+    pwd.value='';
+  }
+
+  modal.style.display='flex';
+  modal.style.position='fixed';
+  modal.style.inset='0';
+  modal.style.background='rgba(20,30,60,0.5)';
+  modal.style.zIndex='999999';
+
+  modal.style.alignItems='center';
+  modal.style.justifyContent='center';
+});
 
   }
 
