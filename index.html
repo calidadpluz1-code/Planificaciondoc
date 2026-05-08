@@ -270,7 +270,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <div class="nav-tab" id="ntab-dash" style="display:none" onclick="showPage('dashboard')">Dashboard</div>
     <div class="nav-tab" id="ntab-gantt" style="display:none" onclick="showPage('gantt')">Gantt</div>
     <div class="nav-tab" id="ntab-res" style="display:none" onclick="showPage('resumen')">Resumen</div>
-    <div class="nav-tab" id="ntab-seg" style="display:none" onclick="showPage('seguimiento')">Seguimiento</div>
+
     <div class="nav-tab" id="ntab-estado" style="display:none" onclick="showPage('estadodocs')">Estado Docs</div>
     <div class="nav-right">
       <div>
@@ -357,7 +357,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <th style="width:160px">Observación</th>
           </tr></thead>
           <tbody id="plan-tbody">
-            <tr><td colspan="7" class="empty">Cargando...</td></tr>
+            <tr><td colspan="10" class="empty">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -392,7 +392,24 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   <!-- ESTADO DE DOCUMENTOS (ADMIN) -->
   <div class="page" id="page-estadodocs">
     <div class="page-title">Estado de documentos</div>
-    <div class="page-sub">Basado en el reporte del sistema · Muestra el estado actual de todos los documentos de la empresa</div>
+    <div class="page-sub">Cruza el reporte del sistema con la planificación de las unidades</div>
+
+    <!-- Botón cargar reporte -->
+    <div style="background:#fff;border:1px solid var(--yellow);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="font-size:13px;font-weight:700;color:var(--amber)">📂 Actualizar reporte</div>
+      <div style="font-size:12px;color:var(--text2);flex:1">Sube el Excel del sistema para refrescar los datos de estado, flujo y responsable</div>
+      <input type="file" id="ed-reporte-file" accept=".xlsx" style="display:none" onchange="cargarReporteEstado(this)">
+      <button class="btn btn-yellow" onclick="document.getElementById('ed-reporte-file').click()">Cargar reporte Excel</button>
+      <div id="ed-reporte-status" style="font-size:11px;color:var(--green);font-weight:700;display:none">✓ Reporte cargado</div>
+    </div>
+
+    <!-- KPIs semáforo planificación + vigencia -->
+    <div class="kpi-grid" style="margin-bottom:16px">
+      <div class="kpi g"><div class="kpi-label">🟢 Cumplidos</div><div class="kpi-val" id="ed-sem-verde">—</div><div class="kpi-sub">fecha prog. cumplida</div></div>
+      <div class="kpi y"><div class="kpi-label">🟡 En proceso</div><div class="kpi-val" id="ed-sem-amarillo">—</div><div class="kpi-sub">fecha aún vigente</div></div>
+      <div class="kpi r"><div class="kpi-label">🔴 Vencidos</div><div class="kpi-val" id="ed-sem-rojo">—</div><div class="kpi-sub">fecha pasada sin cumplir</div></div>
+      <div class="kpi"><div class="kpi-label">⚪ Sin fecha</div><div class="kpi-val" id="ed-sem-gris">—</div><div class="kpi-sub">sin fecha programada</div></div>
+    </div>
 
     <!-- KPIs de estado de vigencia -->
     <div class="kpi-grid" style="margin-bottom:20px">
@@ -442,13 +459,16 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div style="overflow-x:auto">
         <table>
           <thead><tr>
+            <th style="width:40px"></th>
             <th style="width:90px">Código</th>
             <th>Descripción</th>
-            <th style="width:110px">Tipo</th>
-            <th style="width:130px">Gerencia</th>
-            <th style="width:100px">Vigencia</th>
-            <th style="width:150px">Estado flujo</th>
-            <th style="width:170px">Responsable</th>
+            <th style="width:100px">Tipo</th>
+            <th style="width:120px">Gerencia</th>
+            <th style="width:90px">Vigencia</th>
+            <th style="width:130px">Estado flujo</th>
+            <th style="width:150px">Responsable</th>
+            <th style="width:100px">Acción plan.</th>
+            <th style="width:100px">Fecha prog.</th>
           </tr></thead>
           <tbody id="ed-tbody">
             <tr><td colspan="7" class="empty">Cargando...</td></tr>
@@ -578,80 +598,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     </div>
   </div>
 
-  <!-- SEGUIMIENTO -->
-  <div class="page" id="page-seguimiento">
-    <div class="page-title">Seguimiento de planificación 2026</div>
-    <div class="page-sub">Compara lo planificado vs el estado actual del documento · Actualiza el reporte para ver cambios</div>
-    <div style="background:#fff;border:1px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <div style="font-size:13px;font-weight:700;color:var(--amber)">Actualizar reporte</div>
-      <div style="font-size:12px;color:var(--text2);flex:1">Sube tu reporte actualizado del sistema para ver el estado real de cumplimiento</div>
-      <input type="file" id="reporte-file" accept=".xlsx,.csv" style="display:none" onchange="cargarReporte(this)">
-      <button class="btn btn-yellow" onclick="document.getElementById('reporte-file').click()">Cargar reporte actualizado</button>
-    </div>
-    <div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap">
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--green)" id="seg-verde">0</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text2);margin-top:4px">
-          <span class="semaforo sem-verde"></span>Cumplidos a tiempo</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--amber)" id="seg-amarillo">0</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text2);margin-top:4px">
-          <span class="semaforo sem-amarillo"></span>En proceso</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--red)" id="seg-rojo">0</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text2);margin-top:4px">
-          <span class="semaforo sem-rojo"></span>Incumplidos</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--text3)" id="seg-gris">0</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text2);margin-top:4px">
-          <span class="semaforo sem-gris"></span>Sin fecha asignada</div>
-      </div>
-    </div>
-    <div class="filters">
-      <label class="flbl">Gerencia</label>
-      <select id="s-sel-ger" onchange="onSegGerChange()" style="min-width:210px;max-width:300px">
-        <option value="">Todas las gerencias</option>
-      </select>
-      <label class="flbl">Unidad</label>
-      <select id="s-sel-uni" onchange="renderSeguimiento()" style="min-width:180px">
-        <option value="">Todas las unidades</option>
-      </select>
-      <select id="s-sel-estado" onchange="renderSeguimiento()" style="min-width:140px">
-        <option value="">Todos los estados</option>
-        <option value="verde">Cumplidos</option>
-        <option value="amarillo">En proceso</option>
-        <option value="rojo">Incumplidos</option>
-        <option value="gris">Sin fecha</option>
-        <option value="proximo">⚠️ Vencen en 30 días</option>
-      </select>
-    </div>
-    <div class="table-wrap">
-      <div class="table-head"><div class="table-head-left">Estado de cumplimiento por documento</div></div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr>
-            <th style="width:40px"></th>
-            <th style="width:80px">Código</th>
-            <th>Documento</th>
-            <th style="width:120px">Unidad</th>
-            <th style="width:100px">Acción plan.</th>
-            <th style="width:115px">Fecha prog.</th>
-            <th style="width:115px">Fecha actual</th>
-            <th style="width:120px">Estado</th>
-          </tr></thead>
-          <tbody id="seg-tbody">
-            <tr><td colspan="8" class="empty">Carga una planificación para ver el seguimiento</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL NUEVO DOC -->
 <div class="modal-overlay" id="modal-nuevo">
   <div class="modal">
     <div class="modal-title">Proponer nuevo documento</div>
@@ -820,7 +766,7 @@ async function cargarTodasLasPlanificaciones(){
 function launchApp(){
   document.getElementById('screen-login').style.display='none';
   document.getElementById('screen-app').style.display='block';
-  ['ntab-dash','ntab-gantt','ntab-res','ntab-seg','ntab-estado'].forEach(id=>document.getElementById(id).style.display=IS_ADMIN?'flex':'none');
+  ['ntab-dash','ntab-gantt','ntab-res','ntab-estado'].forEach(id=>document.getElementById(id).style.display=IS_ADMIN?'flex':'none');
   document.getElementById('ntab-plan').style.display=IS_ADMIN?'none':'flex';
   initAdminSelects();
   if(IS_ADMIN){
@@ -1414,7 +1360,6 @@ function showPage(id){
   if(id==='gantt') renderGantt();
   if(id==='resumen') renderResumen();
   if(id==='dashboard') renderDash();
-  if(id==='seguimiento') renderSeguimiento();
   if(id==='estadodocs') renderEstadoDocs();
 }
 
@@ -1432,8 +1377,50 @@ function showToast(msg,color='var(--green)'){
 initLogin();
 
 // ===== ESTADO DE DOCUMENTOS =====
+let reporteEstadoData = {}; // cod -> {estadoActual, responsable, estadoWF} cargado desde Excel
+
+async function cargarReporteEstado(input){
+  const file = input.files[0];
+  if(!file) return;
+  showSaving('Cargando reporte...');
+  try {
+    const ArrayBuffer = await file.arrayBuffer();
+    const { read, utils } = await import('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mjs');
+    const wb = read(ArrayBuffer);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = utils.sheet_to_json(ws, {header:1, defval:''});
+    reporteEstadoData = {};
+    // Empezar desde fila 3 (índice 2) — fila 1=vacía, fila 2=headers
+    for(let i=2; i<rows.length; i++){
+      const r = rows[i];
+      const cod = String(r[1]||'').trim();
+      if(!cod) continue;
+      reporteEstadoData[cod] = {
+        estadoActual: String(r[9]||'').trim(),
+        responsable: String(r[10]||'').trim(),
+        estadoWF: String(r[12]||'').trim(),
+        vigencia: String(r[14]||'').trim()
+      };
+    }
+    hideSaving();
+    document.getElementById('ed-reporte-status').style.display='block';
+    showToast(`Reporte cargado: ${Object.keys(reporteEstadoData).length} documentos actualizados`, '#27ae60');
+    renderEstadoDocs();
+  } catch(err) {
+    hideSaving();
+    showToast('Error al leer el Excel: ' + err.message, '#c0392b');
+    console.error(err);
+  }
+}
+
 function renderEstadoDocs(){
-  const todos = DOCS_ALL;
+  // Usar datos del reporte cargado si existen, sino usar los del HTML
+  const getDocData = (cod) => reporteEstadoData[cod] || null;
+
+  const todos = DOCS_ALL.map(d => {
+    const rep = getDocData(d.cod);
+    return { ...d, estadoActual: rep?.estadoActual || d.estadoActual, responsable: rep?.responsable || d.responsable };
+  });
   const vigentes = todos.filter(d=>d.estado==='Vigente');
   const obsoletos = todos.filter(d=>d.estado==='Obsoleto');
   const elaboracion = todos.filter(d=>d.estado==='En elaboración');
@@ -1443,63 +1430,68 @@ function renderEstadoDocs(){
   document.getElementById('ed-obsoletos').textContent = obsoletos.length;
   document.getElementById('ed-elaboracion').textContent = elaboracion.length;
 
+  // KPIs semáforo: cruzar planificación con estado
+  let semContadores = {verde:0, amarillo:0, rojo:0, gris:0};
+  DOCS.forEach(d=>{
+    const p = getP(d.cod);
+    if(p.accion==='Pendiente') return;
+    const sem = getSemaforo(p, d.fecha);
+    semContadores[sem]++;
+  });
+  const semTotal = Object.values(semContadores).reduce((a,b)=>a+b,0);
+  document.getElementById('ed-sem-verde').textContent = semContadores.verde || '—';
+  document.getElementById('ed-sem-amarillo').textContent = semContadores.amarillo || '—';
+  document.getElementById('ed-sem-rojo').textContent = semContadores.rojo || '—';
+  document.getElementById('ed-sem-gris').textContent = semContadores.gris || '—';
+
   // Gráfico flujo de trabajo
   const wfCount = {};
   todos.forEach(d=>{
     const k = d.estadoActual || 'Sin estado';
-    // Simplificar etiquetas largas
     let label = k;
-    if(k.startsWith('APROBACION') || k.startsWith('APROBACIÓN')) label = 'En aprobación';
-    else if(k === 'REVISION DE VIGENCIA' || k === 'REVISION ANUAL DE VIGENCIA' || k.includes('REVISION')) label = 'Revisión de vigencia';
-    else if(k === 'Completada') label = 'Completada';
-    else if(k === 'ELABORACION') label = 'En elaboración';
-    else if(k === 'PRIMERA REVISION') label = 'Primera revisión';
-    else if(k === 'REVISION QUA') label = 'Revisión QUA';
-    else if(k === 'PUBLICACION P&O') label = 'Publicación P&O';
+    if(k.startsWith('APROBACION')||k.startsWith('APROBACIÓN')) label = 'En aprobación';
+    else if(k.includes('REVISION')) label = 'Revisión de vigencia';
+    else if(k==='Completada') label = 'Completada';
+    else if(k==='ELABORACION') label = 'En elaboración';
+    else if(k==='PRIMERA REVISION') label = 'Primera revisión';
+    else if(k==='REVISION QUA') label = 'Revisión QUA';
+    else if(k==='PUBLICACION P&O') label = 'Publicación P&O';
     else if(k.includes('AJUSTE')) label = 'Ajustes';
-    else if(k.includes('SELECCION') || k.includes('TRANSICION')) label = 'Selección aprobador';
+    else if(k.includes('SELECCION')||k.includes('TRANSICION')) label = 'Selección aprobador';
     wfCount[label] = (wfCount[label]||0)+1;
   });
   const wfSorted = Object.entries(wfCount).sort((a,b)=>b[1]-a[1]);
   const maxWF = wfSorted[0]?.[1]||1;
   const wfColors = {'Completada':'#27ae60','Revisión de vigencia':'#e67e22','En elaboración':'#3D5BA9','En aprobación':'#8e44ad','Primera revisión':'#2980b9','Revisión QUA':'#c0392b','Ajustes':'#d35400','Publicación P&O':'#16a085','Selección aprobador':'#7f8c8d'};
-  document.getElementById('ed-chart-wf').innerHTML = wfSorted.map(([label, count])=>{
+  document.getElementById('ed-chart-wf').innerHTML = wfSorted.map(([label,count])=>{
     const pct = Math.round(count/maxWF*100);
     const color = wfColors[label]||'#95a5a6';
-    return `<div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="color:var(--text2)">${label}</span>
-        <span style="font-weight:700;color:${color}">${count}</span>
-      </div>
+    return `<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+      <span style="color:var(--text2)">${label}</span>
+      <span style="font-weight:700;color:${color}">${count}</span></div>
       <div style="background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden">
-        <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width .4s"></div>
-      </div>
-    </div>`;
+        <div style="width:${pct}%;height:100%;background:${color};border-radius:4px"></div></div></div>`;
   }).join('');
 
   // Gráfico por gerencia (solo vigentes)
   const gerCount = {};
   vigentes.forEach(d=>{
-    const g = d.gerencia.replace('Gerencia de ','').replace('Gerencia ','') || 'Sin gerencia';
-    const short = g.length > 28 ? g.slice(0,26)+'…' : g;
-    gerCount[short] = (gerCount[short]||0)+1;
+    const g = (d.gerencia||'Sin gerencia').replace('Gerencia de ','').replace('Gerencia ','');
+    const short = g.length>28?g.slice(0,26)+'…':g;
+    gerCount[short]=(gerCount[short]||0)+1;
   });
   const gerSorted = Object.entries(gerCount).sort((a,b)=>b[1]-a[1]);
   const maxGer = gerSorted[0]?.[1]||1;
-  document.getElementById('ed-chart-ger').innerHTML = gerSorted.map(([ger, count])=>{
+  document.getElementById('ed-chart-ger').innerHTML = gerSorted.map(([ger,count])=>{
     const pct = Math.round(count/maxGer*100);
-    return `<div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
-        <span style="color:var(--text2)">${ger}</span>
-        <span style="font-weight:700;color:var(--blue)">${count}</span>
-      </div>
+    return `<div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">
+      <span style="color:var(--text2)">${ger}</span>
+      <span style="font-weight:700;color:var(--blue)">${count}</span></div>
       <div style="background:#f0f0f0;border-radius:4px;height:7px;overflow:hidden">
-        <div style="width:${pct}%;height:100%;background:var(--blue);border-radius:4px"></div>
-      </div>
-    </div>`;
+        <div style="width:${pct}%;height:100%;background:var(--blue);border-radius:4px"></div></div></div>`;
   }).join('');
 
-  // Poblar select de gerencias
+  // Poblar select gerencias
   const sger = document.getElementById('ed-fil-ger');
   const gers = [...new Set(todos.map(d=>d.gerencia).filter(Boolean).sort())];
   sger.innerHTML = '<option value="">Todas las gerencias</option>' + gers.map(g=>`<option value="${g}">${g}</option>`).join('');
@@ -1510,15 +1502,20 @@ function renderEstadoDocs(){
 function renderEstadoTabla(){
   const fger = document.getElementById('ed-fil-ger').value;
   const fvig = document.getElementById('ed-fil-vig').value;
-  const fwf = document.getElementById('ed-fil-wf').value;
+  const fwf  = document.getElementById('ed-fil-wf').value;
   const fbus = document.getElementById('ed-buscar').value.toLowerCase();
 
-  let docs = DOCS_ALL;
+  // Combinar datos del HTML con reporte cargado
+  let docs = DOCS_ALL.map(d=>{
+    const rep = reporteEstadoData[d.cod];
+    return {...d, estadoActual: rep?.estadoActual||d.estadoActual, responsable: rep?.responsable||d.responsable};
+  });
+
   if(fger) docs = docs.filter(d=>d.gerencia===fger);
   if(fvig) docs = docs.filter(d=>d.estado===fvig);
   if(fwf){
-    if(fwf==='APROBACION') docs = docs.filter(d=>d.estadoActual && (d.estadoActual.startsWith('APROBACION')||d.estadoActual.startsWith('APROBACIÓN')));
-    else docs = docs.filter(d=>d.estadoActual && d.estadoActual.includes(fwf));
+    if(fwf==='APROBACION') docs = docs.filter(d=>d.estadoActual&&(d.estadoActual.startsWith('APROBACION')||d.estadoActual.startsWith('APROBACIÓN')));
+    else docs = docs.filter(d=>d.estadoActual&&d.estadoActual.includes(fwf));
   }
   if(fbus) docs = docs.filter(d=>d.desc.toLowerCase().includes(fbus)||d.cod.toLowerCase().includes(fbus));
 
@@ -1526,9 +1523,11 @@ function renderEstadoTabla(){
 
   const vigColors = {'Vigente':'#27ae60','Obsoleto':'#c0392b','En elaboración':'#e67e22'};
   const vigBg = {'Vigente':'#e6f5ec','Obsoleto':'#fdecea','En elaboración':'#fef3ea'};
+  const semColors = {'verde':'#27ae60','amarillo':'#f39c12','rojo':'#c0392b','gris':'#bbb'};
+  const semLabels = {'verde':'✓ Cumplido','amarillo':'⏳ En proceso','rojo':'⚠ Vencido','gris':'— Sin fecha'};
 
   if(!docs.length){
-    document.getElementById('ed-tbody').innerHTML='<tr><td colspan="7" class="empty">No hay documentos con estos filtros</td></tr>';
+    document.getElementById('ed-tbody').innerHTML=`<tr><td colspan="10" class="empty">No hay documentos con estos filtros</td></tr>`;
     return;
   }
 
@@ -1536,8 +1535,22 @@ function renderEstadoTabla(){
     const vc = vigColors[d.estado]||'#888';
     const vb = vigBg[d.estado]||'#f9f9f9';
     const shortGer = (d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
-    const resp = d.responsable ? d.responsable.split(',').map(r=>r.trim()).slice(0,1).join('') : '—';
+    const resp = d.responsable ? d.responsable.split(',').map(r=>r.trim())[0] : '—';
+
+    // Planificación desde Sheets
+    const p = getP(d.cod);
+    const tieneAccion = p.accion && p.accion!=='Pendiente';
+    const sem = tieneAccion ? getSemaforo(p, d.fecha) : null;
+    const semDot = sem ? `<span class="semaforo sem-${sem}" title="${semLabels[sem]}"></span>` : '';
+    const accionBadge = tieneAccion
+      ? `<span style="background:${COLORS[p.accion]||'#eee'}22;color:${COLORS[p.accion]||'#888'};font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid ${COLORS[p.accion]||'#ccc'}55">${p.accion}</span>`
+      : '<span style="font-size:10px;color:#ccc">—</span>';
+    const fechaBadge = p.fechaProg
+      ? `<span style="font-size:10px;color:var(--text2)">${p.fechaProg}</span>`
+      : '<span style="font-size:10px;color:#ccc">—</span>';
+
     return `<tr>
+      <td style="text-align:center">${semDot}</td>
       <td style="font-family:monospace;font-size:10px;color:var(--text2)">${d.cod}</td>
       <td style="font-size:11px;line-height:1.4">${d.desc}</td>
       <td style="font-size:10px;color:var(--text2)">${d.tipo||'—'}</td>
@@ -1545,9 +1558,12 @@ function renderEstadoTabla(){
       <td><span style="background:${vb};color:${vc};font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px">${d.estado}</span></td>
       <td style="font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
       <td style="font-size:10px;color:var(--text3)">${resp}</td>
+      <td>${accionBadge}</td>
+      <td>${fechaBadge}</td>
     </tr>`;
   }).join('');
 }
+
 
 </script>
 </body>
