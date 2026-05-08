@@ -739,27 +739,29 @@ async function cargarTodasLasPlanificaciones(){
   showSaving('Cargando planificaciones de todas las unidades...');
   try {
     if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-      // Obtener planificacion sin filtro (gerencia y unidad vacios = todas)
-      const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`;
-      const res1 = await fetch(url1, {mode:'cors'});
-      const data1 = await res1.json();
-      if(data1.ok && data1.data){
-        data1.data.forEach(r=>{
-          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
-        });
-      }
-      // Obtener nuevos documentos de todas las unidades
-      const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`;
-      const res2 = await fetch(url2, {mode:'cors'});
-      const data2 = await res2.json();
-      if(data2.ok && data2.data){
-        data2.data.forEach(r=>{
-          const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
-          if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
-        });
-      }
+      try {
+        const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`;
+        const res1 = await fetch(url1, {mode:'cors'});
+        const data1 = await res1.json();
+        if(data1.ok && data1.data){
+          data1.data.forEach(r=>{
+            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+          });
+        }
+      } catch(e1){ console.log('Error cargando planificacion:', e1); }
+      try {
+        const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`;
+        const res2 = await fetch(url2, {mode:'cors'});
+        const data2 = await res2.json();
+        if(data2.ok && data2.data){
+          data2.data.forEach(r=>{
+            const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
+            if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
+          });
+        }
+      } catch(e2){ console.log('Error cargando nuevos:', e2); }
     }
-  } catch(e){ console.log('Sin conexion a Sheets, modo offline'); }
+  } catch(e){ console.log('Error general admin Sheets:', e); }
   hideSaving();
   launchApp();
 }
