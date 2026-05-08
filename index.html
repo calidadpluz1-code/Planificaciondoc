@@ -40,7 +40,17 @@ body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-si
   font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}
 .btn-login:hover{background:var(--blue2)}
 .login-footer{text-align:center;margin-top:16px;font-size:11px;color:var(--text3)}
-.admin-link{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline}
+.admin-link{
+  font-size:11px;
+  color:var(--text3);
+  text-align:center;
+  margin-top:10px;
+  cursor:pointer;
+  text-decoration:underline;
+
+  position:relative;
+  z-index:999999;
+}
 
 /* NAV */
 #screen-app{display:none}
@@ -258,7 +268,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
       <button class="btn-login" onclick="doLogin()">Ingresar a mi planificación</button>
       <div class="login-footer">Pluz Energía Perú S.A.A. — Solo para uso interno</div>
-      <div class="admin-link" onclick="openAdminModal()">Acceso administrador QA</div>
+      <button type="button" class="admin-link" onclick="openAdminModal()">
+  Acceso administrador QA
+</button>
     </div>
   </div>
 </div>
