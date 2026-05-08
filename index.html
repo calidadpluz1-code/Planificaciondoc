@@ -216,6 +216,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   nav{padding:0 14px}.page{padding:14px}.frow{grid-template-columns:1fr}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -1385,7 +1386,12 @@ async function cargarReporteEstado(input){
   showSaving('Cargando reporte...');
   try {
     const ArrayBuffer = await file.arrayBuffer();
-    const { read, utils } = await import('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mjs');
+    // XLSX debe estar cargado como script global
+    if(typeof XLSX === 'undefined'){
+      showToast('Error: librería XLSX no disponible. Recarga la página.','#c0392b');
+      hideSaving(); return;
+    }
+    const { read, utils } = XLSX;
     const wb = read(ArrayBuffer);
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = utils.sheet_to_json(ws, {header:1, defval:''});
