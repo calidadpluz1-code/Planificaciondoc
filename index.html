@@ -18,7 +18,7 @@
 body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
 
 /* LOGIN */
-#screen-login{display:flex;min-height:100vh;flex-direction:column}
+#screen-login{display:flex;min-height:100vh;flex-direction:column;position:relative;z-index:1}
 .login-top{background:var(--yellow);height:4px}
 .login-header{background:var(--blue);padding:0 40px;height:62px;display:flex;align-items:center;justify-content:space-between}
 .login-body{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;
@@ -695,6 +695,7 @@ function doLogin(){
   cargarPlanDesdeSheets(ger, uni);
 }
 function openAdminModal(){
+  document.getElementById('screen-login').style.zIndex='0';
   document.getElementById('admin-pwd').value='';
   const m = document.getElementById('modal-admin');
   m.classList.add('open');
@@ -1049,7 +1050,8 @@ function guardarNuevo(){
   renderNewDocs();
 }
 function delNuevo(idx){ nuevos.splice(idx,1); renderNewDocs(); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function closeModal(id){
+  var sl=document.getElementById('screen-login'); if(sl) sl.style.zIndex='1'; document.getElementById(id).classList.remove('open'); }
 
 // ADMIN SELECTS
 function initAdminSelects(){
