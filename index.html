@@ -555,6 +555,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <option value="amarillo">En proceso</option>
         <option value="rojo">Incumplidos</option>
         <option value="gris">Sin fecha</option>
+        <option value="proximo">⚠️ Vencen en 30 días</option>
       </select>
     </div>
     <div class="table-wrap">
@@ -683,23 +684,66 @@ function doAdmin(){
   if(pwd!=='pluz2026'){ showToast('Clave incorrecta','#c0392b'); return; }
   closeModal('modal-admin');
   IS_ADMIN=true; CUR_GER=''; CUR_UNI='';
-  launchApp();
+  cargarTodasLasPlanificaciones();
 }
 
 async function cargarPlanDesdeSheets(ger, uni){
   showSaving('Cargando tu planificación...');
   try {
     if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-      const url = `${SHEETS_URL}?action=obtener_planificacion&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
-      const res = await fetch(url, {mode:'cors'});
-      const data = await res.json();
-      if(data.ok && data.data){
-        data.data.forEach(r=>{
+      // Cargar planificacion existente
+      const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
+      const res1 = await fetch(url1, {mode:'cors'});
+      const data1 = await res1.json();
+      if(data1.ok && data1.data){
+        data1.data.forEach(r=>{
           plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+        });
+      }
+      // Cargar nuevos documentos propuestos
+      const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
+      const res2 = await fetch(url2, {mode:'cors'});
+      const data2 = await res2.json();
+      if(data2.ok && data2.data){
+        data2.data.forEach(r=>{
+          // Evitar duplicados si ya existe en memoria
+          const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
+          if(!existe){
+            nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
+          }
         });
       }
     }
   } catch(e){ console.log('Sin conexión a Sheets, modo offline'); }
+  hideSaving();
+  launchApp();
+}
+
+async function cargarTodasLasPlanificaciones(){
+  showSaving('Cargando planificaciones de todas las unidades...');
+  try {
+    if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
+      // Obtener planificacion sin filtro (gerencia y unidad vacios = todas)
+      const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`;
+      const res1 = await fetch(url1, {mode:'cors'});
+      const data1 = await res1.json();
+      if(data1.ok && data1.data){
+        data1.data.forEach(r=>{
+          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+        });
+      }
+      // Obtener nuevos documentos de todas las unidades
+      const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`;
+      const res2 = await fetch(url2, {mode:'cors'});
+      const data2 = await res2.json();
+      if(data2.ok && data2.data){
+        data2.data.forEach(r=>{
+          const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
+          if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
+        });
+      }
+    }
+  } catch(e){ console.log('Sin conexion a Sheets, modo offline'); }
   hideSaving();
   launchApp();
 }
@@ -817,8 +861,11 @@ function renderPlanTable(){
         <option value="Actualizar" ${p.accion==='Actualizar'?'selected':''}>Actualizar</option>
         <option value="Mantener" ${p.accion==='Mantener'?'selected':''}>Mantener</option>
         <option value="Eliminar" ${p.accion==='Eliminar'?'selected':''}>Eliminar</option>
+        <option value="Transferir" ${p.accion==='Transferir'?'selected':''}>Transferir</option>
       </select></td>
-      <td><input type="date" class="date-input" value="${p.fechaProg}" onchange="setP('${d.cod}','fechaProg',this.value)"></td>
+      <td><input type="date" class="date-input" value="${p.fechaProg}"
+        ${p.accion!=='Actualizar'?'disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed"':''}
+        onchange="setP('${d.cod}','fechaProg',this.value)"></td>
       <td><input type="text" class="obs-input" value="${p.obs}" placeholder="Observación..." onchange="setP('${d.cod}','obs',this.value)"></td>
     </tr>`;
   }).join('');
@@ -827,6 +874,24 @@ function renderPlanTable(){
 function handleAccion(sel,cod){
   sel.className='accion-sel act-'+sel.value;
   setP(cod,'accion',sel.value);
+  // Manejar campo fecha: solo habilitado para Actualizar
+  const row = sel.closest('tr');
+  const dateInput = row.querySelector('.date-input');
+  if(dateInput){
+    if(sel.value === 'Actualizar'){
+      dateInput.disabled = false;
+      dateInput.style.background = '';
+      dateInput.style.color = '';
+      dateInput.style.cursor = '';
+    } else {
+      dateInput.disabled = true;
+      dateInput.style.background = '#f0f0f0';
+      dateInput.style.color = '#aaa';
+      dateInput.style.cursor = 'not-allowed';
+      dateInput.value = '';
+      setP(cod,'fechaProg','');
+    }
+  }
   updateUnitProg(); updateHeroBadges();
 }
 
@@ -891,6 +956,12 @@ async function guardarPlanificacion(){
 
   if(rowsConAccion.length===0){
     showToast('Asigna una acción a al menos un documento antes de guardar.','#e67e22');
+    return;
+  }
+  // Validar que todos los documentos con Actualizar tengan fecha programada
+  const sinFecha = rowsConAccion.filter(r=>r.accion==='Actualizar' && !r.fechaProg);
+  if(sinFecha.length > 0){
+    showToast(`${sinFecha.length} documento(s) con acción "Actualizar" no tienen fecha programada. La fecha es obligatoria para Actualizar.`, '#c0392b');
     return;
   }
 
@@ -1189,6 +1260,8 @@ function renderSeguimiento(){
   const fger=document.getElementById('s-sel-ger').value;
   const funi=document.getElementById('s-sel-uni').value;
   const fest=document.getElementById('s-sel-estado').value;
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const en30=new Date(hoy); en30.setDate(en30.getDate()+30);
   let rows='';
   let contadores={verde:0,amarillo:0,rojo:0,gris:0};
   DOCS.forEach(d=>{
@@ -1199,7 +1272,12 @@ function renderSeguimiento(){
     const docFechaActual=reporteData[d.cod]||d.fecha;
     const sem=getSemaforo(p, docFechaActual);
     contadores[sem]++;
-    if(fest&&fest!==sem) return;
+    // Filtro especial: vence en 30 días (tiene fecha, no cumplida, fecha <= hoy+30)
+    if(fest==='proximo'){
+      if(!p.fechaProg) return;
+      const fp=new Date(p.fechaProg); fp.setHours(0,0,0,0);
+      if(fp > en30 || sem==='verde') return;
+    } else if(fest&&fest!==sem) return;
     const semClass={verde:'sem-verde',amarillo:'sem-amarillo',rojo:'sem-rojo',gris:'sem-gris'}[sem];
     const semLabel={verde:'Cumplido',amarillo:'En proceso',rojo:'Incumplido',gris:'Sin fecha'}[sem];
     const shortU=d.unidad.length>20?d.unidad.slice(0,18)+'…':d.unidad;
