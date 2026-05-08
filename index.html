@@ -176,12 +176,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 .res-lbl{font-size:12px;color:var(--text2);font-weight:600}
 
 /* MODAL */
-.modal-overlay.open {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 99999 !important; /* El valor más alto posible */
-}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,30,60,.5);z-index:9999;
+  align-items:center;justify-content:center}
 .modal-overlay.open{display:flex !important;visibility:visible !important;opacity:1 !important}
 .modal{background:#fff;border-radius:14px;padding:28px;max-width:540px;width:92%;
   box-shadow:0 16px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto;border-top:4px solid var(--yellow)}
@@ -233,6 +229,19 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   </div>
 </div>
 
+<!-- MODAL ADMIN -->
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">Acceso administrador QA</div>
+    <p>Ingresa la clave para acceder al panel completo.</p>
+    <div class="fgrp"><label>Clave</label>
+      <input type="password" id="admin-pwd" placeholder="••••••" onkeydown="if(event.key==='Enter')doAdmin()"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-admin')">Cancelar</button>
+      <button class="btn btn-blue" onclick="doAdmin()">Ingresar</button>
+    </div>
+  </div>
+</div>
 <!-- LOGIN -->
 <div id="screen-login">
   <div class="login-top"></div>
@@ -639,21 +648,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     </div>
   </div>
 </div>
-
-<!-- MODAL ADMIN -->
-<div class="modal-overlay" id="modal-admin">
-  <div class="modal" style="max-width:360px">
-  <div class="admin-link" onclick="window.openAdminModal()">Acceso administrador QA</div>
-    <p>Ingresa la clave para acceder al panel completo.</p>
-    <div class="fgrp"><label>Clave</label>
-      <input type="password" id="admin-pwd" placeholder="••••••" onkeydown="if(event.key==='Enter')doAdmin()"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-admin')">Cancelar</button>
-      <button class="btn btn-blue" onclick="doAdmin()">Ingresar</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -698,24 +692,11 @@ function doLogin(){
   CUR_GER=ger; CUR_UNI=uni; IS_ADMIN=false;
   cargarPlanDesdeSheets(ger, uni);
 }
-window.openAdminModal = function() {
-  const modal = document.getElementById('modal-admin');
-  if (modal) {
-    modal.style.display = 'flex'; // Forzamos la visibilidad
-    modal.classList.add('open');
-    console.log("Modal QA abierto correctamente");
-  } else {
-    alert("Error: No se encontró el modal en el sistema.");
-  }
-};
-
-window.closeAdminModal = function() {
-  const modal = document.getElementById('modal-admin');
-  if (modal) {
-    modal.classList.remove('open');
-    modal.style.display = 'none';
-  }
-};
+function openAdminModal(){
+  document.getElementById('admin-pwd').value='';
+  const m = document.getElementById('modal-admin');
+  m.classList.add('open');
+}
 function doAdmin(){
   const pwd=document.getElementById('admin-pwd').value;
   if(pwd!=='pluz2026'){ showToast('Clave incorrecta','#c0392b'); return; }
