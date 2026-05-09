@@ -425,16 +425,10 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <!-- FILTROS GLOBALES -->
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px">
       <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Filtros</div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Empresa</div>
-          <select id="ed-fil-empresa" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:140px">
-            <option value="">Todas</option>
-          </select>
-        </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Gerencia</div>
-          <select id="ed-fil-ger" onchange="onEdGerChange()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:200px">
+          <select id="ed-fil-ger" onchange="onEdGerChange()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:210px">
             <option value="">Todas las gerencias</option>
           </select>
         </div>
@@ -452,7 +446,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         </div>
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Estado de vigencia</div>
-          <select id="ed-fil-vig" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:150px">
+          <select id="ed-fil-vig" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:160px">
             <option value="">Vigente + En elaboración</option>
             <option value="Vigente">Solo Vigente</option>
             <option value="En elaboración">Solo En elaboración</option>
@@ -460,43 +454,53 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <option value="todos">Ver todos</option>
           </select>
         </div>
-        <div style="margin-top:14px">
-          <button onclick="limpiarFiltrosED()" style="font-size:11px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#f4f6fb;color:var(--text2);cursor:pointer">✕ Limpiar</button>
+        <div>
+          <button onclick="limpiarFiltrosED()" style="font-size:11px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#f4f6fb;color:var(--text2);cursor:pointer">✕ Limpiar</button>
         </div>
       </div>
     </div>
 
-    <!-- KPIs principales: Vigentes, En elaboración, Obsoletos -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+    <!-- KPIs: Total, Vigentes, En elaboración, Obsoletos -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--blue)">
+        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Total documentos</div>
+        <div style="font-size:32px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">en el sistema (filtrados)</div>
+      </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--green);cursor:pointer" onclick="filtrarPorVigenciaED('Vigente')">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Documentos vigentes</div>
+        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Vigentes</div>
         <div style="font-size:32px;font-weight:800;color:var(--green)" id="ed-vigentes">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">publicados y activos · <span style="color:var(--green);font-weight:700">Ver todos →</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">publicados y activos · <span style="color:var(--green);font-weight:700">Ver →</span></div>
       </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--yellow);cursor:pointer" onclick="filtrarPorVigenciaED('En elaboración')">
         <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">En elaboración</div>
         <div style="font-size:32px;font-weight:800;color:var(--amber)" id="ed-elaboracion">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">en proceso · <span style="color:var(--amber);font-weight:700">Ver todos →</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">en proceso · <span style="color:var(--amber);font-weight:700">Ver →</span></div>
       </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--red);opacity:.85">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Obsoletos <span style="font-weight:400;color:var(--text3)">(informativo)</span></div>
+        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Obsoletos <span style="font-weight:400;color:var(--text3)">(info)</span></div>
         <div style="font-size:32px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">fuera de vigencia · no se muestran en tabla</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">fuera de vigencia</div>
       </div>
     </div>
 
-    <!-- Gráfico vigentes por mes + gráficos existentes -->
+    <!-- Gráfico vigentes por mes + flujo de trabajo -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
 
       <!-- Vigentes por mes -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-          <div style="font-size:13px;font-weight:700;color:var(--text)">Vigentes por mes de vencimiento</div>
-          <select id="ed-sel-mes" onchange="onMesChange()" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:6px">
-            <option value="">Todos los meses</option>
-          </select>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Documentos vigentes por mes</div>
+          <div style="display:flex;gap:6px">
+            <select id="ed-sel-anio" onchange="onAnioChange()" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:6px">
+              <option value="">Todos los años</option>
+            </select>
+            <select id="ed-sel-mes" onchange="onMesChange()" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:6px">
+              <option value="">Todos los meses</option>
+            </select>
+          </div>
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Haz clic en un mes para ver el listado</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Haz clic en una barra para filtrar el listado</div>
         <div id="ed-chart-mes" style="display:flex;flex-direction:column;gap:7px"></div>
       </div>
 
@@ -1447,7 +1451,8 @@ initLogin();
 
 // ===== ESTADO DE DOCUMENTOS — conectado a Google Sheets =====
 let REPORTE_DATA = []; // datos crudos desde Sheets
-let edMesFiltro = '';  // mes seleccionado en el gráfico
+let edMesFiltro = '';  // mes seleccionado (YYYY-MM)
+let edAnioFiltro = ''; // año seleccionado en el gráfico
 
 const MESES_ED = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -1478,20 +1483,16 @@ async function cargarReporteDesdeSheets(){
 }
 
 function getDocsED(){
-  // Aplicar filtros globales
-  const fEmp = document.getElementById('ed-fil-empresa')?.value || '';
   const fGer = document.getElementById('ed-fil-ger')?.value || '';
   const fUni = document.getElementById('ed-fil-uni')?.value || '';
   const fCat = document.getElementById('ed-fil-cat')?.value || '';
   const fVig = document.getElementById('ed-fil-vig')?.value || '';
 
   let docs = REPORTE_DATA;
-  if(fEmp) docs = docs.filter(d=>d.empresa===fEmp);
   if(fGer) docs = docs.filter(d=>d.gerencia===fGer);
   if(fUni) docs = docs.filter(d=>d.unidad===fUni);
   if(fCat) docs = docs.filter(d=>d.categoria===fCat);
 
-  // Por defecto mostrar solo Vigente + En elaboración (ocultar Obsoleto)
   if(!fVig || fVig==='') {
     docs = docs.filter(d=>d.estadoVig==='Vigente'||d.estadoVig==='En elaboración');
   } else if(fVig==='todos') {
@@ -1499,17 +1500,11 @@ function getDocsED(){
   } else {
     docs = docs.filter(d=>d.estadoVig===fVig);
   }
-
   return docs;
 }
 
 function poblarFiltrosED(){
   const todos = REPORTE_DATA;
-
-  // Empresa
-  const empresas = [...new Set(todos.map(d=>d.empresa).filter(Boolean).sort())];
-  const selEmp = document.getElementById('ed-fil-empresa');
-  selEmp.innerHTML = '<option value="">Todas</option>' + empresas.map(e=>`<option value="${e}">${e}</option>`).join('');
 
   // Gerencia
   const gers = [...new Set(todos.map(d=>d.gerencia).filter(Boolean).sort())];
@@ -1521,16 +1516,28 @@ function poblarFiltrosED(){
   const selCat = document.getElementById('ed-fil-cat');
   selCat.innerHTML = '<option value="">Todas</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-  // Select de meses para el gráfico
-  poblarSelectMeses(todos);
+  // Años para el gráfico de meses (de vigentes con fechaVig)
+  const anios = [...new Set(todos.filter(d=>d.estadoVig==='Vigente'&&d.fechaVig).map(d=>{
+    const f = new Date(d.fechaVig);
+    return isNaN(f) ? null : f.getFullYear();
+  }).filter(Boolean))].sort();
+  const selAnio = document.getElementById('ed-sel-anio');
+  const anioActual = new Date().getFullYear();
+  selAnio.innerHTML = '<option value="">Todos los años</option>' + anios.map(a=>`<option value="${a}" ${a===anioActual?'selected':''}>${a}</option>`).join('');
+  edAnioFiltro = anios.includes(anioActual) ? String(anioActual) : '';
+
+  poblarSelectMeses();
 }
 
-function poblarSelectMeses(docs){
+function poblarSelectMeses(){
+  const docs = REPORTE_DATA.filter(d=>d.estadoVig==='Vigente'&&d.fechaVig);
   const meses = {};
-  docs.filter(d=>d.estadoVig==='Vigente'&&d.fechaVig).forEach(d=>{
+  docs.forEach(d=>{
     const f = new Date(d.fechaVig);
     if(isNaN(f)) return;
-    const key = `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}`;
+    const anio = String(f.getFullYear());
+    if(edAnioFiltro && anio !== edAnioFiltro) return;
+    const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
     meses[key] = true;
   });
   const sel = document.getElementById('ed-sel-mes');
@@ -1539,6 +1546,9 @@ function poblarSelectMeses(docs){
     const [y,m] = k.split('-');
     return `<option value="${k}">${MESES_ED[parseInt(m)-1]} ${y}</option>`;
   }).join('');
+  // Resetear mes si ya no existe en el nuevo filtro
+  if(edMesFiltro && !meses[edMesFiltro]) edMesFiltro = '';
+  sel.value = edMesFiltro;
 }
 
 function onEdGerChange(){
@@ -1556,19 +1566,30 @@ function aplicarFiltrosED(){
 }
 
 function limpiarFiltrosED(){
-  ['ed-fil-empresa','ed-fil-ger','ed-fil-uni','ed-fil-cat','ed-fil-vig'].forEach(id=>{
+  ['ed-fil-ger','ed-fil-uni','ed-fil-cat','ed-fil-vig'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = '';
   });
   document.getElementById('ed-fil-uni').innerHTML = '<option value="">Todas las unidades</option>';
   edMesFiltro = '';
+  edAnioFiltro = '';
+  document.getElementById('ed-sel-anio').value = '';
   document.getElementById('ed-sel-mes').value = '';
+  document.getElementById('ed-mes-activo').textContent = '';
   renderEstadoDocs();
 }
 
 function filtrarPorVigenciaED(val){
   document.getElementById('ed-fil-vig').value = val;
   aplicarFiltrosED();
+}
+
+function onAnioChange(){
+  edAnioFiltro = document.getElementById('ed-sel-anio').value;
+  edMesFiltro = '';
+  poblarSelectMeses();
+  document.getElementById('ed-mes-activo').textContent = '';
+  renderEstadoDocs();
 }
 
 function onMesChange(){
@@ -1585,25 +1606,40 @@ function onMesChange(){
 function renderEstadoDocs(){
   if(!REPORTE_DATA.length) return;
 
+  // KPIs — sobre datos filtrados por gerencia/unidad/categoría (sin filtro de vigencia para mostrar todos)
+  const filtered = getDocsED();
   const todosRaw = REPORTE_DATA;
-  const vigentes  = todosRaw.filter(d=>d.estadoVig==='Vigente');
-  const obsoletos = todosRaw.filter(d=>d.estadoVig==='Obsoleto');
-  const elaborac  = todosRaw.filter(d=>d.estadoVig==='En elaboración');
 
-  document.getElementById('ed-vigentes').textContent    = vigentes.length;
-  document.getElementById('ed-obsoletos').textContent   = obsoletos.length;
-  document.getElementById('ed-elaboracion').textContent = elaborac.length;
+  // KPI totales sobre datos base filtrados (gerencia/unidad/cat aplicados, sin filtro vigencia)
+  const fGer = document.getElementById('ed-fil-ger')?.value || '';
+  const fUni = document.getElementById('ed-fil-uni')?.value || '';
+  const fCat = document.getElementById('ed-fil-cat')?.value || '';
+  let base = REPORTE_DATA;
+  if(fGer) base = base.filter(d=>d.gerencia===fGer);
+  if(fUni) base = base.filter(d=>d.unidad===fUni);
+  if(fCat) base = base.filter(d=>d.categoria===fCat);
 
-  // Gráfico: vigentes por mes de fecha de vigencia
+  const vigentes  = base.filter(d=>d.estadoVig==='Vigente');
+  const obsoletos = base.filter(d=>d.estadoVig==='Obsoleto');
+  const elaborac  = base.filter(d=>d.estadoVig==='En elaboración');
+
+  document.getElementById('ed-total').textContent      = base.length;
+  document.getElementById('ed-vigentes').textContent   = vigentes.length;
+  document.getElementById('ed-obsoletos').textContent  = obsoletos.length;
+  document.getElementById('ed-elaboracion').textContent= elaborac.length;
+
+  // Gráfico: vigentes por mes — filtrado por año seleccionado
   const mesCnt = {};
   vigentes.filter(d=>d.fechaVig).forEach(d=>{
     const f = new Date(d.fechaVig);
     if(isNaN(f)) return;
-    const key = `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}`;
+    const anio = String(f.getFullYear());
+    if(edAnioFiltro && anio !== edAnioFiltro) return;
+    const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
     mesCnt[key] = (mesCnt[key]||0)+1;
   });
   const mesSorted = Object.entries(mesCnt).sort((a,b)=>a[0].localeCompare(b[0]));
-  const maxMes = mesSorted[0] ? Math.max(...mesSorted.map(e=>e[1])) : 1;
+  const maxMes = mesSorted.length ? Math.max(...mesSorted.map(e=>e[1])) : 1;
   document.getElementById('ed-chart-mes').innerHTML = mesSorted.map(([key,cnt])=>{
     const [y,m] = key.split('-');
     const label = `${MESES_ED[parseInt(m)-1]} ${y}`;
@@ -1617,14 +1653,14 @@ function renderEstadoDocs(){
         <div style="width:${pct}%;height:100%;background:${activo?'var(--blue)':'var(--green)'};border-radius:4px;transition:width .3s"></div></div></div>`;
   }).join('') || '<div style="color:var(--text3);font-size:12px">Sin datos de fecha de vigencia</div>';
 
-  // Gráfico flujo de trabajo
-  const filtered = getDocsED();
+  // Gráfico flujo de trabajo — usa estadoActual (col I)
   const wfCount = {};
   filtered.forEach(d=>{
-    const k = d.estadoWF || d.estadoActual || 'Sin estado';
+    const k = d.estadoActual || 'Sin estado';
     let label = k;
     if(k.startsWith('APROBACION')||k.startsWith('APROBACIÓN')) label='En aprobación';
-    else if(k.includes('REVISION')) label='Revisión de vigencia';
+    else if(k.includes('REVISION DE VIGENCIA')) label='Revisión de vigencia';
+    else if(k.includes('REVISION')) label='En revisión';
     else if(k==='Completada') label='Completada';
     else if(k==='ELABORACION') label='En elaboración';
     else if(k==='PRIMERA REVISION') label='Primera revisión';
@@ -1636,7 +1672,7 @@ function renderEstadoDocs(){
   });
   const wfSorted = Object.entries(wfCount).sort((a,b)=>b[1]-a[1]);
   const maxWF = wfSorted[0]?.[1]||1;
-  const wfColors={'Completada':'#27ae60','Revisión de vigencia':'#e67e22','En elaboración':'#3D5BA9','En aprobación':'#8e44ad','Primera revisión':'#2980b9','Revisión QUA':'#c0392b','Ajustes':'#d35400','Publicación P&O':'#16a085','Selección aprobador':'#7f8c8d'};
+  const wfColors={'Completada':'#27ae60','Revisión de vigencia':'#e67e22','En elaboración':'#3D5BA9','En aprobación':'#8e44ad','En revisión':'#2980b9','Primera revisión':'#2980b9','Revisión QUA':'#c0392b','Ajustes':'#d35400','Publicación P&O':'#16a085','Selección aprobador':'#7f8c8d'};
   document.getElementById('ed-chart-wf').innerHTML = wfSorted.map(([label,count])=>{
     const pct=Math.round(count/maxWF*100);
     const color=wfColors[label]||'#95a5a6';
@@ -1677,7 +1713,33 @@ function selMesChart(key){
   } else {
     document.getElementById('ed-mes-activo').textContent = '';
   }
+  renderEstadoTabla();
+  // Re-render gráfico para resaltar barra activa
   renderEstadoDocs();
+}
+
+function getSemaforoED(p, fechaVigDoc){
+  // Sin planificación → sin semáforo
+  if(!p || !p.accion || p.accion==='Pendiente') return null;
+  if(!p.fechaProg) return null;
+
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const fechaProg = new Date(p.fechaProg); fechaProg.setHours(0,0,0,0);
+
+  // Si la acción es Mantener → verde (no requiere actualización)
+  if(p.accion==='Mantener') return 'verde';
+
+  // Si el doc tiene fecha de vigencia >= fecha programada → ya se actualizó → verde
+  if(fechaVigDoc){
+    const fVig = new Date(fechaVigDoc); fVig.setHours(0,0,0,0);
+    if(!isNaN(fVig) && fVig >= fechaProg) return 'verde';
+  }
+
+  // Si la fecha programada aún no llegó → amarillo (en proceso)
+  if(fechaProg > hoy) return 'amarillo';
+
+  // Fecha programada ya pasó y no se actualizó → rojo (vencido)
+  return 'rojo';
 }
 
 function renderEstadoTabla(){
@@ -1686,7 +1748,7 @@ function renderEstadoTabla(){
 
   let docs = getDocsED();
 
-  // Filtro por mes seleccionado
+  // Filtro por mes seleccionado (sobre fechaVig)
   if(edMesFiltro){
     docs = docs.filter(d=>{
       if(!d.fechaVig) return false;
@@ -1697,9 +1759,10 @@ function renderEstadoTabla(){
     });
   }
 
+  // Filtro flujo de trabajo — usa estadoActual (col I)
   if(fwf){
-    if(fwf==='APROBACION') docs=docs.filter(d=>d.estadoWF&&(d.estadoWF.startsWith('APROBACION')||d.estadoWF.startsWith('APROBACIÓN')));
-    else docs=docs.filter(d=>d.estadoWF&&d.estadoWF.includes(fwf));
+    if(fwf==='APROBACION') docs=docs.filter(d=>d.estadoActual&&(d.estadoActual.startsWith('APROBACION')||d.estadoActual.startsWith('APROBACIÓN')));
+    else docs=docs.filter(d=>d.estadoActual&&d.estadoActual.includes(fwf));
   }
   if(fbus) docs=docs.filter(d=>d.desc.toLowerCase().includes(fbus)||d.cod.toLowerCase().includes(fbus));
 
@@ -1707,7 +1770,7 @@ function renderEstadoTabla(){
 
   const vigColors={'Vigente':'#27ae60','Obsoleto':'#c0392b','En elaboración':'#e67e22'};
   const vigBg={'Vigente':'#e6f5ec','Obsoleto':'#fdecea','En elaboración':'#fef3ea'};
-  const semLabels={'verde':'✓ Cumplido','amarillo':'⏳ En proceso','rojo':'⚠ Vencido','gris':'— Sin fecha'};
+  const semTitles={'verde':'✓ Cumplido','amarillo':'⏳ En proceso','rojo':'⚠ Vencido'};
 
   if(!docs.length){
     document.getElementById('ed-tbody').innerHTML=`<tr><td colspan="12" class="empty">No hay documentos con estos filtros</td></tr>`;
@@ -1720,9 +1783,11 @@ function renderEstadoTabla(){
     const shortGer = (d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
     const resp = d.responsable ? d.responsable.split(',').map(r=>r.trim())[0] : '—';
     const p = getP(d.cod);
+    const sem = getSemaforoED(p, d.fechaVig);
+    const semDot = sem
+      ? `<span class="semaforo sem-${sem}" title="${semTitles[sem]||''}"></span>`
+      : '<span style="width:10px;display:inline-block"></span>';
     const tieneAccion = p.accion && p.accion!=='Pendiente';
-    const sem = tieneAccion ? getSemaforo(p, d.fechaVig) : null;
-    const semDot = sem ? `<span class="semaforo sem-${sem}" title="${semLabels[sem]||''}"></span>` : '<span style="width:10px;display:inline-block"></span>';
     const accionBadge = tieneAccion
       ? `<span style="background:${COLORS[p.accion]||'#eee'}22;color:${COLORS[p.accion]||'#888'};font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid ${COLORS[p.accion]||'#ccc'}55">${p.accion}</span>`
       : '<span style="font-size:10px;color:#ccc">—</span>';
@@ -1739,7 +1804,7 @@ function renderEstadoTabla(){
       <td style="font-size:10px;color:var(--text3)">${shortGer||'—'}</td>
       <td><span style="background:${vb};color:${vc};font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px">${d.estadoVig||'—'}</span></td>
       <td style="font-size:10px;color:var(--text2)">${d.fechaVig||'—'}</td>
-      <td style="font-size:10px;color:var(--text2)">${d.estadoWF||d.estadoActual||'—'}</td>
+      <td style="font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
       <td style="font-size:10px;color:var(--text3)">${resp}</td>
       <td>${accionBadge}</td>
       <td>${fechaBadge}</td>
