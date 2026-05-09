@@ -1215,12 +1215,10 @@ function renderGantt(){
   let items=[];
   DOCS.forEach(d=>{
     const p=getP(d.cod);
-    if(p.accion!=='Actualizar') return; // Solo mostrar documentos a Actualizar
     if(p.accion==='Pendiente') return;
     if(ger&&d.gerencia!==ger) return;
     if(uni&&d.unidad!==uni) return;
     if(acf&&p.accion!==acf) return;
-    if(!p.fechaProg) return; // Solo con fecha asignada
     items.push({label:d.desc,cod:d.cod,gerencia:d.gerencia,unidad:d.unidad,accion:p.accion,fecha:p.fechaProg,isNew:false});
   });
   nuevos.forEach(n=>{
@@ -1235,9 +1233,7 @@ function renderGantt(){
   const getKey=it=>agrup==='gerencia'?it.gerencia.replace('Gerencia de ','').replace('Gerencia ',''):agrup==='accion'?it.accion:it.unidad;
   const groups={};
   items.forEach(it=>{ const k=getKey(it); if(!groups[k]) groups[k]=[]; groups[k].push(it); });
-  // Parsear fechas como locales (evita problema UTC vs hora local)
-  const parseFechaLocal = f => { if(!f) return null; const [y,m,d]=f.split('-').map(Number); return new Date(y,m-1,d); };
-  const fechas=items.filter(i=>i.fecha).map(i=>parseFechaLocal(i.fecha)).filter(Boolean);
+  const fechas=items.filter(i=>i.fecha).map(i=>new Date(i.fecha));
   if(!fechas.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">Asigna fechas programadas para ver el Gantt.</p>'; return; }
   const minD=new Date(Math.min(...fechas));
   const maxD=new Date(Math.max(...fechas));
@@ -1270,7 +1266,7 @@ function renderGantt(){
       rows.push(`<text x="8" y="${y+RH/2+4}" font-size="10" fill="#444" font-family="Arial">${lbl}</text>`);
       months.forEach(mo=>{ const px=LW+Math.round((new Date(mo.y,mo.m,1)-startD)/totalMs*BW); rows.push(`<line x1="${px}" y1="${y}" x2="${px}" y2="${y+RH}" stroke="#f0f3fb" stroke-width="0.5"/>`); });
       if(it.fecha){
-        const s=parseFechaLocal(it.fecha);
+        const s=new Date(it.fecha);
         const pL=Math.max(0,(s-startD)/totalMs);
         const bx=LW+Math.round(pL*BW);
         const bw=30;
@@ -1481,7 +1477,6 @@ let edMesFiltro = '';  // mes seleccionado (YYYY-MM)
 let edAnioFiltro = ''; // año seleccionado en el gráfico
 let edWFFiltro   = ''; // etapa de flujo seleccionada en el gráfico
 let edGerFiltro  = ''; // gerencia seleccionada en el gráfico
-let edPVEFiltro  = null; // {mes, tipo: 'plan'|'exec'} para filtro PvE
 
 const MESES_ED = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -1595,7 +1590,7 @@ function aplicarFiltrosED(){
 }
 
 function limpiarFiltrosCruzados(){
-  edMesFiltro = ''; edWFFiltro = ''; edGerFiltro = ''; edPVEFiltro = null;
+  edMesFiltro = ''; edWFFiltro = ''; edGerFiltro = '';
   document.getElementById('ed-sel-mes').value = '';
   renderEstadoDocs();
 }
@@ -1638,29 +1633,8 @@ function onMesChange(){
 }
 
 function getDocsEDFiltrados(){
+  // Aplica filtros globales + filtros cruzados de gráficos
   let docs = getDocsED();
-  if(edPVEFiltro){
-    const {mes, tipo} = edPVEFiltro;
-    if(tipo==='plan'){
-      // Docs con fechaProg en ese mes
-      docs = docs.filter(d=>{
-        const p = getP(d.cod);
-        if(!p.fechaProg) return false;
-        const f = new Date(p.fechaProg);
-        if(isNaN(f)) return false;
-        return `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}` === mes;
-      });
-    } else {
-      // Docs vigentes con fechaVig en ese mes
-      docs = docs.filter(d=>{
-        if(!d.fechaVig) return false;
-        const f = new Date(d.fechaVig);
-        if(isNaN(f)) return false;
-        return `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}` === mes;
-      });
-    }
-    return docs;
-  }
   if(edMesFiltro){
     docs = docs.filter(d=>{
       if(!d.fechaVig) return false;
@@ -1819,9 +1793,7 @@ function renderEstadoDocs(){
     const pctE = Math.round(exec_/maxPVE*100);
     const cumplido = exec_ >= plan_ && plan_ > 0;
     const colorE = cumplido ? '#27ae60' : (exec_===0&&plan_>0 ? '#c0392b' : '#e67e22');
-    const activoPlan = edPVEFiltro?.mes===key && edPVEFiltro?.tipo==='plan';
-    const activoExec = edPVEFiltro?.mes===key && edPVEFiltro?.tipo==='exec';
-    return `<div style="margin-bottom:10px;padding:4px 6px;border-radius:6px;background:${activoPlan||activoExec?'#eef1f9':'transparent'}">
+    return `<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
         <span style="color:var(--text2);font-weight:500">${label}</span>
         <span style="font-size:10px;color:var(--text3)">
@@ -1831,17 +1803,15 @@ function renderEstadoDocs(){
         </span>
       </div>
       <div style="display:flex;flex-direction:column;gap:3px">
-        <div onclick="selPVEChart('${key}','plan')" style="display:flex;align-items:center;gap:6px;cursor:pointer;opacity:${activoExec?0.4:1}">
-          <span style="font-size:9px;color:${activoPlan?'var(--blue)':'var(--text3)'};width:52px;text-align:right;font-weight:${activoPlan?'700':'400'}">Planif.</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:${activoPlan?9:7}px;overflow:hidden;transition:height .2s">
-            <div style="width:${pctP}%;height:100%;background:${activoPlan?'var(--blue)':'#7a9bd4'};border-radius:4px"></div></div>
-          ${activoPlan?`<span style="font-size:9px;color:var(--blue);font-weight:700">${plan_} docs</span>`:''}
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:9px;color:var(--text3);width:52px;text-align:right">Planif.</span>
+          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:7px;overflow:hidden">
+            <div style="width:${pctP}%;height:100%;background:var(--blue);border-radius:4px"></div></div>
         </div>
-        <div onclick="selPVEChart('${key}','exec')" style="display:flex;align-items:center;gap:6px;cursor:pointer;opacity:${activoPlan?0.4:1}">
-          <span style="font-size:9px;color:${activoExec?colorE:'var(--text3)'};width:52px;text-align:right;font-weight:${activoExec?'700':'400'}">Ejecut.</span>
-          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:${activoExec?9:7}px;overflow:hidden;transition:height .2s">
-            <div style="width:${pctE}%;height:100%;background:${activoExec?colorE:(cumplido?'#6dbf8e':'#f0a06a')};border-radius:4px"></div></div>
-          ${activoExec?`<span style="font-size:9px;color:${colorE};font-weight:700">${exec_} docs</span>`:''}
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:9px;color:var(--text3);width:52px;text-align:right">Ejecut.</span>
+          <div style="flex:1;background:#f0f0f0;border-radius:4px;height:7px;overflow:hidden">
+            <div style="width:${pctE}%;height:100%;background:${colorE};border-radius:4px"></div></div>
         </div>
       </div>
     </div>`;
@@ -1854,18 +1824,6 @@ function renderEstadoDocs(){
   selWF.innerHTML = '<option value="">Todos los flujos</option>' + estadosWF.map(e=>`<option value="${e}" ${e===valWFActual?'selected':''}>${e}</option>`).join('');
 
   renderEstadoTabla();
-}
-
-function selPVEChart(mes, tipo){
-  if(edPVEFiltro && edPVEFiltro.mes===mes && edPVEFiltro.tipo===tipo){
-    edPVEFiltro = null; // deseleccionar
-  } else {
-    edPVEFiltro = {mes, tipo};
-    // limpiar otros filtros cruzados para no confundir
-    edMesFiltro = ''; edWFFiltro = ''; edGerFiltro = '';
-    document.getElementById('ed-sel-mes').value = '';
-  }
-  renderEstadoDocs();
 }
 
 function selMesChart(key){
@@ -1926,7 +1884,7 @@ function renderEstadoTabla(){
   if(fbus) docs = docs.filter(d=>d.desc.toLowerCase().includes(fbus)||d.cod.toLowerCase().includes(fbus));
 
   // Indicador de filtros cruzados
-  const haycruzados = edMesFiltro || edWFFiltro || edGerFiltro || edPVEFiltro;
+  const haycruzados = edMesFiltro || edWFFiltro || edGerFiltro;
   const indic = document.getElementById('ed-filtros-cruzados');
   if(indic){
     indic.style.display = haycruzados ? 'flex' : 'none';
@@ -1935,7 +1893,6 @@ function renderEstadoTabla(){
       if(edMesFiltro){ const[y,m]=edMesFiltro.split('-'); partes.push(`📅 ${MESES_ED[parseInt(m)-1]} ${y}`); }
       if(edWFFiltro) partes.push(`⚙ ${edWFFiltro}`);
       if(edGerFiltro) partes.push(`🏢 ${edGerFiltro.replace('Gerencia de ','').slice(0,25)}`);
-      if(edPVEFiltro){ const[y,m]=edPVEFiltro.mes.split('-'); partes.push(`${edPVEFiltro.tipo==='plan'?'🔵 Planificados':'🟢 Ejecutados'} ${MESES_ED[parseInt(m)-1]} ${y}`); }
       document.getElementById('ed-cruzados-label').textContent = partes.join(' · ');
     }
   }
