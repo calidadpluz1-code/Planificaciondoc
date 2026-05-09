@@ -243,7 +243,29 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     </div>
   </div>
 </div>
-<!-- LOGIN -->
+<!-- MODAL REPROGRAMACIÓN -->
+<div class="modal-overlay" id="modal-reprog">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title">⚠ Reprogramación detectada</div>
+    <p id="reprog-msg">Estás cambiando la fecha de un documento ya planificado. Indica el motivo para dejar trazabilidad.</p>
+    <div class="fgrp">
+      <label>Fecha original</label>
+      <input type="text" id="reprog-fecha-orig" readonly style="background:#f4f6fb;color:var(--text2)">
+    </div>
+    <div class="fgrp">
+      <label>Nueva fecha</label>
+      <input type="text" id="reprog-fecha-nueva" readonly style="background:#f4f6fb;color:var(--text2)">
+    </div>
+    <div class="fgrp">
+      <label>Motivo de reprogramación *</label>
+      <textarea id="reprog-motivo" placeholder="Ej: Retraso en aprobación, Recursos insuficientes, Cambio de prioridad..." style="min-height:70px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="cancelarReprog()">Cancelar</button>
+      <button class="btn btn-yellow" onclick="confirmarReprog()">Confirmar reprogramación</button>
+    </div>
+  </div>
+</div>
 <div id="screen-login">
   <div class="login-top"></div>
   <div class="login-header">
@@ -484,25 +506,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- Gráfico vigentes por mes + flujo de trabajo -->
+    <!-- Gráfico flujo de trabajo + Documentos por gerencia -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-
-      <!-- Vigentes por mes -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-          <div style="font-size:13px;font-weight:700;color:var(--text)">Documentos vigentes por mes</div>
-          <div style="display:flex;gap:6px">
-            <select id="ed-sel-anio" onchange="onAnioChange()" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:6px">
-              <option value="">Todos los años</option>
-            </select>
-            <select id="ed-sel-mes" onchange="onMesChange()" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:6px">
-              <option value="">Todos los meses</option>
-            </select>
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Haz clic en una barra para filtrar el listado</div>
-        <div id="ed-chart-mes" style="display:flex;flex-direction:column;gap:7px"></div>
-      </div>
 
       <!-- Estado flujo de trabajo -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
@@ -510,8 +515,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Haz clic en una etapa para filtrar el listado</div>
         <div id="ed-chart-wf" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
-
-    </div>
 
     <!-- Documentos por gerencia + Planificado vs Ejecutado -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
@@ -616,17 +619,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <select id="g-sel-uni" onchange="renderGantt()" style="min-width:180px">
         <option value="">Todas las unidades</option>
       </select>
-      <select id="g-sel-accion" onchange="renderGantt()" style="min-width:130px">
-        <option value="">Todas las acciones</option>
-        <option value="Actualizar">Actualizar</option>
-        <option value="Mantener">Mantener</option>
-        <option value="Eliminar">Eliminar</option>
-        <option value="Nuevo">Nuevo</option>
-      </select>
       <select id="g-agrup" onchange="renderGantt()" style="min-width:150px">
         <option value="unidad">Por unidad</option>
         <option value="gerencia">Por gerencia</option>
-        <option value="accion">Por acción</option>
       </select>
     </div>
     <div class="gantt-wrap">
@@ -636,10 +631,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <span style="font-size:12px;font-weight:400;color:var(--text2);margin-left:8px" id="gantt-count"></span>
           </div>
           <div class="gantt-legend">
-            <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--blue)"></div>Actualizar</div>
-            <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--green)"></div>Mantener</div>
-            <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--red)"></div>Eliminar</div>
-            <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--purple)"></div>Nuevo</div>
+            <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:var(--blue)"></div>Documentos a actualizar con fecha programada</div>
           </div>
         </div>
       </div>
@@ -802,7 +794,15 @@ async function cargarPlanDesdeSheets(ger, uni){
       const data1 = await res1.json();
       if(data1.ok && data1.data){
         data1.data.forEach(r=>{
-          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+          plan[r.cod]={
+            accion: r.accion||'Pendiente',
+            fechaProg: r.fechaProg||'',
+            obs: r.obs||'',
+            fechaOriginal: r.fechaOriginal || r.fechaProg || '',
+            reprogramado: r.reprogramado==='true'||r.reprogramado===true,
+            motivoReprog: r.motivoReprog||'',
+            guardadoEnSheets: true // viene de Sheets → es fecha comprometida
+          };
         });
       }
       // Cargar nuevos documentos propuestos
@@ -970,12 +970,34 @@ function renderPlanTable(){
         <option value="Eliminar" ${p.accion==='Eliminar'?'selected':''}>Eliminar</option>
         <option value="Transferir" ${p.accion==='Transferir'?'selected':''}>Transferir</option>
       </select></td>
-      <td><input type="date" class="date-input" value="${p.fechaProg}"
+      <td><input type="date" class="date-input" data-cod="${d.cod}" value="${p.fechaProg}"
         ${p.accion!=='Actualizar'?'disabled style="background:#f0f0f0;color:#aaa;cursor:not-allowed"':''}
-        onchange="setP('${d.cod}','fechaProg',this.value)"></td>
-      <td><input type="text" class="obs-input" value="${p.obs}" placeholder="Observación..." onchange="setP('${d.cod}','obs',this.value)"></td>
+        onchange="handleFechaChange(this,'${d.cod}')"></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="text" class="obs-input" value="${p.obs}" placeholder="Observación..." onchange="setP('${d.cod}','obs',this.value)" style="flex:1">
+          ${p.reprogramado?`<span title="Reprogramado: ${p.motivoReprog||''}" style="font-size:14px;cursor:help">🔄</span>`:''}
+        </div>
+      </td>
     </tr>`;
   }).join('');
+}
+
+async function handleFechaChange(input, cod){
+  const nuevaFecha = input.value;
+  const p = getP(cod);
+  const fechaAnterior = p.fechaProg;
+
+  // Detectar reprogramación: tenía fecha guardada en Sheets y se está cambiando
+  if(p.guardadoEnSheets && fechaAnterior && nuevaFecha && fechaAnterior !== nuevaFecha){
+    const resultado = await checkReprog(cod, nuevaFecha);
+    if(resultado === null){
+      // Usuario canceló — input ya fue revertido en cancelarReprog()
+      return;
+    }
+  }
+  setP(cod,'fechaProg', nuevaFecha);
+  updateUnitProg();
 }
 
 function handleAccion(sel,cod){
@@ -1052,12 +1074,70 @@ function postToSheets(data) {
   });
 }
 
+// REPROGRAMACIÓN
+let _reprogPendiente = null; // {cod, fechaOriginal, fechaNueva, resolve}
+
+function checkReprog(cod, fechaNueva){
+  const p = getP(cod);
+  const fechaOriginal = plan[cod]?.fechaOriginal || p.fechaProg;
+  // Si ya tenía fecha guardada en Sheets (fechaOriginal) y la nueva es distinta → reprogramación
+  if(fechaOriginal && fechaNueva && fechaOriginal !== fechaNueva && plan[cod]?.guardadoEnSheets){
+    return new Promise(resolve => {
+      _reprogPendiente = {cod, fechaOriginal, fechaNueva, resolve};
+      document.getElementById('reprog-fecha-orig').value = fechaOriginal;
+      document.getElementById('reprog-fecha-nueva').value = fechaNueva;
+      document.getElementById('reprog-motivo').value = '';
+      document.getElementById('modal-reprog').classList.add('open');
+    });
+  }
+  return Promise.resolve(null); // no es reprogramación
+}
+
+function confirmarReprog(){
+  const motivo = document.getElementById('reprog-motivo').value.trim();
+  if(!motivo){ showToast('Indica el motivo de la reprogramación','#c0392b'); return; }
+  if(_reprogPendiente){
+    const {cod, fechaOriginal, resolve} = _reprogPendiente;
+    // Marcar como reprogramado en el plan local
+    if(!plan[cod]) plan[cod] = {accion:'Pendiente',fechaProg:'',obs:''};
+    plan[cod].reprogramado = true;
+    plan[cod].fechaOriginal = fechaOriginal;
+    plan[cod].motivoReprog = motivo;
+    _reprogPendiente.resolve({reprogramado:true, motivo});
+    _reprogPendiente = null;
+  }
+  closeModal('modal-reprog');
+}
+
+function cancelarReprog(){
+  if(_reprogPendiente){
+    // Revertir la fecha al valor original
+    const {cod, fechaOriginal} = _reprogPendiente;
+    plan[cod].fechaProg = fechaOriginal;
+    // Actualizar el input de fecha en la tabla
+    document.querySelectorAll('.date-input').forEach(inp=>{
+      if(inp.dataset.cod===cod) inp.value = fechaOriginal;
+    });
+    _reprogPendiente.resolve(null);
+    _reprogPendiente = null;
+  }
+  closeModal('modal-reprog');
+}
+
 async function guardarPlanificacion(){
   const docs=getDocs(CUR_GER,CUR_UNI);
-  // Solo guardar documentos que ya tienen acción asignada (no Pendiente)
   const rowsConAccion=docs
     .filter(d=>getP(d.cod).accion!=='Pendiente')
-    .map(d=>{ const p=getP(d.cod); return {cod:d.cod,desc:d.desc,ver:d.ver,tipo:d.tipo,accion:p.accion,fechaProg:p.fechaProg,obs:p.obs}; });
+    .map(d=>{
+      const p=getP(d.cod);
+      return {
+        cod:d.cod, desc:d.desc, ver:d.ver, tipo:d.tipo,
+        accion:p.accion, fechaProg:p.fechaProg, obs:p.obs,
+        fechaOriginal: p.fechaOriginal || p.fechaProg || '',
+        reprogramado: p.reprogramado || false,
+        motivoReprog: p.motivoReprog || ''
+      };
+    });
   const nvsUnit=nuevos.filter(n=>n.gerencia===CUR_GER&&n.unidad===CUR_UNI);
   const pen=docs.filter(d=>getP(d.cod).accion==='Pendiente').length;
 
@@ -1065,15 +1145,14 @@ async function guardarPlanificacion(){
     showToast('Asigna una acción a al menos un documento antes de guardar.','#e67e22');
     return;
   }
-  // Validar que todos los documentos con Actualizar tengan fecha programada
   const sinFecha = rowsConAccion.filter(r=>r.accion==='Actualizar' && !r.fechaProg);
   if(sinFecha.length > 0){
-    showToast(`${sinFecha.length} documento(s) con acción "Actualizar" no tienen fecha programada. La fecha es obligatoria para Actualizar.`, '#c0392b');
+    showToast(`${sinFecha.length} documento(s) con acción "Actualizar" no tienen fecha programada.`, '#c0392b');
     return;
   }
 
   if(SHEETS_URL==='REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-    document.getElementById('modal-ok-msg').textContent=`${rowsConAccion.length} documentos con acción listos para guardar. Configura Google Sheets.`;
+    document.getElementById('modal-ok-msg').textContent=`${rowsConAccion.length} documentos listos para guardar.`;
     document.getElementById('modal-ok').classList.add('open');
     return;
   }
@@ -1084,12 +1163,20 @@ async function guardarPlanificacion(){
     for(const n of nvsUnit){
       await postToSheets({action:'guardar_nuevo',gerencia:CUR_GER,unidad:CUR_UNI,...n});
     }
+    // Marcar todos los docs guardados como "guardadoEnSheets" para detectar futuras reprogramaciones
+    rowsConAccion.forEach(r=>{
+      if(plan[r.cod]){
+        plan[r.cod].guardadoEnSheets = true;
+        plan[r.cod].fechaOriginal = r.fechaOriginal || r.fechaProg;
+        plan[r.cod].reprogramado = false; // resetear flag tras guardar
+      }
+    });
     hideSaving();
     document.getElementById('modal-ok-msg').textContent=pen>0
-      ? `Guardados ${rowsConAccion.length} documentos. Quedan ${pen} pendientes de asignar.`
-      : `¡Planificación de ${CUR_UNI} completada al 100%! Todos los documentos tienen acción asignada.`;
+      ? `Guardados ${rowsConAccion.length} documentos. Quedan ${pen} pendientes.`
+      : `¡Planificación de ${CUR_UNI} completada al 100%!`;
     document.getElementById('modal-ok').classList.add('open');
-    renderPlanTable(); // refrescar para mostrar sección de guardados
+    renderPlanTable();
   } catch(e){
     hideSaving();
     showToast('Error al guardar. Revisa la conexión.','#c0392b');
@@ -1210,29 +1297,20 @@ function onGanttGerChange(){
 function renderGantt(){
   const ger=document.getElementById('g-sel-ger').value;
   const uni=document.getElementById('g-sel-uni').value;
-  const acf=document.getElementById('g-sel-accion').value;
   const agrup=document.getElementById('g-agrup').value;
   let items=[];
   DOCS.forEach(d=>{
     const p=getP(d.cod);
-    if(p.accion!=='Actualizar') return; // Solo mostrar documentos a Actualizar
-    if(p.accion==='Pendiente') return;
+    if(p.accion!=='Actualizar') return;
+    if(!p.fechaProg) return;
     if(ger&&d.gerencia!==ger) return;
     if(uni&&d.unidad!==uni) return;
-    if(acf&&p.accion!==acf) return;
-    if(!p.fechaProg) return; // Solo con fecha asignada
     items.push({label:d.desc,cod:d.cod,gerencia:d.gerencia,unidad:d.unidad,accion:p.accion,fecha:p.fechaProg,isNew:false});
   });
-  nuevos.forEach(n=>{
-    if(ger&&n.gerencia!==ger) return;
-    if(uni&&n.unidad!==uni) return;
-    if(acf&&acf!=='Nuevo') return;
-    items.push({label:n.titulo,cod:'NEW',gerencia:n.gerencia,unidad:n.unidad,accion:'Nuevo',fecha:n.fecha,isNew:true});
-  });
-  document.getElementById('gantt-count').textContent=items.length+' entradas';
+  document.getElementById('gantt-count').textContent=items.length+' documentos a actualizar';
   const container=document.getElementById('gantt-container');
-  if(!items.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">No hay documentos con acciones y fechas asignadas.</p>'; return; }
-  const getKey=it=>agrup==='gerencia'?it.gerencia.replace('Gerencia de ','').replace('Gerencia ',''):agrup==='accion'?it.accion:it.unidad;
+  if(!items.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">No hay documentos con acción "Actualizar" y fecha programada.</p>'; return; }
+  const getKey=it=>agrup==='gerencia'?it.gerencia.replace('Gerencia de ','').replace('Gerencia ',''):it.unidad;
   const groups={};
   items.forEach(it=>{ const k=getKey(it); if(!groups[k]) groups[k]=[]; groups[k].push(it); });
   // Parsear fechas como locales (evita problema UTC vs hora local)
