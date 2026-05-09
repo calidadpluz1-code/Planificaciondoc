@@ -1622,18 +1622,6 @@ function poblarFiltrosED(){
   const cats = [...new Set(todos.map(d=>d.categoria).filter(Boolean).sort())];
   const selCat = document.getElementById('ed-fil-cat');
   selCat.innerHTML = '<option value="">Todas</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
-
-  // Años para el gráfico de meses (de vigentes con fechaVig)
-  const anios = [...new Set(todos.filter(d=>d.estadoVig==='Vigente'&&d.fechaVig).map(d=>{
-    const f = new Date(d.fechaVig);
-    return isNaN(f) ? null : f.getFullYear();
-  }).filter(Boolean))].sort();
-  const selAnio = document.getElementById('ed-sel-anio');
-  const anioActual = new Date().getFullYear();
-  selAnio.innerHTML = '<option value="">Todos los años</option>' + anios.map(a=>`<option value="${a}" ${a===anioActual?'selected':''}>${a}</option>`).join('');
-  edAnioFiltro = anios.includes(anioActual) ? String(anioActual) : '';
-
-  poblarSelectMeses();
 }
 
 function poblarSelectMeses(){
@@ -1684,10 +1672,7 @@ function limpiarFiltrosED(){
     if(el) el.value = '';
   });
   document.getElementById('ed-fil-uni').innerHTML = '<option value="">Todas las unidades</option>';
-  edMesFiltro = ''; edAnioFiltro = ''; edWFFiltro = ''; edGerFiltro = '';
-  document.getElementById('ed-sel-anio').value = '';
-  document.getElementById('ed-sel-mes').value = '';
-  document.getElementById('ed-mes-activo').textContent = '';
+  edMesFiltro = ''; edAnioFiltro = ''; edWFFiltro = ''; edGerFiltro = ''; edPVEFiltro = null;
   renderEstadoDocs();
 }
 
@@ -1696,24 +1681,8 @@ function filtrarPorVigenciaED(val){
   aplicarFiltrosED();
 }
 
-function onAnioChange(){
-  edAnioFiltro = document.getElementById('ed-sel-anio').value;
-  edMesFiltro = '';
-  poblarSelectMeses();
-  document.getElementById('ed-mes-activo').textContent = '';
-  renderEstadoDocs();
-}
-
-function onMesChange(){
-  edMesFiltro = document.getElementById('ed-sel-mes').value;
-  renderEstadoTabla();
-  if(edMesFiltro){
-    const [y,m] = edMesFiltro.split('-');
-    document.getElementById('ed-mes-activo').textContent = `📅 Filtrando: ${MESES_ED[parseInt(m)-1]} ${y}`;
-  } else {
-    document.getElementById('ed-mes-activo').textContent = '';
-  }
-}
+function onAnioChange(){ renderEstadoDocs(); }
+function onMesChange(){ renderEstadoTabla(); }
 
 function getDocsEDFiltrados(){
   let docs = getDocsED();
@@ -1775,32 +1744,7 @@ function renderEstadoDocs(){
   // Subconjunto para gráficos (respeta filtros globales + vigencia, sin cruzados aún)
   const filtered = getDocsED();
 
-  // ── GRÁFICO 1: Vigentes por mes ──────────────────────────────────────
-  const mesCnt = {};
-  vigentes.filter(d=>d.fechaVig).forEach(d=>{
-    const f = new Date(d.fechaVig);
-    if(isNaN(f)) return;
-    const anio = String(f.getFullYear());
-    if(edAnioFiltro && anio !== edAnioFiltro) return;
-    const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
-    mesCnt[key] = (mesCnt[key]||0)+1;
-  });
-  const mesSorted = Object.entries(mesCnt).sort((a,b)=>a[0].localeCompare(b[0]));
-  const maxMes = mesSorted.length ? Math.max(...mesSorted.map(e=>e[1])) : 1;
-  document.getElementById('ed-chart-mes').innerHTML = mesSorted.map(([key,cnt])=>{
-    const [y,m] = key.split('-');
-    const label = `${MESES_ED[parseInt(m)-1]} ${y}`;
-    const pct = Math.round(cnt/maxMes*100);
-    const activo = edMesFiltro===key;
-    return `<div onclick="selMesChart('${key}')" style="cursor:pointer;padding:3px 6px;border-radius:5px;background:${activo?'#eef1f9':'transparent'}">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
-        <span style="color:${activo?'var(--blue)':'var(--text2)'};font-weight:${activo?'700':'400'}">${label}</span>
-        <span style="font-weight:700;color:${activo?'var(--blue)':'var(--green)'}">${cnt}</span></div>
-      <div style="background:#f0f0f0;border-radius:4px;height:7px;overflow:hidden">
-        <div style="width:${pct}%;height:100%;background:${activo?'var(--blue)':'var(--green)'};border-radius:4px;transition:width .3s"></div></div></div>`;
-  }).join('') || '<div style="color:var(--text3);font-size:12px">Sin datos de fecha de vigencia</div>';
-
-  // ── GRÁFICO 2: Flujo de trabajo (clickeable) ─────────────────────────
+  // ── GRÁFICO 1: Flujo de trabajo (clickeable) ─────────────────────────
   // Si hay mes seleccionado, filtrar también por mes
   let docsWF = filtered;
   if(edMesFiltro){
