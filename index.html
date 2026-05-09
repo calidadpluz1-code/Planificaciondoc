@@ -1653,29 +1653,19 @@ function renderEstadoDocs(){
         <div style="width:${pct}%;height:100%;background:${activo?'var(--blue)':'var(--green)'};border-radius:4px;transition:width .3s"></div></div></div>`;
   }).join('') || '<div style="color:var(--text3);font-size:12px">Sin datos de fecha de vigencia</div>';
 
-  // Gráfico flujo de trabajo — usa estadoActual (col I)
+  // Gráfico flujo de trabajo — estadoActual exacto, sin agrupar
   const wfCount = {};
   filtered.forEach(d=>{
     const k = d.estadoActual || 'Sin estado';
-    let label = k;
-    if(k.startsWith('APROBACION')||k.startsWith('APROBACIÓN')) label='En aprobación';
-    else if(k.includes('REVISION DE VIGENCIA')) label='Revisión de vigencia';
-    else if(k.includes('REVISION')) label='En revisión';
-    else if(k==='Completada') label='Completada';
-    else if(k==='ELABORACION') label='En elaboración';
-    else if(k==='PRIMERA REVISION') label='Primera revisión';
-    else if(k==='REVISION QUA') label='Revisión QUA';
-    else if(k==='PUBLICACION P&O') label='Publicación P&O';
-    else if(k.includes('AJUSTE')) label='Ajustes';
-    else if(k.includes('SELECCION')||k.includes('TRANSICION')) label='Selección aprobador';
-    wfCount[label]=(wfCount[label]||0)+1;
+    wfCount[k]=(wfCount[k]||0)+1;
   });
   const wfSorted = Object.entries(wfCount).sort((a,b)=>b[1]-a[1]);
   const maxWF = wfSorted[0]?.[1]||1;
-  const wfColors={'Completada':'#27ae60','Revisión de vigencia':'#e67e22','En elaboración':'#3D5BA9','En aprobación':'#8e44ad','En revisión':'#2980b9','Primera revisión':'#2980b9','Revisión QUA':'#c0392b','Ajustes':'#d35400','Publicación P&O':'#16a085','Selección aprobador':'#7f8c8d'};
-  document.getElementById('ed-chart-wf').innerHTML = wfSorted.map(([label,count])=>{
+  // Paleta de colores por índice para distinguir visualmente
+  const wfPalette=['#3D5BA9','#27ae60','#e67e22','#8e44ad','#2980b9','#c0392b','#d35400','#16a085','#7f8c8d','#f39c12','#1abc9c','#e74c3c','#9b59b6','#34495e','#2ecc71'];
+  document.getElementById('ed-chart-wf').innerHTML = wfSorted.map(([label,count],i)=>{
     const pct=Math.round(count/maxWF*100);
-    const color=wfColors[label]||'#95a5a6';
+    const color=wfPalette[i%wfPalette.length];
     return `<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
       <span style="color:var(--text2)">${label}</span>
       <span style="font-weight:700;color:${color}">${count}</span></div>
@@ -1700,6 +1690,12 @@ function renderEstadoDocs(){
       <div style="background:#f0f0f0;border-radius:4px;height:7px;overflow:hidden">
         <div style="width:${pct}%;height:100%;background:var(--blue);border-radius:4px"></div></div></div>`;
   }).join('') || '<div style="color:var(--text3);font-size:12px">Sin datos</div>';
+
+  // Poblar select de flujo dinámicamente con valores reales del estadoActual
+  const estadosWF = [...new Set(filtered.map(d=>d.estadoActual).filter(Boolean).sort())];
+  const selWF = document.getElementById('ed-fil-wf');
+  const valWFActual = selWF.value;
+  selWF.innerHTML = '<option value="">Todos los flujos</option>' + estadosWF.map(e=>`<option value="${e}" ${e===valWFActual?'selected':''}>${e}</option>`).join('');
 
   renderEstadoTabla();
 }
@@ -1759,11 +1755,8 @@ function renderEstadoTabla(){
     });
   }
 
-  // Filtro flujo de trabajo — usa estadoActual (col I)
-  if(fwf){
-    if(fwf==='APROBACION') docs=docs.filter(d=>d.estadoActual&&(d.estadoActual.startsWith('APROBACION')||d.estadoActual.startsWith('APROBACIÓN')));
-    else docs=docs.filter(d=>d.estadoActual&&d.estadoActual.includes(fwf));
-  }
+  // Filtro flujo de trabajo — coincidencia exacta con estadoActual (col I)
+  if(fwf) docs=docs.filter(d=>d.estadoActual===fwf);
   if(fbus) docs=docs.filter(d=>d.desc.toLowerCase().includes(fbus)||d.cod.toLowerCase().includes(fbus));
 
   document.getElementById('ed-tabla-titulo').textContent = `${docs.length} documento(s)`;
