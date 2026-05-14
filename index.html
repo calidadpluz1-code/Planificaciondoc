@@ -813,6 +813,7 @@ async function cargarPlanDesdeSheets(ger, uni){
       // Procesar reporte (para Estado Docs)
       if(data.reporte?.ok && data.reporte?.data){
         REPORTE_DATA = data.reporte.data;
+        poblarFiltrosED(); // poblar filtros superiores con los datos recién cargados
       }
     }
   } catch(e){ console.log('Sin conexión a Sheets, modo offline'); }
@@ -1562,14 +1563,14 @@ function poblarFiltrosED(){
   const selCat = document.getElementById('ed-fil-cat');
   selCat.innerHTML = '<option value="">Todas</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-  // Años para el gráfico de meses (de vigentes con fechaVig)
-  const anios = [...new Set(todos.filter(d=>d.estadoVig==='Vigente'&&d.fechaVig).map(d=>{
-    const f = new Date(d.fechaVig);
-    return isNaN(f) ? null : f.getFullYear();
-  }).filter(Boolean))].sort();
+  // Años para el selector PVE: combinar años de fechaVig (ejecutados) y fechaProg (planificados)
+  const aniosVig = todos.filter(d=>d.fechaVig).map(d=>{ const f=new Date(d.fechaVig); return isNaN(f)?null:f.getFullYear(); }).filter(Boolean);
+  const aniosPlan = DOCS.map(d=>{ const p=getP(d.cod); if(!p.fechaProg) return null; const f=new Date(p.fechaProg); return isNaN(f)?null:f.getFullYear(); }).filter(Boolean);
+  const anios = [...new Set([...aniosVig,...aniosPlan])].sort();
   const selAnio = document.getElementById('ed-sel-anio');
   const anioActual = new Date().getFullYear();
   selAnio.innerHTML = '<option value="">Todos los años</option>' + anios.map(a=>`<option value="${a}" ${a===anioActual?'selected':''}>${a}</option>`).join('');
+  // Arrancar ya filtrado en el año actual (2026)
   edAnioFiltro = anios.includes(anioActual) ? String(anioActual) : '';
 
   poblarSelectMeses();
@@ -1636,7 +1637,8 @@ function filtrarPorVigenciaED(val){
 }
 
 function onAnioChange(){
-  edAnioFiltro = document.getElementById('ed-sel-anio').value;
+  edAnioFiltro = document.getElementById('ed-sel-anio').value; // String, coincide con comparación en filtros
+  edPVEFiltro = ''; edPVETipo = ''; // limpiar mes seleccionado al cambiar año
   edMesFiltro = '';
   poblarSelectMeses();
   document.getElementById('ed-mes-activo').textContent = '';
