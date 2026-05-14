@@ -796,7 +796,8 @@ async function cargarPlanDesdeSheets(ger, uni){
       const data1 = await res1.json();
       if(data1.ok && data1.data){
         data1.data.forEach(r=>{
-          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+          // yaGuardado:true = ya existe en Sheets, no se debe reescribir con fecha nueva
+          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
         });
       }
       // Cargar nuevos documentos propuestos
@@ -808,7 +809,7 @@ async function cargarPlanDesdeSheets(ger, uni){
           // Evitar duplicados si ya existe en memoria
           const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
           if(!existe){
-            nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
+            nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
           }
         });
       }
@@ -828,7 +829,7 @@ async function cargarTodasLasPlanificaciones(){
         const data1 = await res1.json();
         if(data1.ok && data1.data){
           data1.data.forEach(r=>{
-            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||''};
+            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
           });
         }
       } catch(e1){ console.log('Error cargando planificacion:', e1); }
@@ -839,7 +840,7 @@ async function cargarTodasLasPlanificaciones(){
         if(data2.ok && data2.data){
           data2.data.forEach(r=>{
             const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
-            if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just});
+            if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
           });
         }
       } catch(e2){ console.log('Error cargando nuevos:', e2); }
@@ -1048,18 +1049,22 @@ function postToSheets(data) {
 
 async function guardarPlanificacion(){
   const docs=getDocs(CUR_GER,CUR_UNI);
-  // Solo guardar documentos que ya tienen acción asignada (no Pendiente)
-  const rowsConAccion=docs
+
+  // Solo docs con acción asignada (no Pendiente)
+  const rowsConAccion = docs
     .filter(d=>getP(d.cod).accion!=='Pendiente')
-    .map(d=>{ const p=getP(d.cod); return {cod:d.cod,desc:d.desc,ver:d.ver,tipo:d.tipo,accion:p.accion,fechaProg:p.fechaProg,obs:p.obs}; });
-  const nvsUnit=nuevos.filter(n=>n.gerencia===CUR_GER&&n.unidad===CUR_UNI);
-  const pen=docs.filter(d=>getP(d.cod).accion==='Pendiente').length;
+    .map(d=>{ const p=getP(d.cod); return {cod:d.cod,desc:d.desc,ver:d.ver,tipo:d.tipo,accion:p.accion,fechaProg:p.fechaProg,obs:p.obs,yaGuardado:p.yaGuardado||false}; });
+
+  // Solo nuevos que NO estaban ya en Sheets (yaGuardado===false o undefined)
+  const nvsUnit = nuevos.filter(n=>n.gerencia===CUR_GER && n.unidad===CUR_UNI);
+  const nvsSoloNuevos = nvsUnit.filter(n=>!n.yaGuardado);
+
+  const pen = docs.filter(d=>getP(d.cod).accion==='Pendiente').length;
 
   if(rowsConAccion.length===0){
     showToast('Asigna una acción a al menos un documento antes de guardar.','#e67e22');
     return;
   }
-  // Validar que todos los documentos con Actualizar tengan fecha programada
   const sinFecha = rowsConAccion.filter(r=>r.accion==='Actualizar' && !r.fechaProg);
   if(sinFecha.length > 0){
     showToast(`${sinFecha.length} documento(s) con acción "Actualizar" no tienen fecha programada. La fecha es obligatoria para Actualizar.`, '#c0392b');
@@ -1074,16 +1079,34 @@ async function guardarPlanificacion(){
 
   showSaving('Guardando planificación...');
   try {
-    await postToSheets({action:'guardar_planificacion',gerencia:CUR_GER,unidad:CUR_UNI,rows:rowsConAccion});
-    for(const n of nvsUnit){
-      await postToSheets({action:'guardar_nuevo',gerencia:CUR_GER,unidad:CUR_UNI,...n});
+    // Solo enviamos a Sheets los docs que son NUEVOS o fueron MODIFICADOS
+    // Los que ya estaban guardados (yaGuardado:true) no se reenvían para no pisar su timestamp
+    const rowsAEnviar = rowsConAccion.filter(r=>!r.yaGuardado);
+
+    if(rowsAEnviar.length > 0 || nvsSoloNuevos.length > 0){
+      // Solo si hay algo nuevo que guardar hacemos el post de planificación
+      if(rowsAEnviar.length > 0){
+        await postToSheets({action:'guardar_planificacion',gerencia:CUR_GER,unidad:CUR_UNI,rows:rowsAEnviar});
+        // Marcar como yaGuardado en memoria para no reenviar en próxima sesión
+        rowsAEnviar.forEach(r=>{ if(plan[r.cod]) plan[r.cod].yaGuardado=true; });
+      }
+      // Guardar solo los nuevos documentos que aún no estaban en Sheets
+      for(const n of nvsSoloNuevos){
+        await postToSheets({action:'guardar_nuevo',gerencia:CUR_GER,unidad:CUR_UNI,...n});
+        n.yaGuardado=true; // marcar en memoria
+      }
     }
+
     hideSaving();
-    document.getElementById('modal-ok-msg').textContent=pen>0
-      ? `Guardados ${rowsConAccion.length} documentos. Quedan ${pen} pendientes de asignar.`
-      : `¡Planificación de ${CUR_UNI} completada al 100%! Todos los documentos tienen acción asignada.`;
+    const totalNuevosGuardados = rowsAEnviar.length + nvsSoloNuevos.length;
+    const msg = totalNuevosGuardados === 0
+      ? `Todo ya estaba guardado. No hay cambios nuevos para ${CUR_UNI}.`
+      : pen > 0
+        ? `Guardados ${rowsAEnviar.length} doc(s) y ${nvsSoloNuevos.length} nuevo(s). Quedan ${pen} pendientes.`
+        : `¡Planificación de ${CUR_UNI} completada! ${rowsAEnviar.length} doc(s) y ${nvsSoloNuevos.length} nuevo(s) guardados.`;
+    document.getElementById('modal-ok-msg').textContent = msg;
     document.getElementById('modal-ok').classList.add('open');
-    renderPlanTable(); // refrescar para mostrar sección de guardados
+    renderPlanTable();
   } catch(e){
     hideSaving();
     showToast('Error al guardar. Revisa la conexión.','#c0392b');
