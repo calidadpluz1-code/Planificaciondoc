@@ -790,28 +790,29 @@ async function cargarPlanDesdeSheets(ger, uni){
   showSaving('Cargando tu planificación...');
   try {
     if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-      // Cargar planificacion existente
-      const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
-      const res1 = await fetch(url1, {mode:'cors'});
-      const data1 = await res1.json();
-      if(data1.ok && data1.data){
-        data1.data.forEach(r=>{
-          // yaGuardado:true = ya existe en Sheets, no se debe reescribir con fecha nueva
+      // Una sola llamada que trae planificacion + nuevos + reporte juntos
+      const url = `${SHEETS_URL}?action=obtener_todo&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
+      const res = await fetch(url, {mode:'cors'});
+      const data = await res.json();
+
+      // Procesar planificacion
+      if(data.planificacion?.ok && data.planificacion?.data){
+        data.planificacion.data.forEach(r=>{
           plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
         });
       }
-      // Cargar nuevos documentos propuestos
-      const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
-      const res2 = await fetch(url2, {mode:'cors'});
-      const data2 = await res2.json();
-      if(data2.ok && data2.data){
-        data2.data.forEach(r=>{
-          // Evitar duplicados si ya existe en memoria
+      // Procesar nuevos
+      if(data.nuevos?.ok && data.nuevos?.data){
+        data.nuevos.data.forEach(r=>{
           const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
           if(!existe){
             nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
           }
         });
+      }
+      // Procesar reporte (para Estado Docs)
+      if(data.reporte?.ok && data.reporte?.data){
+        REPORTE_DATA = data.reporte.data;
       }
     }
   } catch(e){ console.log('Sin conexión a Sheets, modo offline'); }
