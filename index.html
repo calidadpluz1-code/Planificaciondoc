@@ -710,7 +710,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
           <option>Manual</option><option>Reglamento</option>
         </select></div>
       <div class="fgrp"><label>Fecha programada *</label>
-        <input type="date" id="nv-fecha"></div>
+        <input type="date" id="nv-fecha" min=""></div>
     </div>
     <div class="fgrp"><label>Justificación</label>
       <textarea id="nv-just" placeholder="¿Por qué se necesita este documento?"></textarea></div>
@@ -1150,7 +1150,9 @@ function renderNewDocs(){
 function openNuevoModal(){
   ['nv-titulo','nv-just'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nv-tipo').value='';
-  document.getElementById('nv-fecha').value='';
+  const fechaInput=document.getElementById('nv-fecha');
+  fechaInput.value='';
+  fechaInput.min=getMinDate();
   document.getElementById('modal-nuevo').classList.add('open');
 }
 function guardarNuevo(){
