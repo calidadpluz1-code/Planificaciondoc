@@ -430,22 +430,23 @@ function goFicha(cod){
   }
   document.getElementById('ficha-pe').innerHTML = peHTML;
 
-  // ── Actividades ──
-  const acts=uniq(sipocRows.map(r=>r['Actividad clave']));
-  document.getElementById('ficha-actividades').innerHTML=acts.length
-    ?acts.map((x,i)=>`<div class="act-cell"><div class="act-num">${i+1}</div><div>${x}</div></div>`).join('')
+  // ── Actividades — tomar todas las filas con actividad ──
+  const actsAll = sipocRows.map(r=>r['Actividad clave']).filter(Boolean);
+  // Eliminar duplicados pero mantener orden
+  const actsSeen = new Set();
+  const actsFiltered = actsAll.filter(a=>{ if(actsSeen.has(a)) return false; actsSeen.add(a); return true; });
+  document.getElementById('ficha-actividades').innerHTML=actsFiltered.length
+    ?actsFiltered.map((x,i)=>`<div class="act-cell"><div class="act-num">${i+1}</div><div>${x}</div></div>`).join('')
     :empty;
 
-  // ── Salidas + Clientes fila a fila — tomar TODAS las filas con salida o cliente ──
-  // Primero recolectar salidas únicas y clientes únicos por separado
-  const salsUniq = [...new Set(sipocRows.map(r=>r['Salida']).filter(Boolean))];
-  const clisUniq = [...new Set(sipocRows.map(r=>r['Usuario del Proceso']).filter(Boolean))];
-  const maxSC = Math.max(salsUniq.length, clisUniq.length);
+  // ── Salidas + Clientes — tomar TODAS las filas tal como están en el Sheets ──
+  // NO usar Set() para no perder repetidos
+  const filasSC = sipocRows.filter(r=>r['Salida']||r['Usuario del Proceso']);
   let scHTML = '';
-  if(maxSC) {
-    for(let i=0;i<maxSC;i++){
-      const sal = salsUniq[i]||'';
-      const cli = clisUniq[i]||'';
+  if(filasSC.length) {
+    filasSC.forEach(r => {
+      const sal = r['Salida']||'';
+      const cli = r['Usuario del Proceso']||'';
       const salCell = sal
         ? `<div class="sipoc-cell"><div class="sal-cell"><div class="s-dot s-dot-green"></div><div>${sal}</div></div></div>`
         : `<div class="sipoc-cell"></div>`;
@@ -465,7 +466,7 @@ function goFicha(cod){
           : `<div class="sipoc-cell right-cell cli-cell">${cli}</div>`)
         : `<div class="sipoc-cell right-cell"></div>`;
       scHTML += salCell + cliCell;
-    }
+    });
   } else {
     scHTML = `<div style="grid-column:span 2">${empty}</div>`;
   }
