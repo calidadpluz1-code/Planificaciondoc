@@ -585,8 +585,16 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 
   <!-- DASHBOARD -->
   <div class="page" id="page-dashboard">
-    <div class="page-title">Dashboard general</div>
-    <div class="page-sub">Pluz Energía Perú S.A.A. — Planificación Documental 2026</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+      <div>
+        <div class="page-title" style="margin-bottom:2px">Dashboard general</div>
+        <div class="page-sub">Pluz Energía Perú S.A.A. — Planificación Documental 2026</div>
+      </div>
+      <button onclick="exportReporteDashboard()" style="display:flex;align-items:center;gap:7px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(39,174,96,.18);transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar reporte Excel
+      </button>
+    </div>
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-label">Docs vigentes</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-sub">en planificación</div></div>
       <div class="kpi y"><div class="kpi-label">Avance global</div><div class="kpi-val" id="kpi-avance">0%</div><div class="kpi-sub">docs revisados</div></div>
@@ -2031,6 +2039,54 @@ function renderEstadoTabla(){
 }
 
 
+
+// REPORTE DASHBOARD — Excel completo de documentos planificados
+function exportReporteDashboard(){
+  if(!DOCS||!DOCS.length){ showToast('No hay datos cargados','#c0392b'); return; }
+  const acciones=['Actualizar','Mantener','Transferir','Eliminar'];
+  const headers=['Gerencia','Unidad','Código','Descripción','Tipo','Acción','Fecha Programada','Observación'];
+  const rows=[headers];
+  getGers().forEach(g=>{
+    getUnis(g).forEach(u=>{
+      getDocs(g,u).forEach(d=>{
+        const p=getP(d.cod);
+        if(!acciones.includes(p.accion)) return; // excluye Pendientes
+        rows.push([
+          g, u, d.cod, d.desc, d.tipo||'',
+          p.accion, p.fechaProg||'', p.obs||''
+        ]);
+      });
+      // Nuevos documentos propuestos por esta unidad
+      nuevos.filter(n=>n.gerencia===g&&n.unidad===u).forEach(n=>{
+        rows.push([
+          g, u, 'NUEVO', n.titulo, n.tipo||'',
+          'Nuevo', n.fecha||'', n.just||''
+        ]);
+      });
+    });
+  });
+  if(rows.length<=1){ showToast('No hay documentos planificados aún','#e67e22'); return; }
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  // Anchos de columna
+  ws['!cols']=[{wch:32},{wch:26},{wch:14},{wch:48},{wch:18},{wch:14},{wch:18},{wch:32}];
+  // Estilo de cabecera (color azul)
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  for(let c=range.s.c;c<=range.e.c;c++){
+    const cell=XLSX.utils.encode_cell({r:0,c});
+    if(!ws[cell]) continue;
+    ws[cell].s={
+      font:{bold:true,color:{rgb:'FFFFFF'}},
+      fill:{fgColor:{rgb:'3D5BA9'}},
+      alignment:{horizontal:'center',vertical:'center'},
+      border:{bottom:{style:'thin',color:{rgb:'CCCCCC'}}}
+    };
+  }
+  XLSX.utils.book_append_sheet(wb,ws,'Reporte Planificación 2026');
+  const fecha=new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb,'Reporte_Planificacion_2026_'+fecha+'.xlsx');
+  showToast('Reporte descargado correctamente ✓','#27ae60');
+}
 </script>
 </body>
 </html>
