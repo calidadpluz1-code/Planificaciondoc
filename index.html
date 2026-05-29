@@ -209,8 +209,12 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 .empty{padding:36px;text-align:center;color:var(--text3);font-size:13px}
 .ger-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
 .ger-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-  padding:14px 16px;cursor:pointer;transition:all .15s;border-left:4px solid var(--blue)}
-.ger-card:hover{border-color:var(--yellow);box-shadow:0 3px 14px rgba(61,91,169,.15)}
+  padding:14px 16px;cursor:pointer;transition:all .18s;border-left:4px solid var(--blue);
+  position:relative;user-select:none}
+.ger-card:hover{border-color:var(--blue);box-shadow:0 4px 18px rgba(61,91,169,.18);transform:translateY(-2px);background:#f7f9ff}
+.ger-card:active{transform:translateY(0);box-shadow:0 1px 6px rgba(61,91,169,.12)}
+.ger-card-hint{font-size:10px;color:var(--blue);opacity:0;transition:opacity .18s;margin-top:6px;font-weight:600;letter-spacing:.3px}
+.ger-card:hover .ger-card-hint{opacity:1}
 
 @media(max-width:768px){
   .kpi-grid,.ger-grid,.res-grid{grid-template-columns:1fr 1fr}
@@ -616,16 +620,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <select id="g-sel-uni" onchange="renderGantt()" style="min-width:180px">
         <option value="">Todas las unidades</option>
       </select>
-      <select id="g-sel-accion" onchange="renderGantt()" style="min-width:130px">
-        <option value="">Todas las acciones</option>
-        <option value="Actualizar">Actualizar</option>
-        <option value="Nuevo">Nuevo</option>
-      </select>
-      <select id="g-agrup" onchange="renderGantt()" style="min-width:150px">
-        <option value="unidad">Por unidad</option>
-        <option value="gerencia">Por gerencia</option>
-        <option value="accion">Por acción</option>
-      </select>
+
+
     </div>
     <div class="gantt-wrap">
       <div class="gantt-hd">
@@ -685,6 +681,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <th>Gerencia</th><th>Unidad</th><th>Total</th>
             <th style="color:var(--blue)">Actualizar</th>
             <th style="color:var(--green)">Mantener</th>
+            <th style="color:#e67e22">Transferir</th>
             <th style="color:var(--red)">Eliminar</th>
             <th style="color:var(--purple)">Nuevos</th>
             <th>Pendientes</th><th style="min-width:110px">Avance</th>
@@ -1177,6 +1174,12 @@ function initAdminSelects(){
     el.innerHTML='<option value="">Todas las gerencias</option>';
     gers.forEach(g=>{ const o=document.createElement('option'); o.value=g; o.textContent=g; el.appendChild(o); });
   });
+  // Populate Gantt unit filter with all units on init
+  const su=document.getElementById('g-sel-uni');
+  if(su){
+    su.innerHTML='<option value="">Todas las unidades</option>';
+    gers.flatMap(g=>getUnis(g)).sort().forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
+  }
 }
 
 // DASHBOARD
@@ -1214,13 +1217,18 @@ function renderDash(){
     const done2=ac2.filter(a=>a!=='Pendiente').length;
     const pct2=docs.length?Math.round(done2/docs.length*100):0;
     const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+    const pen2=ac2.filter(a=>a==='Pendiente').length;
     return `<div class="ger-card" onclick="goToResumen('${g.replace(/'/g,"\\'")}')">
-      <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--blue)">${shortG}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);line-height:1.3">${shortG}</div>
+        ${pen2>0?`<span style="font-size:10px;background:#fef3ea;color:#e67e22;border-radius:8px;padding:1px 7px;font-weight:700;white-space:nowrap">${pen2} pend.</span>`:''}
+      </div>
       <div style="display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden;margin-bottom:6px">
         <div style="flex:${done2};background:var(--green)"></div>
         <div style="flex:${docs.length-done2};background:var(--border)"></div>
       </div>
       <div style="font-size:11px;color:var(--text3)">${docs.length} docs · ${pct2}% avance</div>
+      <div class="ger-card-hint">Ver detalle →</div>
     </div>`;
   }).join('');
 }
@@ -1236,15 +1244,16 @@ function onGanttGerChange(){
   const ger=document.getElementById('g-sel-ger').value;
   const su=document.getElementById('g-sel-uni');
   su.innerHTML='<option value="">Todas las unidades</option>';
-  if(ger) getUnis(ger).forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
+  const unis=ger ? getUnis(ger) : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  unis.forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
   renderGantt();
 }
 
 function renderGantt(){
   const ger=document.getElementById('g-sel-ger').value;
   const uni=document.getElementById('g-sel-uni').value;
-  const acf=document.getElementById('g-sel-accion').value;
-  const agrup=document.getElementById('g-agrup').value;
+  const acf='';
+  const agrup='unidad'; // agrupación fija por unidad
   let items=[];
   DOCS.forEach(d=>{
     const p=getP(d.cod);
@@ -1346,6 +1355,7 @@ function renderResumen(){
       const ac=docs.map(d=>getP(d.cod).accion);
       const act=ac.filter(a=>a==='Actualizar').length;
       const man=ac.filter(a=>a==='Mantener').length;
+      const tra=ac.filter(a=>a==='Transferir').length;
       const eli=ac.filter(a=>a==='Eliminar').length;
       const pen=ac.filter(a=>a==='Pendiente').length;
       const nue=nuevos.filter(n=>n.gerencia===g&&n.unidad===u).length;
@@ -1360,6 +1370,7 @@ function renderResumen(){
         <td style="text-align:center;font-weight:700">${tot}</td>
         <td style="text-align:center;color:var(--blue);font-weight:${act?'700':'400'}">${act||'—'}</td>
         <td style="text-align:center;color:var(--green);font-weight:${man?'700':'400'}">${man||'—'}</td>
+        <td style="text-align:center;color:#e67e22;font-weight:${tra?'700':'400'}">${tra||'—'}</td>
         <td style="text-align:center;color:var(--red);font-weight:${eli?'700':'400'}">${eli||'—'}</td>
         <td style="text-align:center;color:var(--purple);font-weight:${nue?'700':'400'}">${nue||'—'}</td>
         <td style="text-align:center;color:var(--text3)">${pen||'—'}</td>
@@ -1371,7 +1382,7 @@ function renderResumen(){
       </tr>`;
     });
   });
-  document.getElementById('resumen-tbody').innerHTML=rows||'<tr><td colspan="9" class="empty">Sin datos con estos filtros</td></tr>';
+  document.getElementById('resumen-tbody').innerHTML=rows||'<tr><td colspan="10" class="empty">Sin datos con estos filtros</td></tr>';
 }
 
 // SEGUIMIENTO
@@ -1464,11 +1475,11 @@ function exportCSV(){
   dlCSV(rows,'planificacion_'+CUR_UNI.replace(/\s+/g,'_')+'_2026.csv');
 }
 function exportResumen(){
-  const rows=[['Gerencia','Unidad','Total','Actualizar','Mantener','Eliminar','Nuevos','Pendientes','Avance%']];
+  const rows=[['Gerencia','Unidad','Total','Actualizar','Mantener','Transferir','Eliminar','Nuevos','Pendientes','Avance%']];
   getGers().forEach(g=>getUnis(g).forEach(u=>{
     const docs=getDocs(g,u),ac=docs.map(d=>getP(d.cod).accion),pen=ac.filter(a=>a==='Pendiente').length;
     rows.push([g,u,docs.length,ac.filter(a=>a==='Actualizar').length,ac.filter(a=>a==='Mantener').length,
-      ac.filter(a=>a==='Eliminar').length,nuevos.filter(n=>n.gerencia===g&&n.unidad===u).length,pen,
+      ac.filter(a=>a==='Transferir').length,ac.filter(a=>a==='Eliminar').length,nuevos.filter(n=>n.gerencia===g&&n.unidad===u).length,pen,
       Math.round((docs.length-pen)/docs.length*100)+'%']);
   }));
   dlCSV(rows,'resumen_planificacion_2026.csv');
