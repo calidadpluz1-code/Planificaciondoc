@@ -735,6 +735,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <p style="font-size:12px;color:var(--text2);margin-bottom:4px">Documento: <strong id="reprog-cod-label" style="font-family:monospace"></strong></p>
     <p style="font-size:11px;color:var(--text3);margin-bottom:16px">La fecha original se conservará. Solo se registrará la nueva fecha reprogramada.</p>
     <input type="hidden" id="reprog-cod">
+    <input type="hidden" id="reprog-ger">
+    <input type="hidden" id="reprog-uni">
     <div class="fgrp">
       <label>Fecha original programada</label>
       <input type="text" id="reprog-fecha-orig" disabled style="background:#f5f5f5;color:var(--text3);cursor:not-allowed">
@@ -971,7 +973,7 @@ function renderGuardados(){
       ? `<span style="color:#e67e22;font-weight:700;font-size:11px">${p.fechaReprog}</span>`
       : '<span style="color:var(--text3);font-size:11px">—</span>';
     const btnReprog = p.accion==='Actualizar'
-      ? `<button onclick="abrirModalReprog('${d.cod.replace(/'/g,"\'")}','${(p.fechaReprog||p.fechaProg||'').replace(/'/g,"\'")}','${(p.obs||'').replace(/'/g,"\'")}')"
+      ? `<button onclick="abrirModalReprog('${d.cod.replace(/'/g,"\'")}','${(p.fechaReprog||p.fechaProg||'').replace(/'/g,"\'")}','${(p.obs||'').replace(/'/g,"\'")}','${d.gerencia.replace(/'/g,"\'")}','${d.unidad.replace(/'/g,"\'")}')"
           style="font-size:10px;font-weight:700;color:#e67e22;background:#fff8f0;border:1px solid #e67e22;border-radius:8px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:all .15s"
           onmouseover="this.style.background='#e67e22';this.style.color='#fff'"
           onmouseout="this.style.background='#fff8f0';this.style.color='#e67e22'">
@@ -2130,13 +2132,16 @@ function exportReporteDashboard(){
 }
 
 // ── REPROGRAMACIÓN DE FECHAS ──────────────────────────────────────────────
-function abrirModalReprog(cod, fechaActual, obs){
+function abrirModalReprog(cod, fechaActual, obs, ger, uni){
   document.getElementById('reprog-cod').value = cod;
   document.getElementById('reprog-cod-label').textContent = cod;
   document.getElementById('reprog-fecha-orig').value = fechaActual || '(sin fecha)';
   document.getElementById('reprog-fecha-nueva').value = '';
   document.getElementById('reprog-fecha-nueva').min = getMinDate();
   document.getElementById('reprog-motivo').value = '';
+  // Guardar ger+uni en campos ocultos para el POST
+  document.getElementById('reprog-ger').value = ger || CUR_GER;
+  document.getElementById('reprog-uni').value = uni || CUR_UNI;
   document.getElementById('modal-reprog').classList.add('open');
 }
 
@@ -2151,11 +2156,13 @@ function confirmarReprog(){
   btn.textContent = 'Guardando...';
   btn.disabled = true;
 
+  const gerencia = document.getElementById('reprog-ger').value;
+  const unidad   = document.getElementById('reprog-uni').value;
   const payload = {
     action: 'reprogramar_fecha',
     cod: cod,
-    gerencia: CUR_GER,
-    unidad: CUR_UNI,
+    gerencia: gerencia,
+    unidad: unidad,
     fechaReprog: fechaNueva,
     motivo: motivo
   };
