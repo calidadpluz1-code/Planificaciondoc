@@ -778,6 +778,7 @@ const DOCS = DOCS_ALL; // ya filtrados a Vigentes en origen
 
 const plan = {};
 const nuevos = [];
+const reprog = {}; // reprog[cod] = {fechaReprog, motivo, fechaOrig}
 let IS_ADMIN = false;
 let CUR_GER = '', CUR_UNI = '';
 let reporteData = {};
@@ -785,7 +786,7 @@ let reporteData = {};
 const COLORS = {Actualizar:'#3D5BA9',Mantener:'#3A9E5F',Eliminar:'#c0392b',Nuevo:'#5f4ab7',Pendiente:'#ccc'};
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-function getP(cod){ return plan[cod]||{accion:'Pendiente',fechaProg:'',fechaReprog:'',obs:''}; }
+function getP(cod){ return plan[cod]||{accion:'Pendiente',fechaProg:'',obs:''}; }
 function setP(cod,key,val){ if(!plan[cod]) plan[cod]={accion:'Pendiente',fechaProg:'',obs:''}; plan[cod][key]=val; }
 function getGers(){ return [...new Set(DOCS.map(d=>d.gerencia))].filter(g=>g&&g!=='-').sort(); }
 function getUnis(ger){ return [...new Set(DOCS.filter(d=>d.gerencia===ger).map(d=>d.unidad))].filter(u=>u&&u!=='-').sort(); }
@@ -834,8 +835,15 @@ async function cargarPlanDesdeSheets(ger, uni){
       // Procesar planificacion
       if(data.planificacion?.ok && data.planificacion?.data){
         data.planificacion.data.forEach(r=>{
-          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',fechaReprog:r.fechaReprog||'',obs:r.obs||'',yaGuardado:true};
+          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
         });
+        // Cargar reprogramaciones en lookup por código
+        if(data.reprogramaciones && data.reprogramaciones.data){
+          data.reprogramaciones.data.forEach(r=>{
+            // Guardar la más reciente (última entrada por código)
+            reprog[r.cod]={fechaReprog:r.fechaReprog||'',motivo:r.motivo||'',fechaOrig:r.fechaOrig||''};
+          });
+        }
       }
       // Procesar nuevos
       if(data.nuevos?.ok && data.nuevos?.data){
@@ -867,7 +875,7 @@ async function cargarTodasLasPlanificaciones(){
         const data1 = await res1.json();
         if(data1.ok && data1.data){
           data1.data.forEach(r=>{
-            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',fechaReprog:r.fechaReprog||'',obs:r.obs||'',yaGuardado:true};
+            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
           });
         }
       } catch(e1){ console.log('Error cargando planificacion:', e1); }
@@ -969,8 +977,9 @@ function renderGuardados(){
     const p=getP(d.cod);
     const bg=colores[p.accion]||'#f9f9f9';
     const bc=badges[p.accion]||'#888';
-    const fechaReprogDisplay = p.fechaReprog
-      ? `<span style="color:#e67e22;font-weight:700;font-size:11px">${p.fechaReprog}</span>`
+    const r = reprog[d.cod] || {};
+    const fechaReprogDisplay = r.fechaReprog
+      ? `<span style="color:#e67e22;font-weight:700;font-size:11px">${r.fechaReprog}</span>`
       : '<span style="color:var(--text3);font-size:11px">—</span>';
     const btnReprog = p.accion==='Actualizar'
       ? `<button onclick="abrirModalReprog('${d.cod.replace(/'/g,"\'")}','${(p.fechaReprog||p.fechaProg||'').replace(/'/g,"\'")}','${(p.obs||'').replace(/'/g,"\'")}','${d.gerencia.replace(/'/g,"\'")}','${d.unidad.replace(/'/g,"\'")}')"
@@ -2167,25 +2176,18 @@ function confirmarReprog(){
     motivo: motivo
   };
 
-  fetch(SHEETS_URL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(payload)
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.ok){
-      // Actualizar en memoria local
-      if(plan[cod]) plan[cod].fechaReprog = fechaNueva;
-      closeModal('modal-reprog');
-      renderGuardados();
-      showToast('Fecha reprogramada correctamente ✓','#27ae60');
-    } else {
-      showToast('Error: '+(res.msg||'No se pudo guardar'),'#c0392b');
-    }
-  })
-  .catch(()=>showToast('Error de conexión','#c0392b'))
-  .finally(()=>{ btn.textContent='Guardar reprogramación'; btn.disabled=false; });
+  // Usar postToSheets (iframe+form) igual que el resto de la app para evitar CORS
+  postToSheets(payload).then(()=>{
+    reprog[cod] = {fechaReprog: fechaNueva, motivo: document.getElementById('reprog-motivo').value.trim(), fechaOrig: document.getElementById('reprog-fecha-orig').value};
+    closeModal('modal-reprog');
+    renderGuardados();
+    showToast('Fecha reprogramada correctamente ✓','#27ae60');
+  }).catch(()=>{
+    showToast('Error al guardar, intenta nuevamente','#c0392b');
+  }).finally(()=>{
+    btn.textContent='Guardar reprogramación';
+    btn.disabled=false;
+  });
 }
 </script>
 </body>
