@@ -436,31 +436,43 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Gerencia</div>
-          <select id="ed-fil-ger" onchange="onEdGerChange()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:210px">
-            <option value="">Todas las gerencias</option>
-          </select>
+          <div id="ed-ger-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('ed-ger')" style="min-width:210px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+              <span id="ed-ger-label">Todas las gerencias</span><span style="font-size:10px;color:var(--text3)">▾</span>
+            </button>
+            <div id="ed-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
+          </div>
         </div>
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Unidad</div>
-          <select id="ed-fil-uni" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:170px">
-            <option value="">Todas las unidades</option>
-          </select>
+          <div id="ed-uni-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('ed-uni')" style="min-width:180px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+              <span id="ed-uni-label">Todas las unidades</span><span style="font-size:10px;color:var(--text3)">▾</span>
+            </button>
+            <div id="ed-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:220px;max-height:240px;overflow-y:auto"></div>
+          </div>
         </div>
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Categoría</div>
-          <select id="ed-fil-cat" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:140px">
-            <option value="">Todas</option>
-          </select>
+          <div id="ed-cat-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('ed-cat')" style="min-width:150px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+              <span id="ed-cat-label">Todas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+            </button>
+            <div id="ed-cat-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:240px;overflow-y:auto"></div>
+          </div>
         </div>
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Estado de vigencia</div>
-          <select id="ed-fil-vig" onchange="aplicarFiltrosED()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;min-width:160px">
-            <option value="">Vigente + En elaboración</option>
-            <option value="Vigente">Solo Vigente</option>
-            <option value="En elaboración">Solo En elaboración</option>
-            <option value="Obsoleto">Obsoleto (informativo)</option>
-            <option value="todos">Ver todos</option>
-          </select>
+          <div id="ed-vig-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('ed-vig')" style="min-width:175px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+              <span id="ed-vig-label">Vigente + En elaboración</span><span style="font-size:10px;color:var(--text3)">▾</span>
+            </button>
+            <div id="ed-vig-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:190px">
+              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Vigente" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> Vigente</label>
+              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="En elaboración" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> En elaboración</label>
+              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Obsoleto" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> Obsoleto</label>
+            </div>
+          </div>
         </div>
         <div>
           <button onclick="limpiarFiltrosED()" style="font-size:11px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#f4f6fb;color:var(--text2);cursor:pointer">✕ Limpiar</button>
@@ -468,27 +480,49 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- KPIs: Total, Vigentes, En elaboración, Obsoletos -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--blue)">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Total documentos</div>
-        <div style="font-size:32px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">en el sistema (filtrados)</div>
+    <!-- KPIs + Velocímetro -->
+    <div style="display:flex;gap:14px;margin-bottom:20px;align-items:stretch">
+      <!-- Tarjetas KPI (más pequeñas) -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--blue)">
+          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total</div>
+          <div style="font-size:24px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">documentos filtrados</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--green);cursor:pointer" onclick="filtrarPorVigenciaED('Vigente')">
+          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vigentes</div>
+          <div style="font-size:24px;font-weight:800;color:var(--green)" id="ed-vigentes">—</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">publicados y activos <span style="color:var(--green);font-weight:700">→</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--yellow);cursor:pointer" onclick="filtrarPorVigenciaED('En elaboración')">
+          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">En elaboración</div>
+          <div style="font-size:24px;font-weight:800;color:var(--amber)" id="ed-elaboracion">—</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">en proceso <span style="color:var(--amber);font-weight:700">→</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--red);opacity:.85">
+          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Obsoletos <span style="font-weight:400">(info)</span></div>
+          <div style="font-size:24px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">fuera de vigencia</div>
+        </div>
       </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--green);cursor:pointer" onclick="filtrarPorVigenciaED('Vigente')">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Vigentes</div>
-        <div style="font-size:32px;font-weight:800;color:var(--green)" id="ed-vigentes">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">publicados y activos · <span style="color:var(--green);font-weight:700">Ver →</span></div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--yellow);cursor:pointer" onclick="filtrarPorVigenciaED('En elaboración')">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">En elaboración</div>
-        <div style="font-size:32px;font-weight:800;color:var(--amber)" id="ed-elaboracion">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">en proceso · <span style="color:var(--amber);font-weight:700">Ver →</span></div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;border-top:4px solid var(--red);opacity:.85">
-        <div style="font-size:11px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Obsoletos <span style="font-weight:400;color:var(--text3)">(info)</span></div>
-        <div style="font-size:32px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">fuera de vigencia</div>
+      <!-- Velocímetro % Avance -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;min-width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">% Avance planif.</div>
+        <svg id="ed-gauge-svg" viewBox="0 0 160 100" width="160" height="100">
+          <!-- Arco fondo -->
+          <path d="M20,90 A70,70 0 0,1 140,90" fill="none" stroke="#e8ecf5" stroke-width="14" stroke-linecap="round"/>
+          <!-- Arco valor -->
+          <path id="ed-gauge-arc" d="M20,90 A70,70 0 0,1 140,90" fill="none" stroke="#27ae60" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 220"/>
+          <!-- Aguja -->
+          <line id="ed-gauge-needle" x1="80" y1="90" x2="80" y2="28" stroke="#3D5BA9" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90,80,90)"/>
+          <circle cx="80" cy="90" r="5" fill="#3D5BA9"/>
+          <!-- Marcas -->
+          <text x="16" y="100" font-size="9" fill="var(--text3)" text-anchor="middle">0%</text>
+          <text x="80" y="18" font-size="9" fill="var(--text3)" text-anchor="middle">50%</text>
+          <text x="144" y="100" font-size="9" fill="var(--text3)" text-anchor="middle">100%</text>
+        </svg>
+        <div id="ed-gauge-pct" style="font-size:22px;font-weight:800;color:var(--blue);margin-top:-8px">—%</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Vigentes / Planificados</div>
       </div>
     </div>
 
@@ -496,16 +530,23 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <select id="ed-sel-mes" onchange="onMesChange()" style="display:none"><option value="">Todos los meses</option></select>
     <div id="ed-chart-mes" style="display:none"></div>
 
-    <!-- Planificado vs Ejecutado (ancho completo, arriba) -->
+    <!-- Planificado vs Ejecutado -->
     <div style="margin-bottom:20px">
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
           <div style="font-size:13px;font-weight:700;color:var(--text)">Planificado vs Ejecutado</div>
-          <div style="display:flex;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <select id="ed-sel-anio" onchange="onAnioChange()" style="font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;color:var(--blue);font-weight:700">
               <option value="">Todos los años</option>
             </select>
-            <div style="display:flex;gap:12px;font-size:10px">
+            <!-- Filtro mes multi-selección PvE -->
+            <div id="pve-mes-dropdown" style="position:relative;display:inline-block">
+              <button onclick="toggleDropdown('pve-mes')" style="padding:3px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700">
+                <span id="pve-mes-label">Últimos 3 meses</span><span style="font-size:9px">▾</span>
+              </button>
+              <div id="pve-mes-menu" style="display:none;position:absolute;top:100%;right:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:240px;overflow-y:auto"></div>
+            </div>
+            <div style="display:flex;gap:10px;font-size:10px">
               <span><span style="display:inline-block;width:10px;height:10px;background:var(--blue);border-radius:2px;margin-right:3px"></span>Planificado</span>
               <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutado</span>
             </div>
@@ -513,6 +554,45 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         </div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Haz clic en <b>Planif.</b> para ver docs planificados ese mes · Haz clic en <b>Ejecut.</b> para ver docs ejecutados ese mes</div>
         <div id="ed-chart-pve" style="display:flex;flex-direction:column;gap:4px"></div>
+      </div>
+    </div>
+
+    <!-- Tablas PvE: Por gerencia + Por gerencia y categoría -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <!-- Por gerencia -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Cumplimiento por gerencia</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead>
+              <tr style="background:#f0f4ff;color:var(--blue)">
+                <th style="padding:7px 10px;text-align:left;font-weight:700">Gerencia</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700">Planif.</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Ejecut.</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700">% Cumpl.</th>
+              </tr>
+            </thead>
+            <tbody id="ed-tabla-ger-pve"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Por gerencia y categoría -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Cumplimiento por gerencia y categoría</div>
+        <div style="overflow-x:auto;max-height:260px;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead>
+              <tr style="background:#f0f4ff;color:var(--blue)">
+                <th style="padding:7px 10px;text-align:left;font-weight:700">Gerencia</th>
+                <th style="padding:7px 8px;text-align:left;font-weight:700">Categoría</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700">Planif.</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Ejecut.</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700">%</th>
+              </tr>
+            </thead>
+            <tbody id="ed-tabla-ger-cat-pve"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -562,7 +642,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <div id="ed-mes-activo" style="font-size:11px;color:var(--blue);font-weight:700"></div>
       </div>
       <div style="overflow-x:auto">
-        <table>
+        <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:4px">
+        <table style="min-width:100%">
           <thead><tr>
             <th style="width:40px"></th>
             <th style="width:85px">Código</th>
@@ -1370,7 +1451,7 @@ function goToResumen(ger){
 function toggleDropdown(prefix){
   const menu=document.getElementById(prefix+'-menu');
   // Cerrar todos los demás
-  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes'].forEach(p=>{
     if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
   if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
@@ -1395,7 +1476,7 @@ function buildCheckboxMenu(menuId, items, onChangeFn){
 }
 // Cerrar dropdowns al click fuera
 document.addEventListener('click',e=>{
-  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes'].forEach(p=>{
     const dd=document.getElementById(p+'-dropdown');
     if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
@@ -1819,23 +1900,50 @@ async function cargarReporteDesdeSheets(){
   }
 }
 
+
+// ── ESTADO DOCS: helpers dropdowns multi-selección ───────────────────────
+function edGetChecked(prefix){
+  return [...document.querySelectorAll('#'+prefix+'-menu input[type=checkbox]:checked')].map(c=>c.value);
+}
+function edUpdateLabel(prefix, noun){
+  const sel=edGetChecked(prefix);
+  const lbl=document.getElementById(prefix+'-label');
+  if(!lbl) return;
+  lbl.textContent=sel.length===0?'Todas las '+noun:sel.length===1?sel[0]:sel.length+' selec.';
+}
+function edBuildMenu(menuId, items, onChangeFn){
+  const menu=document.getElementById(menuId);
+  if(!menu) return;
+  const prev=edGetChecked(menuId.replace('-menu',''));
+  menu.innerHTML=items.map(v=>`<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+    <input type="checkbox" value="${v.replace(/"/g,'&quot;')}" ${prev.includes(v)?'checked':''} onchange="${onChangeFn}"> ${v}
+  </label>`).join('');
+}
+
+// Agregar ed-* al cierre de dropdowns global
+document.addEventListener('click',e=>{
+  ['ed-ger','ed-uni','ed-cat','ed-vig','pve-mes'].forEach(p=>{
+    const dd=document.getElementById(p+'-dropdown');
+    if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
+  });
+});
+
 function getDocsED(){
-  const fGer = document.getElementById('ed-fil-ger')?.value || '';
-  const fUni = document.getElementById('ed-fil-uni')?.value || '';
-  const fCat = document.getElementById('ed-fil-cat')?.value || '';
-  const fVig = document.getElementById('ed-fil-vig')?.value || '';
+  const fGers = edGetChecked('ed-ger');
+  const fUnis = edGetChecked('ed-uni');
+  const fCats = edGetChecked('ed-cat');
+  const fVigs = edGetChecked('ed-vig');
 
   let docs = REPORTE_DATA;
-  if(fGer) docs = docs.filter(d=>d.gerencia===fGer);
-  if(fUni) docs = docs.filter(d=>d.unidad===fUni);
-  if(fCat) docs = docs.filter(d=>d.categoria===fCat);
+  if(fGers.length>0) docs = docs.filter(d=>fGers.includes(d.gerencia));
+  if(fUnis.length>0) docs = docs.filter(d=>fUnis.includes(d.unidad));
+  if(fCats.length>0) docs = docs.filter(d=>fCats.includes(d.categoria));
 
-  if(!fVig || fVig==='') {
+  if(fVigs.length===0){
+    // Default: Vigente + En elaboración
     docs = docs.filter(d=>d.estadoVig==='Vigente'||d.estadoVig==='En elaboración');
-  } else if(fVig==='todos') {
-    // no filtrar
   } else {
-    docs = docs.filter(d=>d.estadoVig===fVig);
+    docs = docs.filter(d=>fVigs.includes(d.estadoVig));
   }
   return docs;
 }
@@ -1843,15 +1951,13 @@ function getDocsED(){
 function poblarFiltrosED(){
   const todos = REPORTE_DATA;
 
-  // Gerencia
-  const gers = [...new Set(todos.map(d=>d.gerencia).filter(Boolean).sort())];
-  const selGer = document.getElementById('ed-fil-ger');
-  selGer.innerHTML = '<option value="">Todas las gerencias</option>' + gers.map(g=>`<option value="${g}">${g}</option>`).join('');
+  // Gerencia → checkbox menu
+  const gers = [...new Set(todos.map(d=>d.gerencia).filter(Boolean))].sort();
+  edBuildMenu('ed-ger-menu', gers, "onEdGerChange()");
 
-  // Categoría
-  const cats = [...new Set(todos.map(d=>d.categoria).filter(Boolean).sort())];
-  const selCat = document.getElementById('ed-fil-cat');
-  selCat.innerHTML = '<option value="">Todas</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  // Categoría → checkbox menu
+  const cats = [...new Set(todos.map(d=>d.categoria).filter(Boolean))].sort();
+  edBuildMenu('ed-cat-menu', cats, "aplicarFiltrosED();edUpdateLabel('ed-cat','categorías')");
 
   // Años para el selector PVE: combinar años de fechaVig (ejecutados) y fechaProg (planificados)
   const aniosVig = todos.filter(d=>d.fechaVig).map(d=>{ const f=new Date(d.fechaVig); return isNaN(f)?null:f.getFullYear(); }).filter(Boolean);
@@ -1864,6 +1970,7 @@ function poblarFiltrosED(){
   edAnioFiltro = anios.includes(anioActual) ? String(anioActual) : '';
 
   poblarSelectMeses();
+  poblarPveMesFiltro();
 }
 
 function poblarSelectMeses(){
@@ -1889,10 +1996,10 @@ function poblarSelectMeses(){
 }
 
 function onEdGerChange(){
-  const ger = document.getElementById('ed-fil-ger').value;
-  const selUni = document.getElementById('ed-fil-uni');
-  const unis = [...new Set(REPORTE_DATA.filter(d=>!ger||d.gerencia===ger).map(d=>d.unidad).filter(Boolean).sort())];
-  selUni.innerHTML = '<option value="">Todas las unidades</option>' + unis.map(u=>`<option value="${u}">${u}</option>`).join('');
+  const gers = edGetChecked('ed-ger');
+  edUpdateLabel('ed-ger','gerencias');
+  const unis = [...new Set(REPORTE_DATA.filter(d=>gers.length===0||gers.includes(d.gerencia)).map(d=>d.unidad).filter(Boolean))].sort();
+  edBuildMenu('ed-uni-menu', unis, "aplicarFiltrosED();edUpdateLabel('ed-uni','unidades')");
   aplicarFiltrosED();
 }
 
@@ -1909,11 +2016,15 @@ function limpiarFiltrosCruzados(){
 }
 
 function limpiarFiltrosED(){
-  ['ed-fil-ger','ed-fil-uni','ed-fil-cat','ed-fil-vig'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.value = '';
+  ['ed-ger','ed-uni','ed-cat','ed-vig'].forEach(p=>{
+    const menu=document.getElementById(p+'-menu');
+    if(menu) menu.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+    const lbl=document.getElementById(p+'-label');
+    if(lbl) lbl.textContent={ger:'Todas las gerencias',uni:'Todas las unidades',cat:'Todas',vig:'Vigente + En elaboración'}[p]||'Todos';
   });
-  document.getElementById('ed-fil-uni').innerHTML = '<option value="">Todas las unidades</option>';
+  // Repoblar unidades con todas
+  const allUnis=[...new Set(REPORTE_DATA.map(d=>d.unidad).filter(Boolean))].sort();
+  edBuildMenu('ed-uni-menu', allUnis, "aplicarFiltrosED();edUpdateLabel('ed-uni','unidades')");
   edMesFiltro = ''; edAnioFiltro = ''; edWFFiltro = ''; edGerFiltro = '';
   document.getElementById('ed-sel-anio').value = '';
   document.getElementById('ed-sel-mes').value = '';
@@ -1922,7 +2033,10 @@ function limpiarFiltrosED(){
 }
 
 function filtrarPorVigenciaED(val){
-  document.getElementById('ed-fil-vig').value = val;
+  // Marcar solo ese valor en el checkbox de vigencia
+  const menu=document.getElementById('ed-vig-menu');
+  if(menu){ menu.querySelectorAll('input[type=checkbox]').forEach(cb=>{ cb.checked=(cb.value===val); }); }
+  edUpdateLabel('ed-vig','estados');
   aplicarFiltrosED();
 }
 
@@ -1989,13 +2103,13 @@ function getDocsEDFiltrados(){
 function renderEstadoDocs(){
   if(!REPORTE_DATA.length) return;
 
-  const fGer = document.getElementById('ed-fil-ger')?.value || '';
-  const fUni = document.getElementById('ed-fil-uni')?.value || '';
-  const fCat = document.getElementById('ed-fil-cat')?.value || '';
+  const fGers = edGetChecked('ed-ger');
+  const fUnis = edGetChecked('ed-uni');
+  const fCats = edGetChecked('ed-cat');
   let base = REPORTE_DATA;
-  if(fGer) base = base.filter(d=>d.gerencia===fGer);
-  if(fUni) base = base.filter(d=>d.unidad===fUni);
-  if(fCat) base = base.filter(d=>d.categoria===fCat);
+  if(fGers.length>0) base = base.filter(d=>fGers.includes(d.gerencia));
+  if(fUnis.length>0) base = base.filter(d=>fUnis.includes(d.unidad));
+  if(fCats.length>0) base = base.filter(d=>fCats.includes(d.categoria));
 
   const vigentes  = base.filter(d=>d.estadoVig==='Vigente');
   const obsoletos = base.filter(d=>d.estadoVig==='Obsoleto');
@@ -2005,6 +2119,13 @@ function renderEstadoDocs(){
   document.getElementById('ed-vigentes').textContent    = vigentes.length;
   document.getElementById('ed-obsoletos').textContent   = obsoletos.length;
   document.getElementById('ed-elaboracion').textContent = elaborac.length;
+  // Velocímetro: vigentes / planificados
+  const totalPlan=DOCS.filter(d=>{ const p=getP(d.cod); return p.accion&&p.accion!=='Pendiente'; }).length;
+  const pctAvance=totalPlan>0?Math.round(vigentes.length/totalPlan*100):0;
+  renderGauge(pctAvance);
+  // Tablas PvE
+  const pveMesesTbls=getPveMesesSel();
+  renderTablasPVE(pveMesesTbls);
 
   // Subconjunto base para gráficos (respeta filtros globales + vigencia, sin cruzados)
   const filtered = getDocsED();
@@ -2110,9 +2231,9 @@ function renderEstadoDocs(){
     const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
     execCnt[key] = (execCnt[key]||0)+1;
   });
-  const pveMeses = [...new Set([...Object.keys(planCnt),...Object.keys(execCnt)])].sort();
-  const maxPVE = Math.max(1,...pveMeses.map(k=>Math.max(planCnt[k]||0,execCnt[k]||0)));
-  document.getElementById('ed-chart-pve').innerHTML = pveMeses.length ? pveMeses.map(key=>{
+  const pveMesesGraf = [...new Set([...Object.keys(planCnt),...Object.keys(execCnt)])].sort();
+  const maxPVE = Math.max(1,...pveMesesGraf.map(k=>Math.max(planCnt[k]||0,execCnt[k]||0)));
+  document.getElementById('ed-chart-pve').innerHTML = pveMesesGraf.length ? pveMesesGraf.map(key=>{
     const [y,m] = key.split('-');
     const label = `${MESES_ED[parseInt(m)-1]} ${y}`;
     const plan_ = planCnt[key]||0;
@@ -2446,6 +2567,125 @@ function renderTablaMensual(items, startD, endD){
   document.getElementById('mensual-thead').innerHTML = thead;
   document.getElementById('mensual-tbody').innerHTML = tbody;
   wrap.style.display = 'block';
+}
+
+// ── VELOCÍMETRO % AVANCE ─────────────────────────────────────────────────
+function renderGauge(pct){
+  const arc=document.getElementById('ed-gauge-arc');
+  const needle=document.getElementById('ed-gauge-needle');
+  const pctEl=document.getElementById('ed-gauge-pct');
+  if(!arc||!needle||!pctEl) return;
+  const totalArc=220; // longitud arco fondo
+  const filled=Math.min(Math.round(totalArc*pct/100),totalArc);
+  arc.setAttribute('stroke-dasharray',filled+' '+(totalArc-filled));
+  arc.setAttribute('stroke',pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b');
+  const angle=-90+(pct*180/100); // -90° = 0%, +90° = 100%
+  needle.setAttribute('transform',`rotate(${angle},80,90)`);
+  pctEl.textContent=pct+'%';
+  pctEl.style.color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
+}
+
+// ── TABLAS PvE POR GERENCIA Y GERENCIA+CATEGORÍA ─────────────────────────
+function renderTablasPVE(mesesVisibles){
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  // Construir lookup planificados (cod → {ger, cat, mes})
+  const planMap={};
+  DOCS.forEach(d=>{
+    const p=getP(d.cod);
+    if(!p.fechaProg||p.accion==='Pendiente') return;
+    const f=new Date(p.fechaProg); if(isNaN(f)) return;
+    const key=f.getFullYear()+'-'+f.getMonth();
+    if(mesesVisibles.length>0&&!mesesVisibles.includes(key)) return;
+    const doc=DOCS.find(x=>x.cod===d.cod);
+    const ger=doc?.gerencia||'';
+    const cat=doc?.tipodoc||'';
+    const k=ger+'|||'+cat;
+    if(!planMap[k]) planMap[k]={ger,cat,plan:0,exec:0};
+    planMap[k].plan++;
+    // Ejecutado: doc en Reporte con estadoVig=Vigente o En elaboración cuya fechaVig cae en meses visibles
+    const rep=REPORTE_DATA.find(r=>r.cod===d.cod&&(r.estadoVig==='Vigente'||r.estadoVig==='En elaboración'));
+    if(rep&&rep.fechaVig){
+      const fe=new Date(rep.fechaVig); if(!isNaN(fe)){
+        const ke=fe.getFullYear()+'-'+fe.getMonth();
+        if(mesesVisibles.length===0||mesesVisibles.includes(ke)) planMap[k].exec++;
+      }
+    }
+  });
+
+  // Por gerencia
+  const gerMap={};
+  Object.values(planMap).forEach(r=>{
+    if(!gerMap[r.ger]) gerMap[r.ger]={plan:0,exec:0};
+    gerMap[r.ger].plan+=r.plan; gerMap[r.ger].exec+=r.exec;
+  });
+  const tbGer=document.getElementById('ed-tabla-ger-pve');
+  if(tbGer){
+    const rows=Object.entries(gerMap).sort((a,b)=>b[1].plan-a[1].plan).map(([g,v])=>{
+      const pct=v.plan?Math.round(v.exec/v.plan*100):0;
+      const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:6px 10px;font-size:11px">${shortG}</td>
+        <td style="text-align:center;padding:6px 8px;font-weight:700;color:var(--blue)">${v.plan}</td>
+        <td style="text-align:center;padding:6px 8px;font-weight:700;color:#27ae60">${v.exec}</td>
+        <td style="text-align:center;padding:6px 8px">
+          <span style="font-weight:700;color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</span>
+        </td>
+      </tr>`;
+    }).join('');
+    tbGer.innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text3)">Sin datos</td></tr>';
+  }
+
+  // Por gerencia + categoría
+  const tbCat=document.getElementById('ed-tabla-ger-cat-pve');
+  if(tbCat){
+    const rows=Object.values(planMap).filter(r=>r.plan>0).sort((a,b)=>a.ger.localeCompare(b.ger)||a.cat.localeCompare(b.cat)).map(r=>{
+      const pct=r.plan?Math.round(r.exec/r.plan*100):0;
+      const shortG=r.ger.replace('Gerencia de ','').replace('Gerencia ','');
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:5px 8px;font-size:11px">${shortG}</td>
+        <td style="padding:5px 8px;font-size:11px;color:var(--text2)">${r.cat||'—'}</td>
+        <td style="text-align:center;padding:5px 6px;font-weight:700;color:var(--blue)">${r.plan}</td>
+        <td style="text-align:center;padding:5px 6px;font-weight:700;color:#27ae60">${r.exec}</td>
+        <td style="text-align:center;padding:5px 6px"><span style="font-weight:700;color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</span></td>
+      </tr>`;
+    }).join('');
+    tbCat.innerHTML=rows||'<tr><td colspan="5" style="text-align:center;padding:12px;color:var(--text3)">Sin datos</td></tr>';
+  }
+}
+
+// ── POBLAR FILTRO MES PvE (últimos 3 meses por defecto) ──────────────────
+function poblarPveMesFiltro(){
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  // Recopilar meses con datos
+  const mesesSet=new Set();
+  DOCS.forEach(d=>{
+    const p=getP(d.cod);
+    if(!p.fechaProg) return;
+    const f=new Date(p.fechaProg); if(!isNaN(f)) mesesSet.add(f.getFullYear()+'-'+f.getMonth());
+  });
+  REPORTE_DATA.filter(d=>d.fechaVig).forEach(d=>{
+    const f=new Date(d.fechaVig); if(!isNaN(f)) mesesSet.add(f.getFullYear()+'-'+f.getMonth());
+  });
+  const meses=[...mesesSet].sort();
+  const menu=document.getElementById('pve-mes-menu');
+  if(!menu) return;
+  // Preseleccionar últimos 3 meses
+  const ultimos3=meses.slice(-3);
+  menu.innerHTML=meses.map(k=>{
+    const [y,m]=k.split('-');
+    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+      <input type="checkbox" value="${k}" ${ultimos3.includes(k)?'checked':''} onchange="updatePveMesLabel();renderEstadoDocs()"> ${MESES_N[+m]} ${y}
+    </label>`;
+  }).join('');
+  updatePveMesLabel();
+}
+function updatePveMesLabel(){
+  const sel=[...document.querySelectorAll('#pve-mes-menu input:checked')].map(c=>c.value);
+  const lbl=document.getElementById('pve-mes-label');
+  if(lbl) lbl.textContent=sel.length===0?'Todos los meses':sel.length===1?(()=>{ const [y,m]=sel[0].split('-'); const N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; return N[+m]+' '+y; })():sel.length+' meses';
+}
+function getPveMesesSel(){
+  return [...document.querySelectorAll('#pve-mes-menu input:checked')].map(c=>c.value);
 }
 </script>
 </body>
