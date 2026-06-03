@@ -1355,7 +1355,14 @@ function renderDash(){
 
 function goToResumen(ger){
   showPage('resumen');
-  document.getElementById('r-sel-ger').value=ger;
+  // Marcar solo esa gerencia en el dropdown multi-selección
+  const menu=document.getElementById('r-ger-menu');
+  if(menu){
+    menu.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.checked=(cb.value===ger);
+    });
+    updateDropdownLabel('r-ger','gerencias');
+  }
   onResGerChange();
 }
 
