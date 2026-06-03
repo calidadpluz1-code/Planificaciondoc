@@ -640,7 +640,15 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <div id="g-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:260px;overflow-y:auto">
         </div>
       </div>
-
+      <label class="flbl">Mes</label>
+      <div id="g-mes-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('g-mes')" style="min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="g-mes-label">Todos los meses</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="g-mes-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:160px;max-height:260px;overflow-y:auto">
+        </div>
+      </div>
 
     </div>
     <div class="gantt-wrap">
@@ -1355,7 +1363,7 @@ function goToResumen(ger){
 function toggleDropdown(prefix){
   const menu=document.getElementById(prefix+'-menu');
   // Cerrar todos los demás
-  ['r-ger','r-uni','r-accion','g-ger','g-uni'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes'].forEach(p=>{
     if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
   if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
@@ -1380,7 +1388,7 @@ function buildCheckboxMenu(menuId, items, onChangeFn){
 }
 // Cerrar dropdowns al click fuera
 document.addEventListener('click',e=>{
-  ['r-ger','r-uni','r-accion','g-ger','g-uni'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes'].forEach(p=>{
     const dd=document.getElementById(p+'-dropdown');
     if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
@@ -1415,7 +1423,34 @@ function renderGantt(){
     if(unis.length>0&&!unis.includes(n.unidad)) return;
     items.push({label:n.titulo,cod:'NEW',gerencia:n.gerencia,unidad:n.unidad,accion:'Nuevo',fecha:n.fecha,isNew:true});
   });
+  // Filtrar por meses seleccionados
+  const mesesSel=getChecked('g-mes');
+  if(mesesSel.length>0){
+    items=items.filter(it=>{
+      if(!it.fecha) return false;
+      const d=new Date(it.fecha);
+      return !isNaN(d)&&mesesSel.includes(d.getFullYear()+'-'+d.getMonth());
+    });
+  }
   document.getElementById('gantt-count').textContent=items.length+' entradas';
+  // Poblar filtro de meses con los meses disponibles en los items
+  (function(){
+    const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const mesesDisp=[...new Set(items.filter(i=>i.fecha).map(i=>{
+      const d=new Date(i.fecha); return isNaN(d)?null:d.getFullYear()+'-'+d.getMonth();
+    }).filter(Boolean))].sort();
+    const prevMes=getChecked('g-mes');
+    const menu=document.getElementById('g-mes-menu');
+    if(menu){
+      menu.innerHTML=mesesDisp.map(k=>{
+        const [y,m]=k.split('-');
+        const label=MESES[+m]+' '+y;
+        return `<label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px">
+          <input type="checkbox" value="${k}" ${prevMes.includes(k)?'checked':''} onchange="updateDropdownLabel('g-mes','meses');renderGantt()"> ${label}
+        </label>`;
+      }).join('');
+    }
+  })();
   const container=document.getElementById('gantt-container');
   if(!items.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">No hay documentos con acciones y fechas asignadas.</p>'; renderTablaMensual([]); return; }
   const getKey=it=>it.unidad; // agrupación fija por unidad
@@ -1467,10 +1502,36 @@ function renderGantt(){
     });
   });
   const totalH=y+HH+10;
-  container.innerHTML=`<svg width="100%" viewBox="0 0 ${LW+BW} ${totalH}" style="min-width:760px">
-    ${mhdr}<g transform="translate(0,${HH})">${rows.join('')}</g></svg>`;
-  // Renderizar conteo mensual alineado bajo el Gantt
-  renderTablaMensual(items, startD, endD);
+  // Generar fila de conteo mensual encima de los encabezados de meses
+  const MH=28; // altura fila conteo
+  const conteoMes={};
+  items.filter(i=>i.fecha).forEach(it=>{
+    const d=new Date(it.fecha);
+    if(!isNaN(d)){
+      const k=d.getFullYear()+'-'+d.getMonth();
+      conteoMes[k]=(conteoMes[k]||0)+1;
+    }
+  });
+  const MESES2=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  let conteoRow=`<g transform="translate(0,0)">`;
+  conteoRow+=`<rect x="0" y="0" width="${LW}" height="${MH}" fill="#f8f9fc"/>`;
+  conteoRow+=`<text x="${LW/2}" y="${MH/2+4}" text-anchor="middle" font-size="10" fill="#3D5BA9" font-weight="700">Docs/mes</text>`;
+  months.forEach(mo=>{
+    const ms=new Date(mo.y,mo.m,1), me=new Date(mo.y,mo.m+1,0);
+    const px=LW+Math.round((ms-startD)/totalMs*BW);
+    const pw=Math.round((me-ms+86400000)/totalMs*BW);
+    const k=mo.y+'-'+mo.m;
+    const n=conteoMes[k]||0;
+    conteoRow+=`<rect x="${px}" y="0" width="${pw}" height="${MH}" fill="${n?'#eef2ff':'#f8f9fc'}" stroke="#e8ecf5" stroke-width="0.5"/>`;
+    if(n) conteoRow+=`<text x="${px+pw/2}" y="${MH/2+4}" text-anchor="middle" font-size="11" fill="#3D5BA9" font-weight="800">${n}</text>`;
+  });
+  conteoRow+='</g>';
+
+  const totalHfinal=totalH+MH;
+  container.innerHTML=`<svg width="100%" viewBox="0 0 ${LW+BW} ${totalHfinal}" style="min-width:760px">
+    ${conteoRow}<g transform="translate(0,${MH})">${mhdr}<g transform="translate(0,${HH})">${rows.join('')}</g></g></svg>`;
+  // Ocultar tabla mensual separada (ya integrada al SVG)
+  const wrap=document.getElementById('gantt-mensual-wrap'); if(wrap) wrap.style.display='none';
 }
 
 // RESUMEN
