@@ -166,14 +166,14 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 .gantt-legend-dot{width:12px;height:12px;border-radius:3px}
 
 /* RESUMEN */
-.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.res-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
 .res-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;
   text-align:center;border-top:4px solid var(--blue)}
 .res-card.y{border-top-color:var(--yellow)}.res-card.g{border-top-color:var(--green)}
-.res-card.r{border-top-color:var(--red)}.res-card.p{border-top-color:var(--purple)}
+.res-card.r{border-top-color:var(--red)}.res-card.p{border-top-color:var(--purple)}.res-card.o{border-top-color:#e67e22}
 .res-num{font-size:32px;font-weight:800;margin-bottom:4px;color:var(--blue)}
 .res-card.y .res-num{color:var(--amber)}.res-card.g .res-num{color:var(--green)}
-.res-card.r .res-num{color:var(--red)}.res-card.p .res-num{color:var(--purple)}
+.res-card.r .res-num{color:var(--red)}.res-card.p .res-num{color:var(--purple)}.res-card.o .res-num{color:#e67e22}
 .res-lbl{font-size:12px;color:var(--text2);font-weight:600}
 
 /* MODAL */
@@ -623,13 +623,23 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <div class="page-sub">Cronograma basado en las fechas programadas por cada unidad</div>
     <div class="filters">
       <label class="flbl">Gerencia</label>
-      <select id="g-sel-ger" onchange="onGanttGerChange()" style="min-width:210px;max-width:300px">
-        <option value="">Todas las gerencias</option>
-      </select>
+      <div id="g-ger-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('g-ger')" style="min-width:210px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="g-ger-label">Todas las gerencias</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="g-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:260px;max-height:260px;overflow-y:auto">
+        </div>
+      </div>
       <label class="flbl">Unidad</label>
-      <select id="g-sel-uni" onchange="renderGantt()" style="min-width:180px">
-        <option value="">Todas las unidades</option>
-      </select>
+      <div id="g-uni-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('g-uni')" style="min-width:190px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="g-uni-label">Todas las unidades</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="g-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:260px;overflow-y:auto">
+        </div>
+      </div>
 
 
     </div>
@@ -653,28 +663,47 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 
   <!-- RESUMEN -->
   <div class="page" id="page-resumen">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
       <div>
         <div class="page-title">Resumen general 2026</div>
         <div class="page-sub">Consolidado de planificación documental por área</div>
       </div>
+    </div>
 
-    </div>
-    <div class="res-grid">
-      <div class="res-card"><div class="res-num" id="res-act">0</div><div class="res-lbl">Para actualizar</div></div>
-      <div class="res-card g"><div class="res-num" id="res-man">0</div><div class="res-lbl">Se mantienen</div></div>
-      <div class="res-card r"><div class="res-num" id="res-eli">0</div><div class="res-lbl">Para eliminar</div></div>
-      <div class="res-card p"><div class="res-num" id="res-nue">0</div><div class="res-lbl">Nuevos propuestos</div></div>
-    </div>
-    <div class="filters">
+    <!-- FILTROS ARRIBA -->
+    <div class="filters" style="margin-bottom:16px">
       <label class="flbl">Gerencia</label>
-      <select id="r-sel-ger" onchange="onResGerChange()" style="min-width:210px;max-width:300px">
-        <option value="">Todas las gerencias</option>
-      </select>
+      <div id="r-ger-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('r-ger')" style="min-width:210px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="r-ger-label">Todas las gerencias</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="r-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:260px;max-height:260px;overflow-y:auto" id="r-ger-menu">
+        </div>
+      </div>
       <label class="flbl">Unidad</label>
-      <select id="r-sel-uni" onchange="renderResumen()" style="min-width:180px">
-        <option value="">Todas las unidades</option>
-      </select>
+      <div id="r-uni-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('r-uni')" style="min-width:190px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="r-uni-label">Todas las unidades</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="r-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:260px;overflow-y:auto">
+        </div>
+      </div>
+      <label class="flbl">Acción</label>
+      <div id="r-accion-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('r-accion')" style="min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="r-accion-label">Todas las acciones</span>
+          <span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="r-accion-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:180px">
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Actualizar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Actualizar</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Mantener" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Mantener</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Transferir" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Transferir</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Eliminar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Eliminar</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Pendiente" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Pendiente</label>
+        </div>
+      </div>
       <select id="r-sel-avance" onchange="renderResumen()" style="min-width:150px">
         <option value="">Cualquier avance</option>
         <option value="100">Completadas (100%)</option>
@@ -683,11 +712,21 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </select>
       <input id="r-buscar" type="text" placeholder="Buscar..." oninput="renderResumen()" style="flex:1;min-width:120px">
     </div>
+
+    <!-- TARJETAS DINÁMICAS (se actualizan con filtros) -->
+    <div class="res-grid" id="res-grid-cards">
+      <div class="res-card"><div class="res-num" id="res-act">0</div><div class="res-lbl">Para actualizar</div></div>
+      <div class="res-card g"><div class="res-num" id="res-man">0</div><div class="res-lbl">Se mantienen</div></div>
+      <div class="res-card o"><div class="res-num" id="res-tra">0</div><div class="res-lbl">Para transferir</div></div>
+      <div class="res-card r"><div class="res-num" id="res-eli">0</div><div class="res-lbl">Para eliminar</div></div>
+      <div class="res-card p"><div class="res-num" id="res-nue">0</div><div class="res-lbl">Nuevos propuestos</div></div>
+    </div>
     <div class="table-wrap">
       <div class="table-head"><div class="table-head-left">Planificación por área</div></div>
       <div style="overflow-x:auto">
         <table>
           <thead><tr>
+            <th style="width:40px;text-align:center">#</th>
             <th>Gerencia</th><th>Unidad</th><th>Total</th>
             <th style="color:var(--blue)">Actualizar</th>
             <th style="color:var(--green)">Mantener</th>
@@ -697,6 +736,19 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <th>Pendientes</th><th style="min-width:110px">Avance</th>
           </tr></thead>
           <tbody id="resumen-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TABLA CONTEO MENSUAL DE ACTUALIZACIONES -->
+    <div class="table-wrap" style="margin-top:24px">
+      <div class="table-head">
+        <div class="table-head-left" style="color:var(--blue)">📅 Documentos a Actualizar por mes</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="tabla-mensual">
+          <thead><tr id="mensual-thead"></tr></thead>
+          <tbody id="mensual-tbody"></tbody>
         </table>
       </div>
     </div>
@@ -1228,17 +1280,21 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 // ADMIN SELECTS
 function initAdminSelects(){
   const gers=getGers();
-  ['g-sel-ger','r-sel-ger','s-sel-ger'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    el.innerHTML='<option value="">Todas las gerencias</option>';
-    gers.forEach(g=>{ const o=document.createElement('option'); o.value=g; o.textContent=g; el.appendChild(o); });
-  });
-  // Populate Gantt unit filter with all units on init
-  const su=document.getElementById('g-sel-uni');
-  if(su){
-    su.innerHTML='<option value="">Todas las unidades</option>';
-    gers.flatMap(g=>getUnis(g)).sort().forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
+  const allUnis=gers.flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+
+  // Poblar dropdowns multi-selección de Resumen
+  buildCheckboxMenu('r-ger-menu', gers, "onResGerChange()");
+  buildCheckboxMenu('r-uni-menu', allUnis, "updateDropdownLabel('r-uni','unidades');renderResumen()");
+
+  // Poblar dropdowns multi-selección de Gantt
+  buildCheckboxMenu('g-ger-menu', gers, "onGanttGerChange()");
+  buildCheckboxMenu('g-uni-menu', allUnis, "updateDropdownLabel('g-uni','unidades');renderGantt()");
+
+  // Seguimiento sigue con select normal
+  const sSelGer=document.getElementById('s-sel-ger');
+  if(sSelGer){
+    sSelGer.innerHTML='<option value="">Todas las gerencias</option>';
+    gers.forEach(g=>{ const o=document.createElement('option'); o.value=g; o.textContent=g; sSelGer.appendChild(o); });
   }
 }
 
@@ -1299,36 +1355,68 @@ function goToResumen(ger){
   onResGerChange();
 }
 
+// ── HELPERS DROPDOWNS MULTI-SELECCIÓN (compartidos) ────────────────────────
+function toggleDropdown(prefix){
+  const menu=document.getElementById(prefix+'-menu');
+  // Cerrar todos los demás
+  ['r-ger','r-uni','r-accion','g-ger','g-uni'].forEach(p=>{
+    if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
+  });
+  if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
+}
+function getChecked(prefix){
+  return [...document.querySelectorAll('#'+prefix+'-menu input[type=checkbox]:checked')].map(c=>c.value);
+}
+function updateDropdownLabel(prefix, noun){
+  const sel=getChecked(prefix);
+  const lbl=document.getElementById(prefix+'-label');
+  if(!lbl) return;
+  lbl.textContent = sel.length===0 ? 'Todas las '+noun : sel.length===1 ? sel[0] : sel.length+' selec.';
+}
+function buildCheckboxMenu(menuId, items, onChangeFn){
+  const menu=document.getElementById(menuId);
+  if(!menu) return;
+  const prev=getChecked(menuId.replace('-menu',''));
+  menu.innerHTML=items.map(v=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px">
+      <input type="checkbox" value="${v}" ${prev.includes(v)?'checked':''} onchange="${onChangeFn}"> ${v}
+    </label>`).join('');
+}
+// Cerrar dropdowns al click fuera
+document.addEventListener('click',e=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni'].forEach(p=>{
+    const dd=document.getElementById(p+'-dropdown');
+    if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
+  });
+});
+
 // GANTT
 function onGanttGerChange(){
-  const ger=document.getElementById('g-sel-ger').value;
-  const su=document.getElementById('g-sel-uni');
-  su.innerHTML='<option value="">Todas las unidades</option>';
-  const unis=ger ? getUnis(ger) : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
-  unis.forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
+  // Actualizar menu de unidades según gerencias seleccionadas
+  const gers=getChecked('g-ger');
+  const unis=gers.length>0
+    ? gers.flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort()
+    : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  buildCheckboxMenu('g-uni-menu', unis, "updateDropdownLabel('g-uni','unidades');renderGantt()");
+  updateDropdownLabel('g-ger','gerencias');
   renderGantt();
 }
 
 function renderGantt(){
-  const ger=document.getElementById('g-sel-ger').value;
-  const uni=document.getElementById('g-sel-uni').value;
-  const acf='';
-  const agrup='unidad'; // agrupación fija por unidad
+  const gers=getChecked('g-ger');
+  const unis=getChecked('g-uni');
   let items=[];
   DOCS.forEach(d=>{
     const p=getP(d.cod);
-    // Solo Actualizar (los demás no tienen fecha programada relevante)
     if(p.accion!=='Actualizar') return;
-    if(!p.fechaProg) return; // sin fecha no aparece en Gantt
-    if(ger&&d.gerencia!==ger) return;
-    if(uni&&d.unidad!==uni) return;
-    if(acf&&p.accion!==acf) return;
+    if(!p.fechaProg) return;
+    if(gers.length>0&&!gers.includes(d.gerencia)) return;
+    if(unis.length>0&&!unis.includes(d.unidad)) return;
     items.push({label:d.desc,cod:d.cod,gerencia:d.gerencia,unidad:d.unidad,accion:p.accion,fecha:p.fechaProg,isNew:false});
   });
   nuevos.forEach(n=>{
-    if(ger&&n.gerencia!==ger) return;
-    if(uni&&n.unidad!==uni) return;
-    if(acf&&acf!=='Nuevo') return;
+    if(gers.length>0&&!gers.includes(n.gerencia)) return;
+    if(unis.length>0&&!unis.includes(n.unidad)) return;
     items.push({label:n.titulo,cod:'NEW',gerencia:n.gerencia,unidad:n.unidad,accion:'Nuevo',fecha:n.fecha,isNew:true});
   });
   document.getElementById('gantt-count').textContent=items.length+' entradas';
@@ -1389,60 +1477,112 @@ function renderGantt(){
 
 // RESUMEN
 function onResGerChange(){
-  const ger=document.getElementById('r-sel-ger').value;
-  const su=document.getElementById('r-sel-uni');
-  su.innerHTML='<option value="">Todas las unidades</option>';
-  if(ger) getUnis(ger).forEach(u=>{ const o=document.createElement('option'); o.value=u; o.textContent=u; su.appendChild(o); });
+  const gers=getChecked('r-ger');
+  const unis=gers.length>0
+    ? gers.flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort()
+    : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  buildCheckboxMenu('r-uni-menu', unis, "updateDropdownLabel('r-uni','unidades');renderResumen()");
+  updateDropdownLabel('r-ger','gerencias');
   renderResumen();
 }
+
 function renderResumen(){
-  const fger=document.getElementById('r-sel-ger').value;
-  const funi=document.getElementById('r-sel-uni').value;
-  const favance=document.getElementById('r-sel-avance').value;
-  const fbus=document.getElementById('r-buscar').value.toLowerCase();
-  const allAc=DOCS.map(d=>getP(d.cod).accion);
-  document.getElementById('res-act').textContent=allAc.filter(a=>a==='Actualizar').length;
-  document.getElementById('res-man').textContent=allAc.filter(a=>a==='Mantener').length;
-  document.getElementById('res-eli').textContent=allAc.filter(a=>a==='Eliminar').length;
-  document.getElementById('res-nue').textContent=nuevos.length;
-  let rows='';
+  const fgers   = getChecked('r-ger');
+  const funis   = getChecked('r-uni');
+  const faccs   = getChecked('r-accion');
+  const favance = document.getElementById('r-sel-avance').value;
+  const fbus    = document.getElementById('r-buscar').value.toLowerCase();
+
+  // Construir filas con datos completos para ordenar
+  const filas = [];
   getGers().forEach(g=>{
-    if(fger&&g!==fger) return;
-    getUnis(g).forEach((u,ui)=>{
-      if(funi&&u!==funi) return;
-      if(fbus&&!u.toLowerCase().includes(fbus)&&!g.toLowerCase().includes(fbus)) return;
-      const docs=getDocs(g,u);
-      const ac=docs.map(d=>getP(d.cod).accion);
-      const act=ac.filter(a=>a==='Actualizar').length;
-      const man=ac.filter(a=>a==='Mantener').length;
-      const tra=ac.filter(a=>a==='Transferir').length;
-      const eli=ac.filter(a=>a==='Eliminar').length;
-      const pen=ac.filter(a=>a==='Pendiente').length;
-      const nue=nuevos.filter(n=>n.gerencia===g&&n.unidad===u).length;
-      const tot=docs.length,pct=tot?Math.round((tot-pen)/tot*100):0;
+    if(fgers.length>0 && !fgers.includes(g)) return;
+    getUnis(g).forEach(u=>{
+      if(funis.length>0 && !funis.includes(u)) return;
+      if(fbus && !u.toLowerCase().includes(fbus) && !g.toLowerCase().includes(fbus)) return;
+      const docs = getDocs(g,u);
+      const ac   = docs.map(d=>getP(d.cod).accion);
+      const act  = ac.filter(a=>a==='Actualizar').length;
+      const man  = ac.filter(a=>a==='Mantener').length;
+      const tra  = ac.filter(a=>a==='Transferir').length;
+      const eli  = ac.filter(a=>a==='Eliminar').length;
+      const pen  = ac.filter(a=>a==='Pendiente').length;
+      const nue  = nuevos.filter(n=>n.gerencia===g&&n.unidad===u).length;
+      const tot  = docs.length;
+      const pct  = tot ? Math.round((tot-pen)/tot*100) : 0;
+      // Filtro multi-accion: si hay acciones seleccionadas, la unidad debe tener al menos una
+      if(faccs.length>0 && !ac.some(a=>faccs.includes(a))) return;
       if(favance==='100'&&pct!==100) return;
       if(favance==='0'&&pct!==0) return;
       if(favance==='parcial'&&(pct===0||pct===100)) return;
-      const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
-      rows+=`<tr>
-        <td style="font-size:11px;color:var(--text2);font-weight:${ui===0?'700':'400'}">${ui===0?shortG:''}</td>
-        <td style="font-size:12px;font-weight:500">${u}</td>
-        <td style="text-align:center;font-weight:700">${tot}</td>
-        <td style="text-align:center;color:var(--blue);font-weight:${act?'700':'400'}">${act||'—'}</td>
-        <td style="text-align:center;color:var(--green);font-weight:${man?'700':'400'}">${man||'—'}</td>
-        <td style="text-align:center;color:#e67e22;font-weight:${tra?'700':'400'}">${tra||'—'}</td>
-        <td style="text-align:center;color:var(--red);font-weight:${eli?'700':'400'}">${eli||'—'}</td>
-        <td style="text-align:center;color:var(--purple);font-weight:${nue?'700':'400'}">${nue||'—'}</td>
-        <td style="text-align:center;color:var(--text3)">${pen||'—'}</td>
-        <td><div style="display:flex;align-items:center;gap:6px">
-          <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:${pct===100?'var(--green)':'var(--blue)'};border-radius:3px"></div></div>
-          <span style="font-size:11px;font-weight:700;color:${pct===100?'var(--green)':'var(--blue)'}">${pct}%</span>
-        </div></td>
-      </tr>`;
+      filas.push({g,u,tot,act,man,tra,eli,pen,nue,pct});
     });
   });
-  document.getElementById('resumen-tbody').innerHTML=rows||'<tr><td colspan="10" class="empty">Sin datos con estos filtros</td></tr>';
+
+  // Ordenar por Actualizar desc, luego por Total desc (ranking)
+  filas.sort((a,b)=> b.act!==a.act ? b.act-a.act : b.tot-a.tot);
+
+  // Actualizar tarjetas con los datos filtrados
+  const docsVisibles = filas.flatMap(f=> getDocs(f.g,f.u));
+  const acVisibles   = docsVisibles.map(d=>getP(d.cod).accion);
+  document.getElementById('res-act').textContent = acVisibles.filter(a=>a==='Actualizar').length;
+  document.getElementById('res-man').textContent = acVisibles.filter(a=>a==='Mantener').length;
+  document.getElementById('res-tra').textContent = acVisibles.filter(a=>a==='Transferir').length;
+  document.getElementById('res-eli').textContent = acVisibles.filter(a=>a==='Eliminar').length;
+  document.getElementById('res-nue').textContent = filas.reduce((s,f)=>s+f.nue,0);
+
+  // Totales por columna
+  const totAct=filas.reduce((s,f)=>s+f.act,0);
+  const totMan=filas.reduce((s,f)=>s+f.man,0);
+  const totTra=filas.reduce((s,f)=>s+f.tra,0);
+  const totEli=filas.reduce((s,f)=>s+f.eli,0);
+  const totNue=filas.reduce((s,f)=>s+f.nue,0);
+  const totPen=filas.reduce((s,f)=>s+f.pen,0);
+  const totTot=filas.reduce((s,f)=>s+f.tot,0);
+
+  if(!filas.length){
+    document.getElementById('resumen-tbody').innerHTML='<tr><td colspan="11" class="empty">Sin datos con estos filtros</td></tr>';
+    return;
+  }
+
+  let rows='';
+  filas.forEach((f,i)=>{
+    const shortG=f.g.replace('Gerencia de ','').replace('Gerencia ','');
+    const rank=i+1;
+    rows+=`<tr>
+      <td style="text-align:center;font-size:12px;font-weight:700;color:var(--text3)">${rank}</td>
+      <td style="font-size:11px;color:var(--text2);font-weight:600">${shortG}</td>
+      <td style="font-size:12px;font-weight:500">${f.u}</td>
+      <td style="text-align:center;font-weight:700">${f.tot}</td>
+      <td style="text-align:center;color:var(--blue);font-weight:${f.act?'700':'400'}">${f.act||'—'}</td>
+      <td style="text-align:center;color:var(--green);font-weight:${f.man?'700':'400'}">${f.man||'—'}</td>
+      <td style="text-align:center;color:#e67e22;font-weight:${f.tra?'700':'400'}">${f.tra||'—'}</td>
+      <td style="text-align:center;color:var(--red);font-weight:${f.eli?'700':'400'}">${f.eli||'—'}</td>
+      <td style="text-align:center;color:var(--purple);font-weight:${f.nue?'700':'400'}">${f.nue||'—'}</td>
+      <td style="text-align:center;color:var(--text3)">${f.pen||'—'}</td>
+      <td><div style="display:flex;align-items:center;gap:6px">
+        <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${f.pct}%;background:${f.pct===100?'var(--green)':'var(--blue)'};border-radius:3px"></div></div>
+        <span style="font-size:11px;font-weight:700;color:${f.pct===100?'var(--green)':'var(--blue)'}">${f.pct}%</span>
+      </div></td>
+    </tr>`;
+  });
+
+  // Fila de totales
+  rows+=`<tr style="background:#f0f4ff;border-top:2px solid var(--blue)">
+    <td colspan="3" style="font-size:12px;font-weight:800;color:var(--blue);padding:8px 12px">TOTAL</td>
+    <td style="text-align:center;font-weight:800;color:var(--blue)">${totTot}</td>
+    <td style="text-align:center;font-weight:800;color:var(--blue)">${totAct||'—'}</td>
+    <td style="text-align:center;font-weight:800;color:var(--green)">${totMan||'—'}</td>
+    <td style="text-align:center;font-weight:800;color:#e67e22">${totTra||'—'}</td>
+    <td style="text-align:center;font-weight:800;color:var(--red)">${totEli||'—'}</td>
+    <td style="text-align:center;font-weight:800;color:var(--purple)">${totNue||'—'}</td>
+    <td style="text-align:center;font-weight:800;color:var(--text3)">${totPen||'—'}</td>
+    <td></td>
+  </tr>`;
+
+  document.getElementById('resumen-tbody').innerHTML=rows;
+  renderTablaMensual(filas);
 }
 
 // SEGUIMIENTO
@@ -2188,6 +2328,67 @@ function confirmarReprog(){
     btn.textContent='Guardar reprogramación';
     btn.disabled=false;
   });
+}
+
+// ── TABLA MENSUAL DE ACTUALIZACIONES ────────────────────────────────────────
+function renderTablaMensual(filas){
+  const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  // Detectar qué meses tienen datos
+  const mesesConDatos=new Set();
+  filas.forEach(f=>{
+    const docs=getDocs(f.g,f.u).filter(d=>getP(d.cod).accion==='Actualizar');
+    docs.forEach(d=>{
+      const fp=getP(d.cod).fechaProg;
+      if(fp){ const mes=new Date(fp).getMonth(); if(!isNaN(mes)) mesesConDatos.add(mes); }
+    });
+  });
+  const mesesActivos=[...mesesConDatos].sort((a,b)=>a-b);
+  if(!mesesActivos.length){
+    document.getElementById('mensual-thead').innerHTML='<th>Sin fechas programadas</th>';
+    document.getElementById('mensual-tbody').innerHTML='';
+    return;
+  }
+
+  // Cabecera: Gerencia | Unidad | mes1 | mes2 ... | Total
+  const thead=document.getElementById('mensual-thead');
+  thead.innerHTML='<th>#</th><th>Gerencia</th><th>Unidad</th>'+
+    mesesActivos.map(m=>`<th style="color:var(--blue);text-align:center">${MESES[m]}</th>`).join('')+
+    '<th style="text-align:center;color:var(--blue)">Total</th>';
+
+  // Filas
+  let rows='';
+  let totalesMes=Object.fromEntries(mesesActivos.map(m=>[m,0]));
+  let granTotal=0;
+
+  filas.forEach((f,i)=>{
+    const docs=getDocs(f.g,f.u).filter(d=>getP(d.cod).accion==='Actualizar');
+    const porMes=Object.fromEntries(mesesActivos.map(m=>[m,0]));
+    docs.forEach(d=>{
+      const fp=getP(d.cod).fechaProg;
+      if(fp){ const mes=new Date(fp).getMonth(); if(mesesActivos.includes(mes)) porMes[mes]++; }
+    });
+    const totalFila=Object.values(porMes).reduce((s,v)=>s+v,0);
+    if(!totalFila) return; // omitir filas sin actualizaciones
+    const shortG=f.g.replace('Gerencia de ','').replace('Gerencia ','');
+    mesesActivos.forEach(m=>{ totalesMes[m]+=porMes[m]; });
+    granTotal+=totalFila;
+    rows+=`<tr>
+      <td style="text-align:center;font-size:11px;color:var(--text3)">${i+1}</td>
+      <td style="font-size:11px;color:var(--text2)">${shortG}</td>
+      <td style="font-size:12px;font-weight:500">${f.u}</td>
+      ${mesesActivos.map(m=>`<td style="text-align:center;font-weight:${porMes[m]?'700':'400'};color:${porMes[m]?'var(--blue)':'var(--text3)'}">${porMes[m]||'—'}</td>`).join('')}
+      <td style="text-align:center;font-weight:800;color:var(--blue)">${totalFila}</td>
+    </tr>`;
+  });
+
+  // Fila de totales
+  rows+=`<tr style="background:#f0f4ff;border-top:2px solid var(--blue)">
+    <td colspan="3" style="font-size:12px;font-weight:800;color:var(--blue);padding:8px 12px">TOTAL</td>
+    ${mesesActivos.map(m=>`<td style="text-align:center;font-weight:800;color:var(--blue)">${totalesMes[m]||'—'}</td>`).join('')}
+    <td style="text-align:center;font-weight:800;color:var(--blue)">${granTotal}</td>
+  </tr>`;
+
+  document.getElementById('mensual-tbody').innerHTML=rows||'<tr><td colspan="'+(mesesActivos.length+4)+'" class="empty">Sin datos</td></tr>';
 }
 </script>
 </body>
