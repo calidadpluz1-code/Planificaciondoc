@@ -659,6 +659,14 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">Guarda planificaciones con fechas para ver el Gantt</p>
       </div></div>
     </div>
+
+    <!-- CONTEO MENSUAL BAJO EL GANTT -->
+    <div id="gantt-mensual-wrap" style="margin-top:12px;overflow-x:auto;display:none">
+      <table id="tabla-mensual" style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr id="mensual-thead"></tr></thead>
+        <tbody id="mensual-tbody"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- RESUMEN -->
@@ -740,18 +748,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- TABLA CONTEO MENSUAL DE ACTUALIZACIONES -->
-    <div class="table-wrap" style="margin-top:24px">
-      <div class="table-head">
-        <div class="table-head-left" style="color:var(--blue)">📅 Documentos a Actualizar por mes</div>
-      </div>
-      <div style="overflow-x:auto">
-        <table id="tabla-mensual">
-          <thead><tr id="mensual-thead"></tr></thead>
-          <tbody id="mensual-tbody"></tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
 <div class="modal-overlay" id="modal-nuevo">
@@ -1421,12 +1417,12 @@ function renderGantt(){
   });
   document.getElementById('gantt-count').textContent=items.length+' entradas';
   const container=document.getElementById('gantt-container');
-  if(!items.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">No hay documentos con acciones y fechas asignadas.</p>'; return; }
-  const getKey=it=>agrup==='gerencia'?it.gerencia.replace('Gerencia de ','').replace('Gerencia ',''):agrup==='accion'?it.accion:it.unidad;
+  if(!items.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">No hay documentos con acciones y fechas asignadas.</p>'; renderTablaMensual([]); return; }
+  const getKey=it=>it.unidad; // agrupación fija por unidad
   const groups={};
   items.forEach(it=>{ const k=getKey(it); if(!groups[k]) groups[k]=[]; groups[k].push(it); });
   const fechas=items.filter(i=>i.fecha).map(i=>new Date(i.fecha));
-  if(!fechas.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">Asigna fechas programadas para ver el Gantt.</p>'; return; }
+  if(!fechas.length){ container.innerHTML='<p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">Asigna fechas programadas para ver el Gantt.</p>'; renderTablaMensual([]); return; }
   const minD=new Date(Math.min(...fechas));
   const maxD=new Date(Math.max(...fechas));
   const startD=new Date(minD.getFullYear(),minD.getMonth(),1);
@@ -1473,6 +1469,8 @@ function renderGantt(){
   const totalH=y+HH+10;
   container.innerHTML=`<svg width="100%" viewBox="0 0 ${LW+BW} ${totalH}" style="min-width:760px">
     ${mhdr}<g transform="translate(0,${HH})">${rows.join('')}</g></svg>`;
+  // Renderizar conteo mensual alineado bajo el Gantt
+  renderTablaMensual(items, startD, endD);
 }
 
 // RESUMEN
@@ -1582,7 +1580,6 @@ function renderResumen(){
   </tr>`;
 
   document.getElementById('resumen-tbody').innerHTML=rows;
-  renderTablaMensual(filas);
 }
 
 // SEGUIMIENTO
@@ -2330,65 +2327,57 @@ function confirmarReprog(){
   });
 }
 
-// ── TABLA MENSUAL DE ACTUALIZACIONES ────────────────────────────────────────
-function renderTablaMensual(filas){
+// ── TABLA MENSUAL BAJO EL GANTT ─────────────────────────────────────────────
+function renderTablaMensual(items, startD, endD){
+  const wrap = document.getElementById('gantt-mensual-wrap');
+  if(!wrap) return;
+  if(!items || !items.length || !startD || !endD){ wrap.style.display='none'; return; }
+
   const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  // Detectar qué meses tienen datos
-  const mesesConDatos=new Set();
-  filas.forEach(f=>{
-    const docs=getDocs(f.g,f.u).filter(d=>getP(d.cod).accion==='Actualizar');
-    docs.forEach(d=>{
-      const fp=getP(d.cod).fechaProg;
-      if(fp){ const mes=new Date(fp).getMonth(); if(!isNaN(mes)) mesesConDatos.add(mes); }
-    });
-  });
-  const mesesActivos=[...mesesConDatos].sort((a,b)=>a-b);
-  if(!mesesActivos.length){
-    document.getElementById('mensual-thead').innerHTML='<th>Sin fechas programadas</th>';
-    document.getElementById('mensual-tbody').innerHTML='';
-    return;
+  // Construir lista de meses en el rango del Gantt
+  const meses=[];
+  let cur=new Date(startD.getFullYear(), startD.getMonth(), 1);
+  while(cur<=endD){
+    meses.push({y:cur.getFullYear(), m:cur.getMonth()});
+    cur=new Date(cur.getFullYear(), cur.getMonth()+1, 1);
   }
+  if(!meses.length){ wrap.style.display='none'; return; }
 
-  // Cabecera: Gerencia | Unidad | mes1 | mes2 ... | Total
-  const thead=document.getElementById('mensual-thead');
-  thead.innerHTML='<th>#</th><th>Gerencia</th><th>Unidad</th>'+
-    mesesActivos.map(m=>`<th style="color:var(--blue);text-align:center">${MESES[m]}</th>`).join('')+
-    '<th style="text-align:center;color:var(--blue)">Total</th>';
-
-  // Filas
-  let rows='';
-  let totalesMes=Object.fromEntries(mesesActivos.map(m=>[m,0]));
-  let granTotal=0;
-
-  filas.forEach((f,i)=>{
-    const docs=getDocs(f.g,f.u).filter(d=>getP(d.cod).accion==='Actualizar');
-    const porMes=Object.fromEntries(mesesActivos.map(m=>[m,0]));
-    docs.forEach(d=>{
-      const fp=getP(d.cod).fechaProg;
-      if(fp){ const mes=new Date(fp).getMonth(); if(mesesActivos.includes(mes)) porMes[mes]++; }
-    });
-    const totalFila=Object.values(porMes).reduce((s,v)=>s+v,0);
-    if(!totalFila) return; // omitir filas sin actualizaciones
-    const shortG=f.g.replace('Gerencia de ','').replace('Gerencia ','');
-    mesesActivos.forEach(m=>{ totalesMes[m]+=porMes[m]; });
-    granTotal+=totalFila;
-    rows+=`<tr>
-      <td style="text-align:center;font-size:11px;color:var(--text3)">${i+1}</td>
-      <td style="font-size:11px;color:var(--text2)">${shortG}</td>
-      <td style="font-size:12px;font-weight:500">${f.u}</td>
-      ${mesesActivos.map(m=>`<td style="text-align:center;font-weight:${porMes[m]?'700':'400'};color:${porMes[m]?'var(--blue)':'var(--text3)'}">${porMes[m]||'—'}</td>`).join('')}
-      <td style="text-align:center;font-weight:800;color:var(--blue)">${totalFila}</td>
-    </tr>`;
+  // Contar docs por mes
+  const conteo=Object.fromEntries(meses.map(({y,m})=>[y+'-'+m, 0]));
+  items.forEach(it=>{
+    if(!it.fecha) return;
+    const d=new Date(it.fecha);
+    const k=d.getFullYear()+'-'+d.getMonth();
+    if(k in conteo) conteo[k]++;
   });
 
-  // Fila de totales
-  rows+=`<tr style="background:#f0f4ff;border-top:2px solid var(--blue)">
-    <td colspan="3" style="font-size:12px;font-weight:800;color:var(--blue);padding:8px 12px">TOTAL</td>
-    ${mesesActivos.map(m=>`<td style="text-align:center;font-weight:800;color:var(--blue)">${totalesMes[m]||'—'}</td>`).join('')}
-    <td style="text-align:center;font-weight:800;color:var(--blue)">${granTotal}</td>
-  </tr>`;
+  // Total de meses del rango para calcular % de ancho igual que el Gantt
+  const totalMs = Math.max(1, endD - startD);
 
-  document.getElementById('mensual-tbody').innerHTML=rows||'<tr><td colspan="'+(mesesActivos.length+4)+'" class="empty">Sin datos</td></tr>';
+  // Thead — celda vacía de etiqueta + una celda por mes proporcional
+  const labelW = 300; // px aprox del label col en Gantt
+  let thead = `<th style="min-width:${labelW}px;background:#f8f9fc;padding:8px 12px;font-size:11px;font-weight:700;color:var(--blue);border-bottom:2px solid var(--blue)">📅 Docs a Actualizar por mes</th>`;
+  meses.forEach(({y,m})=>{
+    const mesStart = new Date(y,m,1);
+    const mesEnd   = new Date(y,m+1,0);
+    const pct = Math.round(((mesEnd-mesStart)/totalMs)*100);
+    thead += `<th style="text-align:center;font-size:11px;font-weight:600;color:var(--text2);background:#f8f9fc;padding:6px 4px;border-bottom:2px solid var(--blue);border-left:1px solid var(--border);width:${pct}%">${MESES[m]} ${y}</th>`;
+  });
+
+  // Tbody — una sola fila con los conteos
+  let tbody = '<tr style="background:#fff">';
+  tbody += `<td style="padding:8px 12px;font-size:11px;color:var(--text3);font-weight:600;border-top:1px solid var(--border)">Total documentos</td>`;
+  meses.forEach(({y,m})=>{
+    const k=y+'-'+m;
+    const n=conteo[k]||0;
+    tbody += `<td style="text-align:center;padding:8px 4px;font-size:12px;font-weight:${n?'800':'400'};color:${n?'var(--blue)':'var(--text3)'};border-top:1px solid var(--border);border-left:1px solid var(--border)">${n||'—'}</td>`;
+  });
+  tbody += '</tr>';
+
+  document.getElementById('mensual-thead').innerHTML = thead;
+  document.getElementById('mensual-tbody').innerHTML = tbody;
+  wrap.style.display = 'block';
 }
 </script>
 </body>
