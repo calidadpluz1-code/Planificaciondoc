@@ -480,10 +480,8 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- KPIs + Velocímetro -->
-    <div style="display:flex;gap:14px;margin-bottom:20px;align-items:stretch">
-      <!-- Tarjetas KPI (más pequeñas) -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1">
+    <!-- KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--blue)">
           <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total</div>
           <div style="font-size:24px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
@@ -504,26 +502,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
           <div style="font-size:24px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
           <div style="font-size:10px;color:var(--text3);margin-top:2px">fuera de vigencia</div>
         </div>
-      </div>
-      <!-- Velocímetro % Avance -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;min-width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-        <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">% Avance planif.</div>
-        <svg id="ed-gauge-svg" viewBox="0 0 160 100" width="160" height="100">
-          <!-- Arco fondo -->
-          <path d="M20,90 A70,70 0 0,1 140,90" fill="none" stroke="#e8ecf5" stroke-width="14" stroke-linecap="round"/>
-          <!-- Arco valor -->
-          <path id="ed-gauge-arc" d="M20,90 A70,70 0 0,1 140,90" fill="none" stroke="#27ae60" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 220"/>
-          <!-- Aguja -->
-          <line id="ed-gauge-needle" x1="80" y1="90" x2="80" y2="28" stroke="#3D5BA9" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90,80,90)"/>
-          <circle cx="80" cy="90" r="5" fill="#3D5BA9"/>
-          <!-- Marcas -->
-          <text x="16" y="100" font-size="9" fill="var(--text3)" text-anchor="middle">0%</text>
-          <text x="80" y="18" font-size="9" fill="var(--text3)" text-anchor="middle">50%</text>
-          <text x="144" y="100" font-size="9" fill="var(--text3)" text-anchor="middle">100%</text>
-        </svg>
-        <div id="ed-gauge-pct" style="font-size:22px;font-weight:800;color:var(--blue);margin-top:-8px">—%</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:2px">Vigentes / Planificados</div>
-      </div>
     </div>
 
     <!-- Selects ocultos preservados para compatibilidad con JS -->
@@ -557,18 +535,19 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- Tablas PvE: Por gerencia + Por gerencia y categoría -->
+    <!-- Tabla cumplimiento por gerencia + gráfico barras por categoría -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-      <!-- Por gerencia -->
+      <!-- Cumplimiento por gerencia: Actualizar vs Revisión de Vigencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Cumplimiento por gerencia</div>
-        <div style="overflow-x:auto">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Cumplimiento por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Docs con acción <b>Actualizar</b> vs los que pasaron a <b>Revisión de Vigencia</b></div>
+        <div style="overflow-x:auto;max-height:260px;overflow-y:auto">
           <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <thead>
-              <tr style="background:#f0f4ff;color:var(--blue)">
+            <thead style="position:sticky;top:0;background:#f0f4ff">
+              <tr style="color:var(--blue)">
                 <th style="padding:7px 10px;text-align:left;font-weight:700">Gerencia</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700">Planif.</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Ejecut.</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700">Actualizar</th>
+                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Rev. Vig.</th>
                 <th style="padding:7px 8px;text-align:center;font-weight:700">% Cumpl.</th>
               </tr>
             </thead>
@@ -576,23 +555,23 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
           </table>
         </div>
       </div>
-      <!-- Por gerencia y categoría -->
+      <!-- Gráfico barras: Procedimientos e Instructivos por gerencia que pasaron a vigencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Cumplimiento por gerencia y categoría</div>
-        <div style="overflow-x:auto;max-height:260px;overflow-y:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <thead>
-              <tr style="background:#f0f4ff;color:var(--blue)">
-                <th style="padding:7px 10px;text-align:left;font-weight:700">Gerencia</th>
-                <th style="padding:7px 8px;text-align:left;font-weight:700">Categoría</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700">Planif.</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Ejecut.</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700">%</th>
-              </tr>
-            </thead>
-            <tbody id="ed-tabla-ger-cat-pve"></tbody>
-          </table>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Documentos en vigencia por gerencia</div>
+          <div id="cat-bar-mes-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('cat-bar-mes')" style="padding:3px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700">
+              <span id="cat-bar-mes-label">Todos los meses</span><span style="font-size:9px">▾</span>
+            </button>
+            <div id="cat-bar-mes-menu" style="display:none;position:absolute;top:100%;right:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:200px;overflow-y:auto"></div>
+          </div>
         </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Procedimientos e Instructivos que pasaron a revisión de vigencia</div>
+        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:8px">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px"></span>Procedimientos</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Instructivos</span>
+        </div>
+        <div id="ed-chart-cat-bar" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
       </div>
     </div>
 
@@ -601,12 +580,12 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Estado en el flujo de trabajo</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Haz clic en una etapa para filtrar el listado y los demás gráficos</div>
-        <div id="ed-chart-wf" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="ed-chart-wf" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto"></div>
       </div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Documentos por gerencia</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Vigentes + En elaboración — haz clic para filtrar</div>
-        <div id="ed-chart-ger" style="display:flex;flex-direction:column;gap:7px"></div>
+        <div id="ed-chart-ger" style="display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto"></div>
       </div>
     </div>
 
@@ -1452,7 +1431,7 @@ function goToResumen(ger){
 function toggleDropdown(prefix){
   const menu=document.getElementById(prefix+'-menu');
   // Cerrar todos los demás
-  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
     if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
   if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
@@ -1477,7 +1456,7 @@ function buildCheckboxMenu(menuId, items, onChangeFn){
 }
 // Cerrar dropdowns al click fuera
 document.addEventListener('click',e=>{
-  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','g-ger','g-uni','g-mes','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
     const dd=document.getElementById(p+'-dropdown');
     if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
@@ -2120,10 +2099,6 @@ function renderEstadoDocs(){
   document.getElementById('ed-vigentes').textContent    = vigentes.length;
   document.getElementById('ed-obsoletos').textContent   = obsoletos.length;
   document.getElementById('ed-elaboracion').textContent = elaborac.length;
-  // Velocímetro: vigentes / planificados
-  const totalPlan=DOCS.filter(d=>{ const p=getP(d.cod); return p.accion&&p.accion!=='Pendiente'; }).length;
-  const pctAvance=totalPlan>0?Math.round(vigentes.length/totalPlan*100):0;
-  renderGauge(pctAvance);
   // Tablas PvE
   const pveMesesTbls=getPveMesesSel();
   renderTablasPVE(pveMesesTbls);
@@ -2214,6 +2189,8 @@ function renderEstadoDocs(){
   }).join('')||'<div style="color:var(--text3);font-size:12px">Sin datos</div>';
 
   // ── GRÁFICO: Planificado vs Ejecutado (clickeable — ejecutado = vigentes por fechaVig) ──
+  // Meses seleccionados en el filtro PvE (formato: "YYYY-M" con getMonth() → 0-based)
+  const pveMesesFiltro=getPveMesesSel(); // formato "YYYY-M"
   const planCnt = {};
   DOCS.forEach(d=>{
     const p = getP(d.cod);
@@ -2221,6 +2198,8 @@ function renderEstadoDocs(){
     const f = new Date(p.fechaProg); if(isNaN(f)) return;
     const anio = String(f.getFullYear());
     if(edAnioFiltro && anio!==edAnioFiltro) return;
+    const keyBase = f.getFullYear()+'-'+f.getMonth(); // para comparar con filtro
+    if(pveMesesFiltro.length>0&&!pveMesesFiltro.includes(keyBase)) return;
     const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
     planCnt[key] = (planCnt[key]||0)+1;
   });
@@ -2229,6 +2208,8 @@ function renderEstadoDocs(){
     const f = new Date(d.fechaVig); if(isNaN(f)) return;
     const anio = String(f.getFullYear());
     if(edAnioFiltro && anio!==edAnioFiltro) return;
+    const keyBase = f.getFullYear()+'-'+f.getMonth();
+    if(pveMesesFiltro.length>0&&!pveMesesFiltro.includes(keyBase)) return;
     const key = `${anio}-${String(f.getMonth()+1).padStart(2,'0')}`;
     execCnt[key] = (execCnt[key]||0)+1;
   });
@@ -2571,93 +2552,104 @@ function renderTablaMensual(items, startD, endD){
 }
 
 // ── VELOCÍMETRO % AVANCE ─────────────────────────────────────────────────
-function renderGauge(pct){
-  const arc=document.getElementById('ed-gauge-arc');
-  const needle=document.getElementById('ed-gauge-needle');
-  const pctEl=document.getElementById('ed-gauge-pct');
-  if(!arc||!needle||!pctEl) return;
-  const totalArc=220; // longitud arco fondo
-  const filled=Math.min(Math.round(totalArc*pct/100),totalArc);
-  arc.setAttribute('stroke-dasharray',filled+' '+(totalArc-filled));
-  arc.setAttribute('stroke',pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b');
-  const angle=-90+(pct*180/100); // -90° = 0%, +90° = 100%
-  needle.setAttribute('transform',`rotate(${angle},80,90)`);
-  pctEl.textContent=pct+'%';
-  pctEl.style.color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
-}
-
-// ── TABLAS PvE POR GERENCIA Y GERENCIA+CATEGORÍA ─────────────────────────
+// ── CUMPLIMIENTO POR GERENCIA: Actualizar vs Revisión de Vigencia ─────────
 function renderTablasPVE(mesesVisibles){
   const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  // Construir lookup planificados (cod → {ger, cat, mes})
-  const planMap={};
+
+  // Meses seleccionados en el filtro PvE principal (para el gráfico de barras)
+  // mesesVisibles viene del filtro PvE; cat-bar-mes tiene su propio filtro
+  const catBarMeses=getCatBarMesesSel();
+
+  // ── Tabla: Actualizar vs que pasaron a REVISION DE VIGENCIA ──
+  // "Planificados" = docs con acción Actualizar en planificación
+  // "Ejecutados"   = esos mismos docs que en Reporte tienen estadoActual que contiene "REVISION"
+  const gerMap={};
   DOCS.forEach(d=>{
     const p=getP(d.cod);
-    if(!p.fechaProg||p.accion==='Pendiente') return;
-    const f=new Date(p.fechaProg); if(isNaN(f)) return;
-    const key=f.getFullYear()+'-'+f.getMonth();
-    if(mesesVisibles.length>0&&!mesesVisibles.includes(key)) return;
-    const doc=DOCS.find(x=>x.cod===d.cod);
-    const ger=doc?.gerencia||'';
-    const cat=doc?.tipodoc||'';
-    const k=ger+'|||'+cat;
-    if(!planMap[k]) planMap[k]={ger,cat,plan:0,exec:0};
-    planMap[k].plan++;
-    // Ejecutado: doc en Reporte con estadoVig=Vigente o En elaboración cuya fechaVig cae en meses visibles
-    const rep=REPORTE_DATA.find(r=>r.cod===d.cod&&(r.estadoVig==='Vigente'||r.estadoVig==='En elaboración'));
-    if(rep&&rep.fechaVig){
-      const fe=new Date(rep.fechaVig); if(!isNaN(fe)){
-        const ke=fe.getFullYear()+'-'+fe.getMonth();
-        if(mesesVisibles.length===0||mesesVisibles.includes(ke)) planMap[k].exec++;
-      }
+    if(!p.accion||p.accion!=='Actualizar') return;
+    // Filtrar por mes de fecha programada si hay filtro activo
+    if(mesesVisibles.length>0&&p.fechaProg){
+      const f=new Date(p.fechaProg);
+      if(isNaN(f)) return;
+      const k=f.getFullYear()+'-'+f.getMonth();
+      if(!mesesVisibles.includes(k)) return;
     }
+    const ger=d.gerencia||'Sin gerencia';
+    if(!gerMap[ger]) gerMap[ger]={plan:0,exec:0};
+    gerMap[ger].plan++;
+    // Buscar en Reporte: ¿pasó a Revisión de Vigencia?
+    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
+    if(rep&&rep.estadoActual&&rep.estadoActual.toUpperCase().includes('REVISION')) gerMap[ger].exec++;
   });
 
-  // Por gerencia
-  const gerMap={};
-  Object.values(planMap).forEach(r=>{
-    if(!gerMap[r.ger]) gerMap[r.ger]={plan:0,exec:0};
-    gerMap[r.ger].plan+=r.plan; gerMap[r.ger].exec+=r.exec;
-  });
   const tbGer=document.getElementById('ed-tabla-ger-pve');
   if(tbGer){
     const rows=Object.entries(gerMap).sort((a,b)=>b[1].plan-a[1].plan).map(([g,v])=>{
       const pct=v.plan?Math.round(v.exec/v.plan*100):0;
       const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+      const color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
       return `<tr style="border-bottom:1px solid var(--border)">
         <td style="padding:6px 10px;font-size:11px">${shortG}</td>
         <td style="text-align:center;padding:6px 8px;font-weight:700;color:var(--blue)">${v.plan}</td>
         <td style="text-align:center;padding:6px 8px;font-weight:700;color:#27ae60">${v.exec}</td>
         <td style="text-align:center;padding:6px 8px">
-          <span style="font-weight:700;color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</span>
+          <div style="display:flex;align-items:center;gap:6px;justify-content:center">
+            <div style="flex:1;max-width:60px;background:#f0f0f0;border-radius:4px;height:6px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${color};border-radius:4px"></div>
+            </div>
+            <span style="font-weight:700;color:${color};min-width:32px">${pct}%</span>
+          </div>
         </td>
       </tr>`;
     }).join('');
-    tbGer.innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text3)">Sin datos</td></tr>';
+    tbGer.innerHTML=rows||'<tr><td colspan="4" style="text-align:center;padding:12px;color:var(--text3)">Sin datos con acción Actualizar</td></tr>';
   }
 
-  // Por gerencia + categoría
-  const tbCat=document.getElementById('ed-tabla-ger-cat-pve');
-  if(tbCat){
-    const rows=Object.values(planMap).filter(r=>r.plan>0).sort((a,b)=>a.ger.localeCompare(b.ger)||a.cat.localeCompare(b.cat)).map(r=>{
-      const pct=r.plan?Math.round(r.exec/r.plan*100):0;
-      const shortG=r.ger.replace('Gerencia de ','').replace('Gerencia ','');
-      return `<tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:5px 8px;font-size:11px">${shortG}</td>
-        <td style="padding:5px 8px;font-size:11px;color:var(--text2)">${r.cat||'—'}</td>
-        <td style="text-align:center;padding:5px 6px;font-weight:700;color:var(--blue)">${r.plan}</td>
-        <td style="text-align:center;padding:5px 6px;font-weight:700;color:#27ae60">${r.exec}</td>
-        <td style="text-align:center;padding:5px 6px"><span style="font-weight:700;color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</span></td>
-      </tr>`;
-    }).join('');
-    tbCat.innerHTML=rows||'<tr><td colspan="5" style="text-align:center;padding:12px;color:var(--text3)">Sin datos</td></tr>';
+  // ── Gráfico barras: Procedimientos e Instructivos en Revisión de Vigencia por gerencia ──
+  const PROC_KEYWORDS=['Procedimiento'];
+  const INST_KEYWORDS=['Instructivo'];
+  const gerBarMap={};
+  REPORTE_DATA.forEach(r=>{
+    if(!r.estadoActual||!r.estadoActual.toUpperCase().includes('REVISION')) return;
+    // Filtrar por mes si hay filtro cat-bar-mes activo
+    if(catBarMeses.length>0&&r.fechaVig){
+      const f=new Date(r.fechaVig);
+      if(isNaN(f)) return;
+      const k=f.getFullYear()+'-'+f.getMonth();
+      if(!catBarMeses.includes(k)) return;
+    }
+    const ger=r.gerencia||'Sin gerencia';
+    if(!gerBarMap[ger]) gerBarMap[ger]={proc:0,inst:0};
+    const tipo=(r.tipodoc||'').toLowerCase();
+    if(PROC_KEYWORDS.some(k=>tipo.includes(k.toLowerCase()))) gerBarMap[ger].proc++;
+    else if(INST_KEYWORDS.some(k=>tipo.includes(k.toLowerCase()))) gerBarMap[ger].inst++;
+  });
+
+  const chartBar=document.getElementById('ed-chart-cat-bar');
+  if(chartBar){
+    const entries=Object.entries(gerBarMap).sort((a,b)=>(b[1].proc+b[1].inst)-(a[1].proc+a[1].inst));
+    const maxVal=Math.max(1,...entries.map(([,v])=>v.proc+v.inst));
+    chartBar.innerHTML=entries.length?entries.map(([g,v])=>{
+      const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+      const pctProc=Math.round(v.proc/maxVal*100);
+      const pctInst=Math.round(v.inst/maxVal*100);
+      return `<div style="padding:3px 0">
+        <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px">
+          <span style="color:var(--text2)">${shortG}</span>
+          <span style="color:var(--text3)"><span style="color:#3D5BA9;font-weight:700">${v.proc}</span> / <span style="color:#27ae60;font-weight:700">${v.inst}</span></span>
+        </div>
+        <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#f0f0f0">
+          <div style="width:${pctProc}%;background:#3D5BA9"></div>
+          <div style="width:${pctInst}%;background:#27ae60"></div>
+        </div>
+      </div>`;
+    }).join(''):'<div style="color:var(--text3);font-size:12px">Sin documentos en Revisión de Vigencia</div>';
   }
 }
 
-// ── POBLAR FILTRO MES PvE (últimos 3 meses por defecto) ──────────────────
+// ── POBLAR FILTROS DE MES (PvE + Cat-Bar) ────────────────────────────────
 function poblarPveMesFiltro(){
   const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  // Recopilar meses con datos
   const mesesSet=new Set();
   DOCS.forEach(d=>{
     const p=getP(d.cod);
@@ -2668,25 +2660,49 @@ function poblarPveMesFiltro(){
     const f=new Date(d.fechaVig); if(!isNaN(f)) mesesSet.add(f.getFullYear()+'-'+f.getMonth());
   });
   const meses=[...mesesSet].sort();
-  const menu=document.getElementById('pve-mes-menu');
-  if(!menu) return;
-  // Preseleccionar últimos 3 meses
-  const ultimos3=meses.slice(-3);
-  menu.innerHTML=meses.map(k=>{
-    const [y,m]=k.split('-');
-    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
-      <input type="checkbox" value="${k}" ${ultimos3.includes(k)?'checked':''} onchange="updatePveMesLabel();renderEstadoDocs()"> ${MESES_N[+m]} ${y}
-    </label>`;
-  }).join('');
-  updatePveMesLabel();
+  // Filtro PvE (últimos 3 meses por defecto)
+  const menuPve=document.getElementById('pve-mes-menu');
+  if(menuPve){
+    const ultimos3=meses.slice(-3);
+    menuPve.innerHTML=meses.map(k=>{
+      const [y,m]=k.split('-');
+      return `<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+        <input type="checkbox" value="${k}" ${ultimos3.includes(k)?'checked':''} onchange="updatePveMesLabel();renderEstadoDocs()"> ${MESES_N[+m]} ${y}
+      </label>`;
+    }).join('');
+    updatePveMesLabel();
+  }
+  // Filtro Cat-Bar (todos vacíos = todos los meses)
+  const menuCat=document.getElementById('cat-bar-mes-menu');
+  if(menuCat){
+    menuCat.innerHTML=meses.map(k=>{
+      const [y,m]=k.split('-');
+      return `<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+        <input type="checkbox" value="${k}" onchange="updateCatBarMesLabel();renderEstadoDocs()"> ${MESES_N[+m]} ${y}
+      </label>`;
+    }).join('');
+    updateCatBarMesLabel();
+  }
 }
 function updatePveMesLabel(){
   const sel=[...document.querySelectorAll('#pve-mes-menu input:checked')].map(c=>c.value);
   const lbl=document.getElementById('pve-mes-label');
-  if(lbl) lbl.textContent=sel.length===0?'Todos los meses':sel.length===1?(()=>{ const [y,m]=sel[0].split('-'); const N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; return N[+m]+' '+y; })():sel.length+' meses';
+  if(!lbl) return;
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  lbl.textContent=sel.length===0?'Últimos 3 meses':sel.length===1?(()=>{const[y,m]=sel[0].split('-');return MESES_N[+m]+' '+y;})():sel.length+' meses';
+}
+function updateCatBarMesLabel(){
+  const sel=[...document.querySelectorAll('#cat-bar-mes-menu input:checked')].map(c=>c.value);
+  const lbl=document.getElementById('cat-bar-mes-label');
+  if(!lbl) return;
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  lbl.textContent=sel.length===0?'Todos los meses':sel.length===1?(()=>{const[y,m]=sel[0].split('-');return MESES_N[+m]+' '+y;})():sel.length+' meses';
 }
 function getPveMesesSel(){
   return [...document.querySelectorAll('#pve-mes-menu input:checked')].map(c=>c.value);
+}
+function getCatBarMesesSel(){
+  return [...document.querySelectorAll('#cat-bar-mes-menu input:checked')].map(c=>c.value);
 }
 </script>
 </body>
