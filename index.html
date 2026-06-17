@@ -1460,7 +1460,8 @@ function renderDash(){
       <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
         <div style="height:100%;width:${Math.round(c/maxT*100)}%;background:var(--blue);border-radius:3px"></div></div>
     </div>`).join('');
-  document.getElementById('ger-grid').innerHTML=getGers().map(g=>{
+  const dashGers=[...new Set(dashDocs.map(d=>d.gerencia).filter(g=>g&&g!=='-'))].sort();
+  document.getElementById('ger-grid').innerHTML=dashGers.map(g=>{
     const docs=dashDocs.filter(d=>d.gerencia===g);
     const ac2=docs.map(d=>getP(d.cod).accion);
     const done2=ac2.filter(a=>a!=='Pendiente').length;
