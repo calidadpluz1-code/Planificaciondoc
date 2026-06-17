@@ -988,11 +988,13 @@ function openAdminModal(){
   const m = document.getElementById('modal-admin');
   m.classList.add('open');
 }
-function doAdmin(){
+async function doAdmin(){
   const pwd=document.getElementById('admin-pwd').value;
   if(pwd!=='pluz2026'){ showToast('Clave incorrecta','#c0392b'); return; }
   closeModal('modal-admin');
   IS_ADMIN=true; CUR_GER=''; CUR_UNI='';
+  // Asegurar catálogo cargado antes de cargar planificaciones
+  if(!CATALOGO_LOADED) await cargarCatalogo();
   cargarTodasLasPlanificaciones();
 }
 
@@ -1042,9 +1044,9 @@ async function cargarTodasLasPlanificaciones(){
   showSaving('Cargando planificaciones de todas las unidades...');
   try {
     if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
+      // 1. Planificacion completa (sin filtro de ger/uni)
       try {
-        const url1 = `${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`;
-        const res1 = await fetch(url1, {mode:'cors'});
+        const res1 = await fetch(`${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`,{mode:'cors'});
         const data1 = await res1.json();
         if(data1.ok && data1.data){
           data1.data.forEach(r=>{
@@ -1052,9 +1054,10 @@ async function cargarTodasLasPlanificaciones(){
           });
         }
       } catch(e1){ console.log('Error cargando planificacion:', e1); }
+
+      // 2. Nuevos documentos
       try {
-        const url2 = `${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`;
-        const res2 = await fetch(url2, {mode:'cors'});
+        const res2 = await fetch(`${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`,{mode:'cors'});
         const data2 = await res2.json();
         if(data2.ok && data2.data){
           data2.data.forEach(r=>{
@@ -1063,6 +1066,30 @@ async function cargarTodasLasPlanificaciones(){
           });
         }
       } catch(e2){ console.log('Error cargando nuevos:', e2); }
+
+      // 3. Reporte (Estado Docs)
+      try {
+        const res3 = await fetch(`${SHEETS_URL}?action=obtener_reporte`,{mode:'cors'});
+        const data3 = await res3.json();
+        if(data3.ok && data3.data){
+          REPORTE_DATA = data3.data;
+          poblarFiltrosED();
+        }
+      } catch(e3){ console.log('Error cargando reporte:', e3); }
+
+      // 4. Reprogramaciones
+      try {
+        const res4 = await fetch(`${SHEETS_URL}?action=obtener_todo&gerencia=&unidad=`,{mode:'cors'});
+        const data4 = await res4.json();
+        if(data4.reprogramaciones?.data){
+          data4.reprogramaciones.data.forEach(r=>{
+            reprog[r.cod]={fechaReprog:r.fechaReprog||'',motivo:r.motivo||'',fechaOrig:r.fechaOrig||''};
+          });
+        }
+      } catch(e4){ console.log('Error cargando reprogramaciones:', e4); }
+
+      // 5. Poblar DOCS con DOCS_ALL completo (admin ve todo)
+      DOCS.splice(0, DOCS.length, ...DOCS_ALL);
     }
   } catch(e){ console.log('Error general admin Sheets:', e); }
   hideSaving();
