@@ -1431,11 +1431,13 @@ function initAdminSelects(){
 
 // DASHBOARD
 function renderDash(){
-  const all=DOCS.map(d=>getP(d.cod).accion);
+  // Dashboard siempre usa DOCS_ALL (todos los docs del sistema, sin filtrar por unidad)
+  const dashDocs = DOCS_ALL.length > 0 ? DOCS_ALL : DOCS;
+  const all=dashDocs.map(d=>getP(d.cod).accion);
   const pen=all.filter(a=>a==='Pendiente').length;
   const done=all.length-pen;
-  document.getElementById('kpi-total').textContent=DOCS.length;
-  document.getElementById('kpi-avance').textContent=Math.round(done/all.length*100)+'%';
+  document.getElementById('kpi-total').textContent=dashDocs.length;
+  document.getElementById('kpi-avance').textContent=all.length?Math.round(done/all.length*100)+'%':'0%';
   document.getElementById('kpi-con').textContent=done;
   document.getElementById('kpi-pen').textContent=pen;
   const ac={Actualizar:0,Mantener:0,Eliminar:0,Pendiente:0};
@@ -1449,7 +1451,7 @@ function renderDash(){
         <div style="height:100%;width:${Math.round(v/maxA*100)}%;background:${COLORS[k]};border-radius:3px"></div></div>
     </div>`).join('');
   const tipos={};
-  DOCS.forEach(d=>{const t=d.tipo||'Otro';tipos[t]=(tipos[t]||0)+1;});
+  dashDocs.forEach(d=>{const t=d.tipo||'Otro';tipos[t]=(tipos[t]||0)+1;});
   const maxT=Math.max(...Object.values(tipos));
   document.getElementById('tipo-bars').innerHTML=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([t,c])=>`
     <div style="margin-bottom:8px">
@@ -1459,7 +1461,7 @@ function renderDash(){
         <div style="height:100%;width:${Math.round(c/maxT*100)}%;background:var(--blue);border-radius:3px"></div></div>
     </div>`).join('');
   document.getElementById('ger-grid').innerHTML=getGers().map(g=>{
-    const docs=DOCS.filter(d=>d.gerencia===g);
+    const docs=dashDocs.filter(d=>d.gerencia===g);
     const ac2=docs.map(d=>getP(d.cod).accion);
     const done2=ac2.filter(a=>a!=='Pendiente').length;
     const pct2=docs.length?Math.round(done2/docs.length*100):0;
@@ -2773,11 +2775,11 @@ function getCatBarMesesSel(){
 
 // ── EDITAR PLANIFICACIÓN (Acción + Observación) ──────────────────────────
 function openEditModal(cod){
-  const d=DOCS.find(x=>x.cod===cod);
+  // Buscar el doc en DOCS o en DOCS_ALL (por si viene de otra unidad)
+  const d=DOCS.find(x=>x.cod===cod)||DOCS_ALL.find(x=>x.cod===cod);
   const p=getP(cod);
-  if(!p||p.accion==='Pendiente'){ showToast('Este documento aún no tiene planificación guardada','#c0392b'); return; }
   document.getElementById('edit-doc-info').innerHTML=`<b>${cod}</b> — ${d?d.desc:''}`;
-  document.getElementById('edit-accion').value=p.accion||'Actualizar';
+  document.getElementById('edit-accion').value=p.accion&&p.accion!=='Pendiente'?p.accion:'Actualizar';
   document.getElementById('edit-fecha-display').value=p.fechaProg||'Sin fecha';
   document.getElementById('edit-obs').value=p.obs||'';
   document.getElementById('edit-cod').value=cod;
