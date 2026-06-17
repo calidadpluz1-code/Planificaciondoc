@@ -851,6 +851,38 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   </div>
 </div>
 
+<!-- MODAL EDITAR PLANIFICACIÓN -->
+<div class="modal-overlay" id="modal-edit" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title" style="color:#3D5BA9">✏️ Editar planificación</div>
+    <div id="edit-doc-info" style="font-size:12px;color:var(--text2);margin-bottom:14px;padding:8px 10px;background:#f4f6fb;border-radius:6px;line-height:1.5"></div>
+    <div class="fgrp">
+      <label>Acción</label>
+      <select id="edit-accion" onchange="onEditAccionChange()" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;width:100%">
+        <option value="Actualizar">Actualizar</option>
+        <option value="Mantener">Mantener</option>
+        <option value="Transferir">Transferir</option>
+        <option value="Eliminar">Eliminar</option>
+      </select>
+    </div>
+    <div class="fgrp" id="edit-fecha-wrap">
+      <label id="edit-fecha-label">Fecha programada</label>
+      <input type="date" id="edit-fecha" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;width:100%">
+      <div id="edit-fecha-hint" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+    </div>
+    <div class="fgrp">
+      <label>Observación</label>
+      <textarea id="edit-obs" rows="3" placeholder="Observación (opcional)" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;width:100%;resize:vertical"></textarea>
+    </div>
+    <input type="hidden" id="edit-cod">
+    <input type="hidden" id="edit-accion-orig">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn" style="background:#3D5BA9;color:#fff" onclick="guardarEdicion()">💾 Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL REPROGRAMAR FECHA -->
 <div class="modal-overlay" id="modal-reprog">
   <div class="modal" style="max-width:420px">
@@ -2801,34 +2833,85 @@ function getCatBarMesesSel(){
   return [...document.querySelectorAll('#cat-bar-mes-menu input:checked')].map(c=>c.value);
 }
 
-// ── EDITAR PLANIFICACIÓN (Acción + Observación) ──────────────────────────
+// ── EDITAR PLANIFICACIÓN ─────────────────────────────────────────────────
 function openEditModal(cod){
-  // Buscar el doc en DOCS o en DOCS_ALL (por si viene de otra unidad)
   const d=DOCS.find(x=>x.cod===cod)||DOCS_ALL.find(x=>x.cod===cod);
   const p=getP(cod);
-  document.getElementById('edit-doc-info').innerHTML=`<b>${cod}</b> — ${d?d.desc:''}`;
-  document.getElementById('edit-accion').value=p.accion&&p.accion!=='Pendiente'?p.accion:'Actualizar';
-  document.getElementById('edit-fecha-display').value=p.fechaProg||'Sin fecha';
+  const accionActual=p.accion&&p.accion!=='Pendiente'?p.accion:'Actualizar';
+  document.getElementById('edit-doc-info').innerHTML=
+    `<b style="font-family:monospace">${cod}</b> — ${d?d.desc:''}<br>
+     <span style="font-size:11px;color:var(--text3)">Acción actual: <b>${accionActual}</b> · Fecha: <b>${p.fechaProg||'Sin fecha'}</b></span>`;
+  document.getElementById('edit-accion').value=accionActual;
+  document.getElementById('edit-accion-orig').value=accionActual;
   document.getElementById('edit-obs').value=p.obs||'';
   document.getElementById('edit-cod').value=cod;
+  // Configurar campo fecha según acción actual
+  onEditAccionChange();
+  // Si no es Actualizar, precargar la fecha existente
+  if(accionActual!=='Actualizar') document.getElementById('edit-fecha').value=p.fechaProg||'';
   document.getElementById('modal-edit').classList.add('open');
 }
+
+function onEditAccionChange(){
+  const accion=document.getElementById('edit-accion').value;
+  const wrap=document.getElementById('edit-fecha-wrap');
+  const input=document.getElementById('edit-fecha');
+  const hint=document.getElementById('edit-fecha-hint');
+  const label=document.getElementById('edit-fecha-label');
+  if(accion==='Actualizar'){
+    // Bloquear fecha — se maneja por Reprogramar
+    input.disabled=true;
+    input.value='';
+    input.style.background='#f4f6fb';
+    input.style.cursor='not-allowed';
+    input.style.color='var(--text3)';
+    label.textContent='Fecha programada';
+    hint.textContent='⚠️ Para cambiar la fecha usa el botón Reprogramar';
+    hint.style.color='#e67e22';
+  } else {
+    // Habilitar fecha
+    input.disabled=false;
+    input.style.background='#fff';
+    input.style.cursor='';
+    input.style.color='';
+    label.textContent='Fecha programada *';
+    hint.textContent='Ingresa la fecha en que se ejecutará este documento';
+    hint.style.color='var(--text3)';
+  }
+}
+
 function closeEditModal(){
   document.getElementById('modal-edit').classList.remove('open');
 }
+
 async function guardarEdicion(){
   const cod=document.getElementById('edit-cod').value;
   const accion=document.getElementById('edit-accion').value;
   const obs=document.getElementById('edit-obs').value;
-  if(!accion){ showToast('Selecciona una acción','#c0392b'); return; }
+  const fechaInput=document.getElementById('edit-fecha').value;
+
+  // Validar fecha si no es Actualizar
+  if(accion!=='Actualizar'&&!fechaInput){
+    showToast('Ingresa una fecha programada','#c0392b'); return;
+  }
+
+  // Determinar fecha a guardar:
+  // - Actualizar → borrar fecha (se maneja por Reprogramar)
+  // - Otras → usar la fecha ingresada
+  const fechaProg = accion==='Actualizar' ? '' : fechaInput;
+
   // Actualizar localmente
   if(!plan[cod]) plan[cod]={accion:'Pendiente',fechaProg:'',obs:''};
   plan[cod].accion=accion;
+  plan[cod].fechaProg=fechaProg;
   plan[cod].obs=obs;
-  // Guardar en Sheets si está conectado
+
+  // Guardar en Sheets
   if(SHEETS_URL!=='REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
     try{
-      postToSheets({action:'editar_planificacion',gerencia:CUR_GER,unidad:CUR_UNI,cod,accion,obs});
+      const ger=plan[cod].gerencia||CUR_GER;
+      const uni=plan[cod].unidad||CUR_UNI;
+      postToSheets({action:'editar_planificacion',gerencia:ger,unidad:uni,cod,accion,fechaProg,obs});
     }catch(e){ console.log('Error guardando edición:', e); }
   }
   closeEditModal();
