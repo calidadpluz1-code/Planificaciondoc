@@ -865,6 +865,10 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <option value="Eliminar">Eliminar</option>
       </select>
     </div>
+    <!-- Aviso cuando acción original era Actualizar -->
+    <div id="edit-reprog-hint" style="display:none;font-size:11px;color:#e67e22;background:#fff8f0;border:1px solid #f9a825;border-radius:6px;padding:7px 10px;margin-bottom:8px">
+      ⚠️ Para cambiar la <b>fecha</b> de este documento usa el botón <b>Reprogramar</b>
+    </div>
     <div class="fgrp" id="edit-fecha-wrap">
       <label id="edit-fecha-label">Fecha programada</label>
       <input type="date" id="edit-fecha" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;width:100%">
@@ -2854,12 +2858,17 @@ function openEditModal(cod){
 
 function onEditAccionChange(){
   const accion=document.getElementById('edit-accion').value;
+  const accionOrig=document.getElementById('edit-accion-orig').value;
   const wrap=document.getElementById('edit-fecha-wrap');
   const input=document.getElementById('edit-fecha');
   const hint=document.getElementById('edit-fecha-hint');
   const label=document.getElementById('edit-fecha-label');
-  if(accion==='Actualizar'){
-    // Habilitar fecha — venía de Mantener/Transferir/Eliminar, debe ingresar fecha
+
+  // Mostrar fecha SOLO si la acción original NO era Actualizar Y la nueva SÍ es Actualizar
+  // (venía de Mantener/Transferir/Eliminar → pasa a Actualizar: necesita ingresar fecha)
+  const mostrarFecha = (accionOrig !== 'Actualizar') && (accion === 'Actualizar');
+
+  if(mostrarFecha){
     wrap.style.display='';
     input.disabled=false;
     input.value='';
@@ -2870,10 +2879,15 @@ function onEditAccionChange(){
     hint.textContent='Ingresa la fecha en que planificas ejecutar este documento';
     hint.style.color='var(--text3)';
   } else {
-    // Mantener / Transferir / Eliminar — sin fecha, se borra
     wrap.style.display='none';
     input.disabled=true;
     input.value='';
+    // Si la acción original era Actualizar, mostrar aviso de Reprogramar
+    if(accionOrig==='Actualizar'){
+      // Mostrar mensaje informativo debajo del select
+      const msg=document.getElementById('edit-reprog-hint');
+      if(msg) msg.style.display = accion!=='Actualizar' ? '' : 'none';
+    }
   }
 }
 
