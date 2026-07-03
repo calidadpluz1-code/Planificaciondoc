@@ -421,7 +421,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   <!-- ESTADO DE DOCUMENTOS (ADMIN) -->
   <div class="page" id="page-estadodocs">
 
-    <!-- Encabezado + botón actualizar pequeño -->
+    <!-- Encabezado -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
       <div>
         <div class="page-title">Estado de documentos</div>
@@ -436,10 +436,21 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- FILTROS GLOBALES -->
+    <!-- FILTROS GLOBALES con cascada Empresa→Gerencia→Unidad -->
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px">
       <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Filtros</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        <!-- Empresa -->
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Empresa</div>
+          <div id="ed-emp-dropdown" style="position:relative;display:inline-block">
+            <button onclick="toggleDropdown('ed-emp')" style="min-width:200px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+              <span id="ed-emp-label">Todas las empresas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+            </button>
+            <div id="ed-emp-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
+          </div>
+        </div>
+        <!-- Gerencia -->
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Gerencia</div>
           <div id="ed-ger-dropdown" style="position:relative;display:inline-block">
@@ -449,6 +460,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <div id="ed-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
           </div>
         </div>
+        <!-- Unidad -->
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Unidad</div>
           <div id="ed-uni-dropdown" style="position:relative;display:inline-block">
@@ -458,6 +470,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <div id="ed-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:220px;max-height:240px;overflow-y:auto"></div>
           </div>
         </div>
+        <!-- Categoría -->
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Categoría</div>
           <div id="ed-cat-dropdown" style="position:relative;display:inline-block">
@@ -467,6 +480,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
             <div id="ed-cat-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:240px;overflow-y:auto"></div>
           </div>
         </div>
+        <!-- Estado vigencia -->
         <div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Estado de vigencia</div>
           <div id="ed-vig-dropdown" style="position:relative;display:inline-block">
@@ -486,112 +500,90 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--blue)">
-          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total</div>
-          <div style="font-size:24px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">documentos filtrados</div>
-        </div>
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--green);cursor:pointer" onclick="filtrarPorVigenciaED('Vigente')">
-          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vigentes</div>
-          <div style="font-size:24px;font-weight:800;color:var(--green)" id="ed-vigentes">—</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">publicados y activos <span style="color:var(--green);font-weight:700">→</span></div>
-        </div>
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--yellow);cursor:pointer" onclick="filtrarPorVigenciaED('En elaboración')">
-          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">En elaboración</div>
-          <div style="font-size:24px;font-weight:800;color:var(--amber)" id="ed-elaboracion">—</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">en proceso <span style="color:var(--amber);font-weight:700">→</span></div>
-        </div>
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--red);opacity:.85">
-          <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Obsoletos <span style="font-weight:400">(info)</span></div>
-          <div style="font-size:24px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">fuera de vigencia</div>
-        </div>
+    <!-- KPIs: 5 tarjetas incluyendo "A Actualizar" -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--blue)">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total</div>
+        <div style="font-size:24px;font-weight:800;color:var(--blue)" id="ed-total">—</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">documentos filtrados</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--green);cursor:pointer" onclick="filtrarPorVigenciaED('Vigente')">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Vigentes</div>
+        <div style="font-size:24px;font-weight:800;color:var(--green)" id="ed-vigentes">—</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">publicados y activos <span style="color:var(--green);font-weight:700">→</span></div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--yellow);cursor:pointer" onclick="filtrarPorVigenciaED('En elaboración')">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">En elaboración</div>
+        <div style="font-size:24px;font-weight:800;color:var(--amber)" id="ed-elaboracion">—</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">en proceso <span style="color:var(--amber);font-weight:700">→</span></div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid var(--red);opacity:.85">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Obsoletos <span style="font-weight:400">(info)</span></div>
+        <div style="font-size:24px;font-weight:800;color:var(--red)" id="ed-obsoletos">—</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">fuera de vigencia</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;border-top:4px solid #7c3aed">
+        <div style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">A Actualizar</div>
+        <div style="font-size:24px;font-weight:800;color:#7c3aed" id="ed-actualizar">—</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">con acción Actualizar</div>
+      </div>
     </div>
 
-    <!-- Selects ocultos preservados para compatibilidad con JS -->
+    <!-- Selects ocultos para compatibilidad JS -->
     <select id="ed-sel-mes" onchange="onMesChange()" style="display:none"><option value="">Todos los meses</option></select>
+    <select id="ed-sel-anio" onchange="onAnioChange()" style="display:none"><option value="">Todos los años</option></select>
     <div id="ed-chart-mes" style="display:none"></div>
+    <div id="pve-mes-dropdown" style="display:none"><div id="pve-mes-menu"></div></div>
+    <div id="pve-mes-label" style="display:none"></div>
+    <div id="cat-bar-mes-dropdown" style="display:none"><div id="cat-bar-mes-menu"></div></div>
+    <div id="cat-bar-mes-label" style="display:none"></div>
+    <div id="ed-chart-pve" style="display:none"></div>
+    <div id="ed-tabla-ger-pve" style="display:none"></div>
+    <div id="ed-chart-cat-bar" style="display:none"></div>
 
-    <!-- Planificado vs Ejecutado -->
-    <div style="margin-bottom:20px">
+    <!-- FILA 1: Árbol Gerencia→Unidad (Actualizar) + Planif vs Ejecutado por mes -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+
+      <!-- ÁRBOL: Gerencia → Unidad (docs a Actualizar) -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
-          <div style="font-size:13px;font-weight:700;color:var(--text)">Planificado vs Ejecutado</div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <select id="ed-sel-anio" onchange="onAnioChange()" style="font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;color:var(--blue);font-weight:700">
-              <option value="">Todos los años</option>
-            </select>
-            <!-- Filtro mes multi-selección PvE -->
-            <div id="pve-mes-dropdown" style="position:relative;display:inline-block">
-              <button onclick="toggleDropdown('pve-mes')" style="padding:3px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700">
-                <span id="pve-mes-label">Últimos 3 meses</span><span style="font-size:9px">▾</span>
-              </button>
-              <div id="pve-mes-menu" style="display:none;position:absolute;top:100%;right:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:240px;overflow-y:auto"></div>
-            </div>
-            <div style="display:flex;gap:10px;font-size:10px">
-              <span><span style="display:inline-block;width:10px;height:10px;background:var(--blue);border-radius:2px;margin-right:3px"></span>Planificado</span>
-              <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutado</span>
-            </div>
-          </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Seguimiento por Actualizar</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en una gerencia para ver sus unidades</div>
+        <div style="display:flex;gap:16px;font-size:10px;margin-bottom:10px">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>A actualizar</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutados</span>
+          <span style="color:var(--text3)">% = ejecutados/planificados</span>
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Haz clic en <b>Planif.</b> para ver docs planificados ese mes · Haz clic en <b>Ejecut.</b> para ver docs ejecutados ese mes</div>
-        <div id="ed-chart-pve" style="display:flex;flex-direction:column;gap:4px"></div>
+        <div id="ed-tree-actualizar" style="display:flex;flex-direction:column;gap:4px;max-height:300px;overflow-y:auto"></div>
+      </div>
+
+      <!-- GRÁFICO: Planificado vs Ejecutado por mes -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Planificado vs Ejecutado por mes</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Docs planificados en el mes vs ejecutados en ese mismo mes o después</div>
+        <div style="display:flex;gap:14px;font-size:10px;margin-bottom:10px">
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--blue);border-radius:2px;margin-right:3px"></span>Planificados</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutados</span>
+        </div>
+        <div id="ed-chart-mes-planif" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto"></div>
       </div>
     </div>
 
-    <!-- Tabla cumplimiento por gerencia + gráfico barras por categoría -->
+    <!-- FILA 2: Docs vencidos por gerencia + Flujo de trabajo por gerencia -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-      <!-- Cumplimiento por gerencia: Actualizar vs Revisión de Vigencia -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Cumplimiento por gerencia</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Docs con acción <b>Actualizar</b> vs los que pasaron a <b>Revisión de Vigencia</b></div>
-        <div style="overflow-x:auto;max-height:260px;overflow-y:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <thead style="position:sticky;top:0;background:#f0f4ff">
-              <tr style="color:var(--blue)">
-                <th style="padding:7px 10px;text-align:left;font-weight:700">Gerencia</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700">Actualizar</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700;color:#27ae60">Rev. Vig.</th>
-                <th style="padding:7px 8px;text-align:center;font-weight:700">% Cumpl.</th>
-              </tr>
-            </thead>
-            <tbody id="ed-tabla-ger-pve"></tbody>
-          </table>
-        </div>
-      </div>
-      <!-- Gráfico barras: Procedimientos e Instructivos por gerencia que pasaron a vigencia -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
-          <div style="font-size:13px;font-weight:700;color:var(--text)">Documentos en vigencia por gerencia</div>
-          <div id="cat-bar-mes-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('cat-bar-mes')" style="padding:3px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700">
-              <span id="cat-bar-mes-label">Todos los meses</span><span style="font-size:9px">▾</span>
-            </button>
-            <div id="cat-bar-mes-menu" style="display:none;position:absolute;top:100%;right:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:200px;overflow-y:auto"></div>
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Procedimientos e Instructivos que pasaron a revisión de vigencia</div>
-        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:8px">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px"></span>Procedimientos</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Instructivos</span>
-        </div>
-        <div id="ed-chart-cat-bar" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
-      </div>
-    </div>
 
-    <!-- Flujo de trabajo + Documentos por gerencia (2 columnas, abajo) -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <!-- Docs vencidos por gerencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Estado en el flujo de trabajo</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Haz clic en una etapa para filtrar el listado y los demás gráficos</div>
-        <div id="ed-chart-wf" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⚠️ Documentos vencidos por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Acción Actualizar · fecha programada ya pasó · aún no publicados</div>
+        <div id="ed-chart-vencidos" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto"></div>
       </div>
+
+      <!-- Flujo de trabajo por gerencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Documentos por gerencia</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Vigentes + En elaboración — haz clic para filtrar</div>
-        <div id="ed-chart-ger" style="display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Estado en flujo de trabajo por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Cantidad de documentos por estado en cada gerencia</div>
+        <div id="ed-chart-wf" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto"></div>
+        <div id="ed-chart-ger" style="display:none"></div>
       </div>
     </div>
 
@@ -749,7 +741,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
           </div>
         </div>
       </div>
-      <div style="overflow-x:auto"><div id="gantt-container" style="padding:16px;min-width:800px">
+      <div style="overflow-x:auto;max-height:500px;overflow-y:auto"><div id="gantt-container" style="padding:16px;min-width:800px">
         <p style="color:var(--text3);text-align:center;padding:30px;font-size:13px">Guarda planificaciones con fechas para ver el Gantt</p>
       </div></div>
     </div>
@@ -772,84 +764,80 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- FILTROS ARRIBA -->
-    <div class="filters" style="margin-bottom:16px">
-      <label class="flbl">Empresa</label>
-      <div id="r-emp-dropdown" style="position:relative;display:inline-block">
-        <button onclick="toggleDropdown('r-emp')" style="min-width:220px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-          <span id="r-emp-label">Todas las empresas</span>
-          <span style="font-size:10px;color:var(--text3)">▾</span>
-        </button>
-        <div id="r-emp-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:260px;max-height:260px;overflow-y:auto"></div>
-      </div>
-      <label class="flbl">Gerencia</label>
-      <div id="r-ger-dropdown" style="position:relative;display:inline-block">
-        <button onclick="toggleDropdown('r-ger')" style="min-width:210px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-          <span id="r-ger-label">Todas las gerencias</span>
-          <span style="font-size:10px;color:var(--text3)">▾</span>
-        </button>
-        <div id="r-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:260px;max-height:260px;overflow-y:auto" id="r-ger-menu">
-        </div>
-      </div>
-      <label class="flbl">Unidad</label>
-      <div id="r-uni-dropdown" style="position:relative;display:inline-block">
-        <button onclick="toggleDropdown('r-uni')" style="min-width:190px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-          <span id="r-uni-label">Todas las unidades</span>
-          <span style="font-size:10px;color:var(--text3)">▾</span>
-        </button>
-        <div id="r-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:260px;overflow-y:auto">
-        </div>
-      </div>
-      <label class="flbl">Acción</label>
-      <div id="r-accion-dropdown" style="position:relative;display:inline-block">
-        <button onclick="toggleDropdown('r-accion')" style="min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-          <span id="r-accion-label">Todas las acciones</span>
-          <span style="font-size:10px;color:var(--text3)">▾</span>
-        </button>
-        <div id="r-accion-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:180px">
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Actualizar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Actualizar</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Mantener" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Mantener</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Transferir" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Transferir</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Eliminar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Eliminar</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="Pendiente" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"> Pendiente</label>
-        </div>
-      </div>
-      <div id="r-avance-dropdown" style="position:relative;display:inline-block">
-        <button onclick="toggleDropdown('r-avance')" style="min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-          <span id="r-avance-label">Cualquier avance</span>
-          <span style="font-size:10px;color:var(--text3)">▾</span>
-        </button>
-        <div id="r-avance-menu" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:180px">
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="100" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Completadas (100%)</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="0" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Sin iniciar (0%)</label>
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px"><input type="checkbox" value="parcial" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Parciales</label>
-        </div>
-      </div>
-      <input id="r-buscar" type="text" placeholder="Buscar..." oninput="renderResumen()" style="flex:1;min-width:120px">
-    </div>
-
-    <!-- TARJETAS DINÁMICAS (se actualizan con filtros) -->
-    <div class="res-grid" id="res-grid-cards">
+    <!-- TARJETAS DINÁMICAS arriba -->
+    <div class="res-grid" id="res-grid-cards" style="margin-bottom:16px">
       <div class="res-card"><div class="res-num" id="res-act">0</div><div class="res-lbl">Para actualizar</div></div>
       <div class="res-card g"><div class="res-num" id="res-man">0</div><div class="res-lbl">Se mantienen</div></div>
       <div class="res-card o"><div class="res-num" id="res-tra">0</div><div class="res-lbl">Para transferir</div></div>
       <div class="res-card r"><div class="res-num" id="res-eli">0</div><div class="res-lbl">Para eliminar</div></div>
       <div class="res-card p"><div class="res-num" id="res-nue">0</div><div class="res-lbl">Nuevos propuestos</div></div>
     </div>
+
+    <!-- PLANIFICACIÓN POR ÁREA con filtros internos -->
     <div class="table-wrap">
-      <div class="table-head"><div class="table-head-left">Planificación por área</div></div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr>
-            <th style="width:40px;text-align:center">#</th>
-            <th>Gerencia</th><th>Unidad</th><th>Total</th>
-            <th style="color:var(--blue)">Actualizar</th>
-            <th style="color:var(--green)">Mantener</th>
-            <th style="color:#e67e22">Transferir</th>
-            <th style="color:var(--red)">Eliminar</th>
-            <th style="color:var(--purple)">Nuevos</th>
-            <th>Pendientes</th><th style="min-width:110px">Avance</th>
-          </tr></thead>
+      <div class="table-head">
+        <div class="table-head-left">Planificación por área</div>
+      </div>
+      <!-- Filtros dentro del cuadro -->
+      <div class="filters" style="padding:12px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px">
+        <label class="flbl">Empresa</label>
+        <div id="r-emp-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('r-emp')" style="min-width:180px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="r-emp-label">Todas las empresas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="r-emp-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
+        </div>
+        <label class="flbl">Gerencia</label>
+        <div id="r-ger-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('r-ger')" style="min-width:190px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="r-ger-label">Todas las gerencias</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="r-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
+        </div>
+        <label class="flbl">Unidad</label>
+        <div id="r-uni-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('r-uni')" style="min-width:170px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="r-uni-label">Todas las unidades</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="r-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:240px;overflow-y:auto"></div>
+        </div>
+        <div id="r-avance-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('r-avance')" style="min-width:150px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="r-avance-label">Cualquier avance</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="r-avance-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:180px">
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:12px"><input type="checkbox" value="100" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Completadas (100%)</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:12px"><input type="checkbox" value="0" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Sin iniciar (0%)</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:12px"><input type="checkbox" value="parcial" onchange="renderResumen();updateDropdownLabel('r-avance','opciones')"> Parciales</label>
+          </div>
+        </div>
+        <!-- r-accion-menu oculto (solo para goToResumenByAccion) -->
+        <div id="r-accion-dropdown" style="display:none">
+          <div id="r-accion-menu">
+            <label><input type="checkbox" value="Actualizar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"></label>
+            <label><input type="checkbox" value="Mantener" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"></label>
+            <label><input type="checkbox" value="Transferir" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"></label>
+            <label><input type="checkbox" value="Eliminar" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"></label>
+            <label><input type="checkbox" value="Pendiente" onchange="renderResumen();updateDropdownLabel('r-accion','acciones')"></label>
+          </div>
+        </div>
+        <input id="r-buscar" type="text" placeholder="🔍 Buscar..." oninput="renderResumen()" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;min-width:140px">
+      </div>
+      <div style="overflow-x:auto;max-height:420px;overflow-y:auto">
+        <table style="min-width:100%">
+          <thead style="position:sticky;top:0;background:#f0f4ff">
+            <tr>
+              <th style="width:40px;text-align:center;padding:8px">#</th>
+              <th style="padding:8px">Gerencia</th><th style="padding:8px">Unidad</th><th style="padding:8px">Total</th>
+              <th style="color:var(--blue);padding:8px">Actualizar</th>
+              <th style="color:var(--green);padding:8px">Mantener</th>
+              <th style="color:#e67e22;padding:8px">Transferir</th>
+              <th style="color:var(--red);padding:8px">Eliminar</th>
+              <th style="color:var(--purple);padding:8px">Nuevos</th>
+              <th style="padding:8px">Pendientes</th>
+              <th style="min-width:110px;padding:8px">Avance</th>
+            </tr>
+          </thead>
           <tbody id="resumen-tbody"></tbody>
         </table>
       </div>
@@ -858,17 +846,49 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <!-- LISTADO DE DOCUMENTOS -->
     <div class="table-wrap" style="margin-top:16px">
       <div class="table-head"><div class="table-head-left" id="res-docs-titulo">Listado de documentos</div></div>
+      <!-- Filtros listado docs -->
+      <div class="filters" style="padding:10px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px">
+        <label class="flbl">Gerencia</label>
+        <div id="rd-ger-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('rd-ger')" style="min-width:180px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="rd-ger-label">Todas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="rd-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
+        </div>
+        <label class="flbl">Unidad</label>
+        <div id="rd-uni-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('rd-uni')" style="min-width:160px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="rd-uni-label">Todas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="rd-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:220px;max-height:240px;overflow-y:auto"></div>
+        </div>
+        <label class="flbl">Acción</label>
+        <div id="rd-accion-dropdown" style="position:relative;display:inline-block">
+          <button onclick="toggleDropdown('rd-accion')" style="min-width:140px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+            <span id="rd-accion-label">Todas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+          </button>
+          <div id="rd-accion-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px 0;min-width:160px">
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Actualizar" onchange="renderResumenDocsTable();updateDropdownLabel('rd-accion','acciones')"> Actualizar</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Mantener" onchange="renderResumenDocsTable();updateDropdownLabel('rd-accion','acciones')"> Mantener</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Transferir" onchange="renderResumenDocsTable();updateDropdownLabel('rd-accion','acciones')"> Transferir</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Eliminar" onchange="renderResumenDocsTable();updateDropdownLabel('rd-accion','acciones')"> Eliminar</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Pendiente" onchange="renderResumenDocsTable();updateDropdownLabel('rd-accion','acciones')"> Pendiente</label>
+          </div>
+        </div>
+        <input id="rd-buscar" type="text" placeholder="🔍 Buscar documento..." oninput="renderResumenDocsTable()" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;flex:1;min-width:160px">
+      </div>
       <div style="overflow-x:auto">
         <div style="max-height:400px;overflow-y:auto">
           <table style="min-width:100%">
             <thead style="position:sticky;top:0;background:#f0f4ff">
               <tr>
-                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue)">Código</th>
-                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue)">Descripción</th>
-                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue)">Tipo</th>
-                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue)">Gerencia</th>
-                <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue)">Acción</th>
-                <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue)">Fecha Prog.</th>
+                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);white-space:nowrap;width:90px">Código</th>
+                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);width:280px">Descripción</th>
+                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);white-space:nowrap;width:160px">Tipo</th>
+                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);width:160px">Gerencia</th>
+                <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);width:140px">Unidad</th>
+                <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue);white-space:nowrap;width:100px">Acción</th>
+                <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue);white-space:nowrap;width:90px">Fecha Prog.</th>
               </tr>
             </thead>
             <tbody id="res-docs-tbody"></tbody>
@@ -1540,6 +1560,13 @@ function initAdminSelects(){
   buildCheckboxMenu('g-ger-menu', gers, "onGanttGerChange()");
   buildCheckboxMenu('g-uni-menu', allUnis, "updateDropdownLabel('g-uni','unidades');renderGantt()");
 
+  // Poblar filtros docs table Resumen
+  const allDocsBase=DOCS_ALL.length>0?DOCS_ALL:DOCS;
+  const rdGers=[...new Set(allDocsBase.map(d=>d.gerencia).filter(Boolean))].sort();
+  buildCheckboxMenu('rd-ger-menu', rdGers, "updateDropdownLabel('rd-ger','gerencias');renderResumenDocsTable()");
+  const rdUnis=[...new Set(allDocsBase.map(d=>d.unidad).filter(Boolean))].sort();
+  buildCheckboxMenu('rd-uni-menu', rdUnis, "updateDropdownLabel('rd-uni','unidades');renderResumenDocsTable()");
+
   // Seguimiento sigue con select normal
   const sSelGer=document.getElementById('s-sel-ger');
   if(sSelGer){
@@ -1559,21 +1586,40 @@ function dashEmpMatch(d, empSel){
   if(empSel.includes('__sin_empresa__') && (!emp||emp==='-'||emp==='')) return true;
   return false;
 }
+function resetDashFiltros(){
+  dashFiltroAccion=null;
+  dashFiltroTipo=null;
+}
 function poblarDashEmpFiltro(){
   const empresas=[...new Set(DOCS_ALL.map(d=>d.empresa).filter(e=>e&&e!=='-'))].sort();
   const sinEmpresa=DOCS_ALL.filter(d=>!d.empresa||d.empresa==='-'||d.empresa==='').length;
   const menu=document.getElementById('dash-emp-menu');
   if(!menu) return;
   let html=empresas.map(e=>`<label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px">
-    <input type="checkbox" value="${e}" onchange="renderDash();updateDropdownLabel('dash-emp','empresas')"> ${e}
+    <input type="checkbox" value="${e}" onchange="resetDashFiltros();renderDash();updateDropdownLabel('dash-emp','empresas')"> ${e}
   </label>`).join('');
   if(sinEmpresa>0){
     html+=`<label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px;border-top:1px solid var(--border);margin-top:4px">
-      <input type="checkbox" value="__sin_empresa__" onchange="renderDash();updateDropdownLabel('dash-emp','empresas')"> Sin empresa asignada <span style="font-size:10px;color:var(--text3);margin-left:4px">(${sinEmpresa})</span>
+      <input type="checkbox" value="__sin_empresa__" onchange="resetDashFiltros();renderDash();updateDropdownLabel('dash-emp','empresas')"> Sin empresa asignada <span style="font-size:10px;color:var(--text3);margin-left:4px">(${sinEmpresa})</span>
     </label>`;
   }
   menu.innerHTML=html;
 }
+// Variables de filtro cruzado dentro del Dashboard
+let dashFiltroAccion = null;
+let dashFiltroTipo   = null;
+
+function setDashFiltroAccion(accion){
+  dashFiltroAccion = dashFiltroAccion===accion ? null : accion; // toggle
+  dashFiltroTipo   = null;
+  renderDash();
+}
+function setDashFiltroTipo(tipo){
+  dashFiltroTipo   = dashFiltroTipo===tipo ? null : tipo; // toggle
+  dashFiltroAccion = null;
+  renderDash();
+}
+
 function renderDash(){
   // Dashboard filtra por empresa seleccionada (multi-selección)
   const empSel=getDashEmpSel();
@@ -1590,23 +1636,51 @@ function renderDash(){
   all.forEach(a=>{ if(ac[a]!==undefined) ac[a]++; else ac[a]=1; });
   const acOrdenado=Object.entries(ac).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
   const maxA=Math.max(...acOrdenado.map(([,v])=>v),1);
-  document.getElementById('dash-acciones').innerHTML=acOrdenado.map(([k,v])=>`
-    <div style="margin-bottom:8px">
+  // Filtrar tipos según acción seleccionada (o todos si no hay filtro)
+  const docsParaTipos = dashFiltroAccion
+    ? dashDocs.filter(d=>getP(d.cod).accion===dashFiltroAccion)
+    : dashDocs;
+
+  document.getElementById('dash-acciones').innerHTML=acOrdenado.map(([k,v])=>{
+    const isSelected = dashFiltroAccion===k;
+    const bg = isSelected ? (COLORS[k]||'#999')+'18' : '';
+    const border = isSelected ? `border:1.5px solid ${COLORS[k]||'#999'};` : 'border:1.5px solid transparent;';
+    return `<div style="margin-bottom:6px;cursor:pointer;border-radius:8px;padding:5px 8px;transition:all .15s;${bg?'background:'+bg+';':''}${border}"
+      onclick="setDashFiltroAccion('${k}')"
+      onmouseover="this.style.background='${(COLORS[k]||'#999')}18'" onmouseout="this.style.background='${bg}'">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;font-weight:500">
-        <span style="color:${COLORS[k]||'#999'}">${k}</span><span style="font-weight:700">${v}</span></div>
+        <span style="color:${COLORS[k]||'#999'};font-weight:${isSelected?'800':'500'}">${k}${isSelected?' ✓':''}</span>
+        <span style="font-weight:700;color:${COLORS[k]||'#999'}">${v}</span>
+      </div>
       <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
-        <div style="height:100%;width:${Math.round(v/maxA*100)}%;background:${COLORS[k]||'#999'};border-radius:3px"></div></div>
-    </div>`).join('');
+        <div style="height:100%;width:${Math.round(v/maxA*100)}%;background:${COLORS[k]||'#999'};border-radius:3px;opacity:${isSelected?1:.6}"></div>
+      </div>
+    </div>`;
+  }).join('');
+  // Tipos filtrados por acción seleccionada (o todos)
   const tipos={};
-  dashDocs.forEach(d=>{const t=d.tipo||'Otro';tipos[t]=(tipos[t]||0)+1;});
-  const maxT=Math.max(...Object.values(tipos));
-  document.getElementById('tipo-bars').innerHTML=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([t,c])=>`
-    <div style="margin-bottom:8px">
+  docsParaTipos.forEach(d=>{const t=d.tipo||'Otro';tipos[t]=(tipos[t]||0)+1;});
+  const maxT=Math.max(...Object.values(tipos),1);
+  // Filtrar acciones según tipo seleccionado
+  const docsParaAcciones = dashFiltroTipo
+    ? dashDocs.filter(d=>d.tipo===dashFiltroTipo)
+    : null; // null = ya se calculó arriba
+  document.getElementById('tipo-bars').innerHTML=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([t,c])=>{
+    const isSelected = dashFiltroTipo===t;
+    const bg = isSelected ? '#3D5BA918' : '';
+    const border = isSelected ? 'border:1.5px solid #3D5BA9;' : 'border:1.5px solid transparent;';
+    return `<div style="margin-bottom:6px;cursor:pointer;border-radius:8px;padding:5px 8px;transition:all .15s;${bg?'background:'+bg+';':''}${border}"
+      onclick="setDashFiltroTipo('${t.replace(/'/g,"\'")}')"
+      onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='${bg}'">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="color:var(--text2)">${t}</span><span style="font-weight:700">${c}</span></div>
+        <span style="color:var(--text2);font-weight:${isSelected?'700':'400'}">${t}${isSelected?' ✓':''}</span>
+        <span style="font-weight:700;color:var(--blue)">${c}</span>
+      </div>
       <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden">
-        <div style="height:100%;width:${Math.round(c/maxT*100)}%;background:var(--blue);border-radius:3px"></div></div>
-    </div>`).join('');
+        <div style="height:100%;width:${Math.round(c/maxT*100)}%;background:var(--blue);border-radius:3px;opacity:${isSelected?1:.6}"></div>
+      </div>
+    </div>`;
+  }).join('');
   const dashGers=[...new Set(dashDocs.map(d=>d.gerencia).filter(g=>g&&g!=='-'))].sort();
   document.getElementById('ger-grid').innerHTML=dashGers.map(g=>{
     const docs=dashDocs.filter(d=>d.gerencia===g);
@@ -1647,7 +1721,7 @@ function goToResumen(ger){
 function toggleDropdown(prefix){
   const menu=document.getElementById(prefix+'-menu');
   // Cerrar todos los demás
-  ['r-ger','r-uni','r-accion','r-emp','r-avance','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
     if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
   if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
@@ -1672,7 +1746,7 @@ function buildCheckboxMenu(menuId, items, onChangeFn){
 }
 // Cerrar dropdowns al click fuera
 document.addEventListener('click',e=>{
-  ['r-ger','r-uni','r-accion','r-emp','r-avance','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes'].forEach(p=>{
     const dd=document.getElementById(p+'-dropdown');
     if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
@@ -1680,11 +1754,13 @@ document.addEventListener('click',e=>{
 
 // GANTT
 function onGanttGerChange(){
-  // Actualizar menu de unidades según gerencias seleccionadas
+  const emps=getGanttEmpSel();
   const gers=getChecked('g-ger');
-  const unis=gers.length>0
-    ? gers.flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort()
-    : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  const allDocs=DOCS_ALL.length>0?DOCS_ALL:DOCS;
+  // Filtrar unidades según empresa + gerencias seleccionadas
+  const unis=[...new Set(allDocs
+    .filter(d=>(emps.length===0||emps.includes(d.empresa))&&(gers.length===0||gers.includes(d.gerencia)))
+    .map(d=>d.unidad).filter(u=>u&&u!=='-'))].sort();
   buildCheckboxMenu('g-uni-menu', unis, "updateDropdownLabel('g-uni','unidades');renderGantt()");
   updateDropdownLabel('g-ger','gerencias');
   renderGantt();
@@ -1715,7 +1791,7 @@ function renderGantt(){
     items=items.filter(it=>{
       if(!it.fecha) return false;
       const d=new Date(it.fecha);
-      return !isNaN(d)&&mesesSel.includes(d.getFullYear()+'-'+d.getMonth());
+      return !isNaN(d)&&mesesSel.includes(d.getFullYear()+'-'+String(d.getMonth()).padStart(2,'0'));
     });
   }
   document.getElementById('gantt-count').textContent=items.length+' entradas';
@@ -1723,13 +1799,14 @@ function renderGantt(){
   (function(){
     const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const mesesDisp=[...new Set(items.filter(i=>i.fecha).map(i=>{
-      const d=new Date(i.fecha); return isNaN(d)?null:d.getFullYear()+'-'+d.getMonth();
-    }).filter(Boolean))].sort();
+      const d=new Date(i.fecha); return isNaN(d)?null:d.getFullYear()+'-'+String(d.getMonth()).padStart(2,'0');
+    }).filter(Boolean))].sort(); // padStart asegura orden cronológico correcto
     const prevMes=getChecked('g-mes');
     const menu=document.getElementById('g-mes-menu');
     if(menu){
       menu.innerHTML=mesesDisp.map(k=>{
-        const [y,m]=k.split('-');
+        const parts=k.split('-');
+        const y=parts[0]; const m=parts[1];
         const label=MESES[+m]+' '+y;
         return `<label style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;font-size:13px">
           <input type="checkbox" value="${k}" ${prevMes.includes(k)?'checked':''} onchange="updateDropdownLabel('g-mes','meses');renderGantt()"> ${label}
@@ -1821,11 +1898,25 @@ function renderGantt(){
 }
 
 // RESUMEN
+function onResEmpChange(){
+  const emps=getResEmpSel();
+  const allDocs=DOCS_ALL.length>0?DOCS_ALL:DOCS;
+  const gers=[...new Set(allDocs
+    .filter(d=>emps.length===0||emps.includes(d.empresa))
+    .map(d=>d.gerencia).filter(g=>g&&g!=='-'))].sort();
+  buildCheckboxMenu('r-ger-menu', gers, "onResGerChange()");
+  buildCheckboxMenu('r-uni-menu', [], "updateDropdownLabel('r-uni','unidades');renderResumen()");
+  updateDropdownLabel('r-ger','gerencias');
+  updateDropdownLabel('r-uni','unidades');
+  renderResumen();
+}
 function onResGerChange(){
+  const emps=getResEmpSel();
   const gers=getChecked('r-ger');
-  const unis=gers.length>0
-    ? gers.flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort()
-    : getGers().flatMap(g=>getUnis(g)).filter((v,i,a)=>a.indexOf(v)===i).sort();
+  const allDocs=DOCS_ALL.length>0?DOCS_ALL:DOCS;
+  const unis=[...new Set(allDocs
+    .filter(d=>(emps.length===0||emps.includes(d.empresa))&&(gers.length===0||gers.includes(d.gerencia)))
+    .map(d=>d.unidad).filter(u=>u&&u!=='-'))].sort();
   buildCheckboxMenu('r-uni-menu', unis, "updateDropdownLabel('r-uni','unidades');renderResumen()");
   updateDropdownLabel('r-ger','gerencias');
   renderResumen();
@@ -2163,6 +2254,9 @@ function getDocsED(){
 function poblarFiltrosED(){
   const todos = REPORTE_DATA;
 
+  // Empresa → checkbox menu con cascada
+  poblarEmpFiltroED();
+
   // Gerencia → checkbox menu
   const gers = [...new Set(todos.map(d=>d.gerencia).filter(Boolean))].sort();
   edBuildMenu('ed-ger-menu', gers, "onEdGerChange()");
@@ -2228,7 +2322,7 @@ function limpiarFiltrosCruzados(){
 }
 
 function limpiarFiltrosED(){
-  ['ed-ger','ed-uni','ed-cat','ed-vig'].forEach(p=>{
+  ['ed-emp','ed-ger','ed-uni','ed-cat','ed-vig'].forEach(p=>{
     const menu=document.getElementById(p+'-menu');
     if(menu) menu.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
     const lbl=document.getElementById(p+'-label');
@@ -2327,13 +2421,18 @@ function renderEstadoDocs(){
   const obsoletos = base.filter(d=>d.estadoVig==='Obsoleto');
   const elaborac  = base.filter(d=>d.estadoVig==='En elaboración');
 
+  const actualizar=base.filter(d=>{ const p=getP(d.cod); return p.accion==='Actualizar'; });
   document.getElementById('ed-total').textContent       = base.length;
   document.getElementById('ed-vigentes').textContent    = vigentes.length;
   document.getElementById('ed-obsoletos').textContent   = obsoletos.length;
   document.getElementById('ed-elaboracion').textContent = elaborac.length;
-  // Tablas PvE
-  const pveMesesTbls=getPveMesesSel();
-  renderTablasPVE(pveMesesTbls);
+  const edActEl=document.getElementById('ed-actualizar');
+  if(edActEl) edActEl.textContent=actualizar.length;
+  // Nuevos gráficos
+  renderTreeActualizar();
+  renderPlanifVsEjecMes();
+  renderVencidosPorGerencia();
+  renderWFPorGerencia(base);
 
   // Subconjunto base para gráficos (respeta filtros globales + vigencia, sin cruzados)
   const filtered = getDocsED();
@@ -3040,8 +3139,24 @@ function poblarEmpFiltros(){
       <input type="checkbox" value="${e}" onchange="${onChangeFn}"> ${e}
     </label>`).join('');
   };
-  mkMenu('g-emp-menu', "updateDropdownLabel('g-emp','empresas');renderGantt()");
-  mkMenu('r-emp-menu', "updateDropdownLabel('r-emp','empresas');renderResumen()");
+  // Gantt empresa → al cambiar, repoblar gerencias en cascada
+  mkMenu('g-emp-menu', "updateDropdownLabel('g-emp','empresas');onGanttEmpChange()");
+  mkMenu('r-emp-menu', "updateDropdownLabel('r-emp','empresas');onResEmpChange()");
+}
+
+function onGanttEmpChange(){
+  const emps=getGanttEmpSel();
+  // Filtrar gerencias según empresa seleccionada
+  const allDocs=DOCS_ALL.length>0?DOCS_ALL:DOCS;
+  const gers=[...new Set(allDocs
+    .filter(d=>emps.length===0||emps.includes(d.empresa))
+    .map(d=>d.gerencia).filter(g=>g&&g!=='-'))].sort();
+  buildCheckboxMenu('g-ger-menu', gers, "onGanttGerChange()");
+  // Limpiar unidades y etiquetas
+  buildCheckboxMenu('g-uni-menu', [], "updateDropdownLabel('g-uni','unidades');renderGantt()");
+  updateDropdownLabel('g-ger','gerencias');
+  updateDropdownLabel('g-uni','unidades');
+  renderGantt();
 }
 
 // Gantt: aplicar filtro empresa a items
@@ -3052,31 +3167,348 @@ function getResEmpSel(){ return getChecked('r-emp'); }
 function getResAvanceSel(){ return getChecked('r-avance'); }
 
 // ── TABLA DOCS EN RESUMEN ─────────────────────────────────────────────────
+// Variables para docs table
+let _resDocsAll = [];
+
 function renderResumenDocsTable(filteredDocs){
+  if(filteredDocs) _resDocsAll = filteredDocs; // guardar base
+  const base = _resDocsAll;
+
+  // Aplicar filtros propios de la tabla
+  const rdGers  = getChecked('rd-ger');
+  const rdUnis  = getChecked('rd-uni');
+  const rdAccs  = getChecked('rd-accion');
+  const rdBus   = (document.getElementById('rd-buscar')?.value||'').toLowerCase();
+
+  let docs = base.filter(d=>{
+    if(rdGers.length>0 && !rdGers.includes(d.gerencia)) return false;
+    if(rdUnis.length>0 && !rdUnis.includes(d.unidad))   return false;
+    const p=getP(d.cod); const ac=p.accion||'Pendiente';
+    if(rdAccs.length>0 && !rdAccs.includes(ac))          return false;
+    if(rdBus && !d.cod.toLowerCase().includes(rdBus) && !d.desc.toLowerCase().includes(rdBus)) return false;
+    return true;
+  });
+
+  // Poblar filtros de gerencia y unidad del docs table
+  const gers=[...new Set(base.map(d=>d.gerencia).filter(Boolean))].sort();
+  const unis=[...new Set(base.filter(d=>rdGers.length===0||rdGers.includes(d.gerencia)).map(d=>d.unidad).filter(Boolean))].sort();
+  buildCheckboxMenu('rd-ger-menu', gers, "updateDropdownLabel('rd-ger','gerencias');renderResumenDocsTable()");
+  buildCheckboxMenu('rd-uni-menu', unis, "updateDropdownLabel('rd-uni','unidades');renderResumenDocsTable()");
+
   const tbody=document.getElementById('res-docs-tbody');
   const titulo=document.getElementById('res-docs-titulo');
   if(!tbody) return;
   const COLORS={Actualizar:'#3D5BA9',Mantener:'#27ae60',Transferir:'#e67e22',Eliminar:'#c0392b',Pendiente:'#999'};
-  const rows=filteredDocs.map(d=>{
+  const TR='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0';
+  const rows=docs.map(d=>{
     const p=getP(d.cod);
     const ac=p.accion||'Pendiente';
     const color=COLORS[ac]||'#999';
     const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
     return `<tr style="border-bottom:1px solid var(--border);font-size:11px">
-      <td style="padding:6px 10px;font-family:monospace;color:var(--blue);font-weight:700">${d.cod}</td>
-      <td style="padding:6px 10px;max-width:300px">${d.desc||''}</td>
-      <td style="padding:6px 8px;color:var(--text2)">${d.tipo||''}</td>
-      <td style="padding:6px 8px;color:var(--text2)">${shortG}</td>
-      <td style="padding:6px 8px;text-align:center">
+      <td style="padding:6px 10px;font-family:monospace;color:var(--blue);font-weight:700;white-space:nowrap;width:90px">${d.cod}</td>
+      <td style="padding:6px 10px;${TR};width:280px" title="${(d.desc||'').replace(/"/g,'&quot;')}">${d.desc||''}</td>
+      <td style="padding:6px 8px;${TR};width:150px;color:var(--text2)" title="${d.tipo||''}">${d.tipo||''}</td>
+      <td style="padding:6px 8px;${TR};width:150px;color:var(--text2)" title="${d.gerencia||''}">${shortG}</td>
+      <td style="padding:6px 8px;${TR};width:130px;color:var(--text2);font-size:10px" title="${d.unidad||''}">${d.unidad||''}</td>
+      <td style="padding:6px 8px;text-align:center;white-space:nowrap;width:100px">
         <span style="padding:2px 8px;border-radius:10px;background:${color}22;color:${color};border:1px solid ${color}44;font-weight:700;font-size:10px">${ac}</span>
       </td>
-      <td style="padding:6px 8px;text-align:center;color:var(--text2)">${p.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;text-align:center;color:var(--text2);white-space:nowrap;width:90px">${p.fechaProg||'—'}</td>
     </tr>`;
   }).join('');
-  tbody.innerHTML=rows||`<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text3)">Sin documentos con estos filtros</td></tr>`;
-  if(titulo) titulo.textContent=`Listado de documentos (${filteredDocs.length})`;
+  tbody.innerHTML=rows||`<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3)">Sin documentos con estos filtros</td></tr>`;
+  if(titulo) titulo.textContent=`Listado de documentos (${docs.length} de ${base.length})`;
+}
+
+// ── DASHBOARD: navegar a Resumen filtrando por acción o tipo ─────────────
+function goToResumenByAccion(accion){
+  showPage('resumen');
+  // Marcar solo esa acción en el dropdown de acciones
+  const menu=document.getElementById('r-accion-menu');
+  if(menu){
+    menu.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.checked=(cb.value===accion);
+    });
+    updateDropdownLabel('r-accion','acciones');
+  }
+  renderResumen();
+}
+
+function goToResumenByTipo(tipo){
+  showPage('resumen');
+  // Limpiar filtros previos
+  ['r-ger','r-uni','r-accion'].forEach(p=>{
+    const menu=document.getElementById(p+'-menu');
+    if(menu) menu.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+    updateDropdownLabel(p, p==='r-accion'?'acciones':p==='r-ger'?'gerencias':'unidades');
+  });
+  const buscar=document.getElementById('r-buscar');
+  if(buscar) buscar.value='';
+  renderResumen();
+  // Filtrar tabla de docs por tipo
+  const tbody=document.getElementById('res-docs-tbody');
+  const titulo=document.getElementById('res-docs-titulo');
+  if(tbody){
+    const COLORS={Actualizar:'#3D5BA9',Mantener:'#27ae60',Transferir:'#e67e22',Eliminar:'#c0392b',Pendiente:'#999'};
+    const allDocs=(DOCS_ALL.length>0?DOCS_ALL:DOCS).filter(d=>d.tipo===tipo);
+    const rows=allDocs.map(d=>{
+      const p=getP(d.cod);
+      const ac=p.accion||'Pendiente';
+      const color=COLORS[ac]||'#999';
+      const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
+      return `<tr style="border-bottom:1px solid var(--border);font-size:11px">
+        <td style="padding:6px 10px;font-family:monospace;color:var(--blue);font-weight:700">${d.cod}</td>
+        <td style="padding:6px 10px;max-width:300px">${d.desc||''}</td>
+        <td style="padding:6px 8px;color:var(--text2)">${d.tipo||''}</td>
+        <td style="padding:6px 8px;color:var(--text2)">${shortG}</td>
+        <td style="padding:6px 8px;text-align:center">
+          <span style="padding:2px 8px;border-radius:10px;background:${color}22;color:${color};border:1px solid ${color}44;font-weight:700;font-size:10px">${ac}</span>
+        </td>
+        <td style="padding:6px 8px;text-align:center;color:var(--text2)">${p.fechaProg||'—'}</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML=rows||`<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text3)">Sin documentos de tipo ${tipo}</td></tr>`;
+    if(titulo) titulo.textContent=`${tipo} (${allDocs.length} documentos)`;
+    // Scroll a la tabla
+    setTimeout(()=>tbody.closest('.table-wrap')?.scrollIntoView({behavior:'smooth'}),200);
+  }
+}
+
+// ── ESTADO DOCS: FILTRO EMPRESA con cascada ───────────────────────────────
+function poblarEmpFiltroED(){
+  const empresas=[...new Set(REPORTE_DATA.map(d=>d.empresa).filter(e=>e&&e!=='-'))].sort();
+  const sinEmp=REPORTE_DATA.filter(d=>!d.empresa||d.empresa==='-'||d.empresa==='').length;
+  const menu=document.getElementById('ed-emp-menu');
+  if(!menu) return;
+  let html=empresas.map(e=>`<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+    <input type="checkbox" value="${e}" onchange="onEdEmpChange();updateDropdownLabel('ed-emp','empresas')"> ${e}
+  </label>`).join('');
+  if(sinEmp>0) html+=`<label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px;border-top:1px solid var(--border)">
+    <input type="checkbox" value="__sin__" onchange="onEdEmpChange();updateDropdownLabel('ed-emp','empresas')"> Sin empresa <span style="font-size:10px;color:var(--text3)">(${sinEmp})</span>
+  </label>`;
+  menu.innerHTML=html;
+}
+
+function onEdEmpChange(){
+  const emps=edGetChecked('ed-emp');
+  const datos=REPORTE_DATA.filter(d=>{
+    if(emps.length===0) return true;
+    const emp=d.empresa||'';
+    return emps.includes(emp)||(emps.includes('__sin__')&&(!emp||emp==='-'));
+  });
+  const gers=[...new Set(datos.map(d=>d.gerencia).filter(Boolean))].sort();
+  edBuildMenu('ed-ger-menu', gers, "onEdGerChange();edUpdateLabel('ed-ger','gerencias')");
+  edBuildMenu('ed-uni-menu', [...new Set(datos.map(d=>d.unidad).filter(Boolean))].sort(), "aplicarFiltrosED();edUpdateLabel('ed-uni','unidades')");
+  edUpdateLabel('ed-ger','gerencias');
+  edUpdateLabel('ed-uni','unidades');
+  aplicarFiltrosED();
+}
+
+// ── ÁRBOL GERENCIA→UNIDAD (docs a Actualizar) ────────────────────────────
+let edTreeExpanded={};
+
+function renderTreeActualizar(){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  // Construir mapa: gerencia → unidad → {plan, exec}
+  const gerMap={};
+  DOCS.forEach(d=>{
+    const p=getP(d.cod);
+    if(!p.accion||p.accion!=='Actualizar') return;
+    const ger=d.gerencia||'Sin gerencia';
+    const uni=d.unidad||'Sin unidad';
+    if(!gerMap[ger]) gerMap[ger]={plan:0,exec:0,unis:{}};
+    if(!gerMap[ger].unis[uni]) gerMap[ger].unis[uni]={plan:0,exec:0};
+    gerMap[ger].plan++;
+    gerMap[ger].unis[uni].plan++;
+    // Ejecutado: en Reporte es Vigente y fechaVig >= inicio del mes de fechaProg
+    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
+    if(rep&&rep.estadoVig==='Vigente'&&rep.fechaVig&&p.fechaProg){
+      const fVig=new Date(rep.fechaVig);
+      const fProg=new Date(p.fechaProg);
+      if(!isNaN(fVig)&&!isNaN(fProg)){
+        // ejecutado si fechaVig >= primer día del mes de fechaProg
+        const inicioPlanMes=new Date(fProg.getFullYear(),fProg.getMonth(),1);
+        if(fVig>=inicioPlanMes){
+          gerMap[ger].exec++;
+          gerMap[ger].unis[uni].exec++;
+        }
+      }
+    }
+  });
+
+  const container=document.getElementById('ed-tree-actualizar');
+  if(!container) return;
+  const entries=Object.entries(gerMap).sort((a,b)=>b[1].plan-a[1].plan);
+
+  container.innerHTML=entries.map(([ger,v])=>{
+    const pct=v.plan?Math.round(v.exec/v.plan*100):0;
+    const color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
+    const isOpen=edTreeExpanded[ger];
+    const shortG=ger.replace('Gerencia de ','').replace('Gerencia ','');
+    const uniRows=isOpen?Object.entries(v.unis).sort((a,b)=>b[1].plan-a[1].plan).map(([uni,u])=>{
+      const up=u.plan?Math.round(u.exec/u.plan*100):0;
+      const uc=up>=80?'#27ae60':up>=50?'#e67e22':'#c0392b';
+      return `<div style="padding:5px 10px 5px 28px;border-bottom:1px solid #f0f4ff;display:flex;align-items:center;justify-content:space-between;font-size:11px;background:#fafbff">
+        <span style="color:var(--text2)">↳ ${uni}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:#7c3aed;font-weight:700">${u.plan}</span>
+          <span style="color:#27ae60;font-weight:700">${u.exec}</span>
+          <span style="font-weight:700;color:${uc};min-width:36px;text-align:right">${up}%</span>
+        </div>
+      </div>`;
+    }).join(''):'';
+
+    return `<div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:4px">
+      <div onclick="edTreeExpanded['${ger}']=!edTreeExpanded['${ger}'];renderTreeActualizar()"
+        style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:${isOpen?'#f0f4ff':'#fff'};transition:background .15s"
+        onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='${isOpen?'#f0f4ff':'#fff'}'">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:10px;color:var(--text3)">${isOpen?'▾':'▸'}</span>
+          <span style="font-size:12px;font-weight:600;color:var(--text)">${shortG}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:#7c3aed;font-weight:700" title="A actualizar">${v.plan}</span>
+          <span style="font-size:11px;color:#27ae60;font-weight:700" title="Ejecutados">${v.exec}</span>
+          <div style="width:50px;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${color};border-radius:3px"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${color};min-width:32px">${pct}%</span>
+        </div>
+      </div>
+      ${uniRows}
+    </div>`;
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Sin documentos con acción Actualizar</div>';
+}
+
+// ── PLANIFICADO vs EJECUTADO POR MES ─────────────────────────────────────
+function renderPlanifVsEjecMes(){
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const mesMap={};
+
+  DOCS.forEach(d=>{
+    const p=getP(d.cod);
+    if(!p.accion||p.accion==='Pendiente'||!p.fechaProg) return;
+    const fP=new Date(p.fechaProg); if(isNaN(fP)) return;
+    const key=fP.getFullYear()+'-'+String(fP.getMonth()).padStart(2,'0');
+    if(!mesMap[key]) mesMap[key]={plan:0,exec:0,y:fP.getFullYear(),m:fP.getMonth()};
+    mesMap[key].plan++;
+    // Ejecutado: mismo doc en Reporte con estadoVig=Vigente y fechaVig >= inicio del mes de fechaProg
+    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
+    if(rep&&rep.estadoVig==='Vigente'&&rep.fechaVig){
+      const fV=new Date(rep.fechaVig); if(isNaN(fV)) return;
+      const inicioMes=new Date(fP.getFullYear(),fP.getMonth(),1);
+      if(fV>=inicioMes) mesMap[key].exec++;
+    }
+  });
+
+  const sorted=Object.entries(mesMap).sort((a,b)=>a[0].localeCompare(b[0]));
+  const maxVal=Math.max(...sorted.map(([,v])=>v.plan),1);
+  const container=document.getElementById('ed-chart-mes-planif');
+  if(!container) return;
+
+  container.innerHTML=sorted.length?sorted.map(([key,v])=>{
+    const label=MESES_N[v.m]+' '+v.y;
+    const pPlan=Math.round(v.plan/maxVal*100);
+    const pExec=Math.round(v.exec/maxVal*100);
+    const pct=v.plan?Math.round(v.exec/v.plan*100):0;
+    return `<div style="margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
+        <span style="color:var(--text2);font-weight:500">${label}</span>
+        <span style="color:var(--text3)"><b style="color:var(--blue)">${v.plan}</b> plan · <b style="color:#27ae60">${v.exec}</b> ejec · <b style="color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</b></span>
+      </div>
+      <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden;position:relative">
+        <div style="position:absolute;height:100%;width:${pPlan}%;background:var(--blue);border-radius:4px;opacity:.3"></div>
+        <div style="position:absolute;height:100%;width:${pExec}%;background:#27ae60;border-radius:4px"></div>
+      </div>
+    </div>`;
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Sin datos de planificación</div>';
+}
+
+// ── DOCS VENCIDOS POR GERENCIA ────────────────────────────────────────────
+function renderVencidosPorGerencia(){
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  const gerVenc={};
+
+  DOCS.forEach(d=>{
+    const p=getP(d.cod);
+    if(!p.accion||p.accion!=='Actualizar'||!p.fechaProg) return;
+    const fP=new Date(p.fechaProg); if(isNaN(fP)) return;
+    if(fP>=hoy) return; // no vencido
+    // Verificar si ya fue publicado
+    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
+    if(rep&&rep.estadoVig==='Vigente') return; // ya ejecutado
+    const ger=d.gerencia||'Sin gerencia';
+    gerVenc[ger]=(gerVenc[ger]||0)+1;
+  });
+
+  const container=document.getElementById('ed-chart-vencidos');
+  if(!container) return;
+  const entries=Object.entries(gerVenc).sort((a,b)=>b[1]-a[1]);
+  const maxV=Math.max(...entries.map(([,v])=>v),1);
+
+  container.innerHTML=entries.length?entries.map(([ger,n])=>{
+    const shortG=ger.replace('Gerencia de ','').replace('Gerencia ','');
+    const pct=Math.round(n/maxV*100);
+    return `<div style="margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="color:var(--text2)">${shortG}</span>
+        <span style="font-weight:700;color:#c0392b">${n} vencido${n>1?'s':''}</span>
+      </div>
+      <div style="height:7px;background:#fdecea;border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:#c0392b;border-radius:4px"></div>
+      </div>
+    </div>`;
+  }).join(''):'<div style="text-align:center;padding:20px;color:#27ae60;font-size:12px;font-weight:700">✅ Sin documentos vencidos</div>';
+}
+
+// ── FLUJO DE TRABAJO POR GERENCIA ─────────────────────────────────────────
+function renderWFPorGerencia(docs){
+  const gerWF={};
+  docs.forEach(d=>{
+    const wf=d.estadoWF||d.estadoActual||'Sin estado';
+    const ger=(d.gerencia||'Sin gerencia').replace('Gerencia de ','').replace('Gerencia ','');
+    if(!gerWF[ger]) gerWF[ger]={};
+    gerWF[ger][wf]=(gerWF[ger][wf]||0)+1;
+  });
+
+  // Obtener todos los estados únicos
+  const allStates=[...new Set(docs.map(d=>d.estadoWF||d.estadoActual||'Sin estado'))].sort();
+  const STATE_COLORS={'REVISION DE VIGENCIA':'#27ae60','Completada':'#3D5BA9','ELABORACION':'#e67e22','APROBACION':'#7c3aed','Sin estado':'#aaa'};
+
+  const container=document.getElementById('ed-chart-wf');
+  if(!container) return;
+
+  const entries=Object.entries(gerWF).sort((a,b)=>Object.values(b[1]).reduce((s,v)=>s+v,0)-Object.values(a[1]).reduce((s,v)=>s+v,0));
+
+  container.innerHTML=`
+    <!-- Leyenda -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      ${allStates.map(s=>`<span style="display:flex;align-items:center;gap:4px;font-size:10px">
+        <span style="width:8px;height:8px;border-radius:2px;background:${STATE_COLORS[s]||'#999'};display:inline-block"></span>${s}
+      </span>`).join('')}
+    </div>
+    ${entries.map(([ger,estados])=>{
+      const total=Object.values(estados).reduce((s,v)=>s+v,0);
+      const bars=allStates.map(s=>{
+        const n=estados[s]||0;
+        const pct=Math.round(n/total*100);
+        return pct>0?`<div style="height:100%;width:${pct}%;background:${STATE_COLORS[s]||'#999'}" title="${s}: ${n}"></div>`:''
+      }).join('');
+      return `<div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+          <span style="color:var(--text2);font-weight:500">${ger}</span>
+          <span style="color:var(--text3)">${total} docs</span>
+        </div>
+        <div style="height:10px;background:#f0f0f0;border-radius:5px;overflow:hidden;display:flex">${bars}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:3px">
+          ${allStates.filter(s=>estados[s]).map(s=>`<span style="font-size:9px;color:${STATE_COLORS[s]||'#999'}">${s.substring(0,3)}.${estados[s]}</span>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}`;
 }
 </script>
 </body>
 </html>
-
