@@ -436,67 +436,30 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- FILTROS GLOBALES con cascada Empresa→Gerencia→Unidad -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px">
-      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Filtros</div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
-        <!-- Empresa -->
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Empresa</div>
-          <div id="ed-emp-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('ed-emp')" style="min-width:200px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-              <span id="ed-emp-label">Todas las empresas</span><span style="font-size:10px;color:var(--text3)">▾</span>
-            </button>
-            <div id="ed-emp-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
-          </div>
+    <!-- FILTRO: Solo Empresa -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Empresa</div>
+      <div id="ed-emp-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('ed-emp')" style="min-width:260px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
+          <span id="ed-emp-label">Todas las empresas</span><span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="ed-emp-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:280px;max-height:240px;overflow-y:auto"></div>
+      </div>
+      <!-- Menus ocultos para compatibilidad JS -->
+      <div id="ed-ger-dropdown" style="display:none"><div id="ed-ger-menu"></div></div>
+      <div id="ed-uni-dropdown" style="display:none"><div id="ed-uni-menu"></div></div>
+      <div id="ed-cat-dropdown" style="display:none"><div id="ed-cat-menu"></div></div>
+      <div id="ed-vig-dropdown" style="display:none">
+        <div id="ed-vig-menu">
+          <label><input type="checkbox" value="Vigente"></label>
+          <label><input type="checkbox" value="En elaboración"></label>
+          <label><input type="checkbox" value="Obsoleto"></label>
         </div>
-        <!-- Gerencia -->
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Gerencia</div>
-          <div id="ed-ger-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('ed-ger')" style="min-width:210px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-              <span id="ed-ger-label">Todas las gerencias</span><span style="font-size:10px;color:var(--text3)">▾</span>
-            </button>
-            <div id="ed-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:240px;max-height:240px;overflow-y:auto"></div>
-          </div>
-        </div>
-        <!-- Unidad -->
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Unidad</div>
-          <div id="ed-uni-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('ed-uni')" style="min-width:180px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-              <span id="ed-uni-label">Todas las unidades</span><span style="font-size:10px;color:var(--text3)">▾</span>
-            </button>
-            <div id="ed-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:220px;max-height:240px;overflow-y:auto"></div>
-          </div>
-        </div>
-        <!-- Categoría -->
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Categoría</div>
-          <div id="ed-cat-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('ed-cat')" style="min-width:150px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-              <span id="ed-cat-label">Todas</span><span style="font-size:10px;color:var(--text3)">▾</span>
-            </button>
-            <div id="ed-cat-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:160px;max-height:240px;overflow-y:auto"></div>
-          </div>
-        </div>
-        <!-- Estado vigencia -->
-        <div>
-          <div style="font-size:10px;color:var(--text3);margin-bottom:3px">Estado de vigencia</div>
-          <div id="ed-vig-dropdown" style="position:relative;display:inline-block">
-            <button onclick="toggleDropdown('ed-vig')" style="min-width:175px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;text-align:left;display:flex;justify-content:space-between;align-items:center">
-              <span id="ed-vig-label">Vigente + En elaboración</span><span style="font-size:10px;color:var(--text3)">▾</span>
-            </button>
-            <div id="ed-vig-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:190px">
-              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Vigente" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> Vigente</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="En elaboración" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> En elaboración</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px"><input type="checkbox" value="Obsoleto" onchange="aplicarFiltrosED();updateDropdownLabel('ed-vig','estados')"> Obsoleto</label>
-            </div>
-          </div>
-        </div>
-        <div>
-          <button onclick="limpiarFiltrosED()" style="font-size:11px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#f4f6fb;color:var(--text2);cursor:pointer">✕ Limpiar</button>
-        </div>
+      </div>
+      <!-- Indicador filtro cruzado activo -->
+      <div id="ed-cross-indicator" style="display:none;align-items:center;gap:8px;margin-left:8px">
+        <span id="ed-cross-label" style="font-size:12px;color:var(--blue);font-weight:600"></span>
+        <button onclick="limpiarFiltrosCruzadosED()" style="font-size:11px;padding:3px 10px;border:1px solid var(--blue);border-radius:6px;background:#fff;color:var(--blue);cursor:pointer;font-weight:700">✕ Quitar</button>
       </div>
     </div>
 
@@ -548,10 +511,12 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Seguimiento por Actualizar</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en una gerencia para ver sus unidades</div>
-        <div style="display:flex;gap:16px;font-size:10px;margin-bottom:10px">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>A actualizar</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutados</span>
-          <span style="color:var(--text3)">% = ejecutados/planificados</span>
+        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:10px;flex-wrap:wrap">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px"></span>Actualizar</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Nuevos</span>
+          <span style="color:var(--text3)">= Total</span>
+          <span id="ed-tree-legend-exec"><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Ejecutados (Vigentes desde Ene <span id="ed-ano-actual"></span>)</span>
+          <span style="color:var(--text3)">% = ejec/total</span>
         </div>
         <div id="ed-tree-actualizar" style="display:flex;flex-direction:column;gap:4px;max-height:300px;overflow-y:auto"></div>
       </div>
@@ -2231,23 +2196,57 @@ document.addEventListener('click',e=>{
   });
 });
 
+function getEdEmpSel(){
+  return edGetChecked('ed-emp');
+}
 function getDocsED(){
+  const fEmps = getEdEmpSel();
   const fGers = edGetChecked('ed-ger');
   const fUnis = edGetChecked('ed-uni');
   const fCats = edGetChecked('ed-cat');
   const fVigs = edGetChecked('ed-vig');
 
   let docs = REPORTE_DATA;
+  // Filtro empresa
+  if(fEmps.length>0) docs = docs.filter(d=>{
+    const emp=d.empresa||'';
+    return fEmps.includes(emp)||(fEmps.includes('__sin__')&&(!emp||emp==='-'));
+  });
   if(fGers.length>0) docs = docs.filter(d=>fGers.includes(d.gerencia));
   if(fUnis.length>0) docs = docs.filter(d=>fUnis.includes(d.unidad));
   if(fCats.length>0) docs = docs.filter(d=>fCats.includes(d.categoria));
 
   if(fVigs.length===0){
-    // Default: Vigente + En elaboración
     docs = docs.filter(d=>d.estadoVig==='Vigente'||d.estadoVig==='En elaboración');
   } else {
     docs = docs.filter(d=>fVigs.includes(d.estadoVig));
   }
+  return docs;
+}
+
+// Filtrar DOCS (catálogo) según filtros ED actuales
+function getDocsEDCatalogo(){
+  const fEmps = getEdEmpSel();
+  const fGers = edGetChecked('ed-ger');
+  const fUnis = edGetChecked('ed-uni');
+  let docs = DOCS_ALL.length>0 ? DOCS_ALL : DOCS;
+  // Filtrar empresa: usar REPORTE_DATA como fuente de verdad para empresa
+  // (ya que el catálogo BdPlan y el Reporte deben coincidir en empresa)
+  if(fEmps.length>0){
+    // Obtener cods del reporte que pasen el filtro de empresa
+    const codsEmp=new Set(REPORTE_DATA.filter(r=>{
+      const emp=r.empresa||'';
+      return fEmps.includes(emp)||(fEmps.includes('__sin__')&&(!emp||emp==='-'));
+    }).map(r=>r.cod));
+    // Filtrar docs del catálogo por esos cods, O por empresa directa si el campo existe
+    docs = docs.filter(d=>{
+      const emp=d.empresa||'';
+      if(emp&&emp!=='-') return fEmps.includes(emp)||(fEmps.includes('__sin__')&&(!emp||emp==='-'));
+      return codsEmp.has(d.cod);
+    });
+  }
+  if(fGers.length>0) docs = docs.filter(d=>fGers.includes(d.gerencia));
+  if(fUnis.length>0) docs = docs.filter(d=>fUnis.includes(d.unidad));
   return docs;
 }
 
@@ -2368,6 +2367,8 @@ function onMesChange(){
 
 function getDocsEDFiltrados(){
   let docs = getDocsED();
+  // Aplicar filtros cruzados al listado
+  docs = aplicarCrossFiltrosReporte(docs);
   if(edMesFiltro){
     docs = docs.filter(d=>{
       if(!d.fechaVig) return false;
@@ -2408,20 +2409,27 @@ function getDocsEDFiltrados(){
 
 function renderEstadoDocs(){
   if(!REPORTE_DATA.length) return;
+  const ANO_ACTUAL=new Date().getFullYear();
+  // Setear año en leyenda HTML
+  const anoSpan=document.getElementById('ed-ano-actual');
+  if(anoSpan) anoSpan.textContent=ANO_ACTUAL;
+  const INICIO_ANO=new Date(ANO_ACTUAL,0,1); // 1 Enero año actual
 
-  const fGers = edGetChecked('ed-ger');
-  const fUnis = edGetChecked('ed-uni');
-  const fCats = edGetChecked('ed-cat');
-  let base = REPORTE_DATA;
-  if(fGers.length>0) base = base.filter(d=>fGers.includes(d.gerencia));
-  if(fUnis.length>0) base = base.filter(d=>fUnis.includes(d.unidad));
-  if(fCats.length>0) base = base.filter(d=>fCats.includes(d.categoria));
+  // Filtrar base por empresa (único filtro visible)
+  const fEmps=getEdEmpSel();
+  let base = REPORTE_DATA.filter(d=>{
+    if(fEmps.length===0) return true;
+    const emp=d.empresa||'';
+    return fEmps.includes(emp)||(fEmps.includes('__sin__')&&(!emp||emp==='-'));
+  });
 
   const vigentes  = base.filter(d=>d.estadoVig==='Vigente');
   const obsoletos = base.filter(d=>d.estadoVig==='Obsoleto');
   const elaborac  = base.filter(d=>d.estadoVig==='En elaboración');
 
-  const actualizar=base.filter(d=>{ const p=getP(d.cod); return p.accion==='Actualizar'; });
+  // KPI actualizar: catálogo filtrado
+  const docsCatalogo=getDocsEDCatalogo();
+  const actualizar=docsCatalogo.filter(d=>{ const p=getP(d.cod); return p.accion==='Actualizar'; });
   document.getElementById('ed-total').textContent       = base.length;
   document.getElementById('ed-vigentes').textContent    = vigentes.length;
   document.getElementById('ed-obsoletos').textContent   = obsoletos.length;
@@ -2432,7 +2440,7 @@ function renderEstadoDocs(){
   renderTreeActualizar();
   renderPlanifVsEjecMes();
   renderVencidosPorGerencia();
-  renderWFPorGerencia(base);
+  renderWFPorGerencia(getDocsED());
 
   // Subconjunto base para gráficos (respeta filtros globales + vigencia, sin cruzados)
   const filtered = getDocsED();
@@ -3309,53 +3317,79 @@ function onEdEmpChange(){
 let edTreeExpanded={};
 
 function renderTreeActualizar(){
-  const hoy=new Date(); hoy.setHours(0,0,0,0);
-  const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-
-  // Construir mapa: gerencia → unidad → {plan, exec}
+  const ANO_ACTUAL=new Date().getFullYear();
+  const INICIO_ANO=new Date(ANO_ACTUAL,0,1); // 1 Enero año actual
+  // Construir mapa: gerencia → unidad → {act(actualizar), nue(nuevos), exec}
   const gerMap={};
-  DOCS.forEach(d=>{
+  let docsBase=getDocsEDCatalogo();
+  docsBase=aplicarCrossFiltrosCatalogo(docsBase);
+
+  // Contar Actualizar por gerencia/unidad
+  docsBase.forEach(d=>{
     const p=getP(d.cod);
     if(!p.accion||p.accion!=='Actualizar') return;
     const ger=d.gerencia||'Sin gerencia';
     const uni=d.unidad||'Sin unidad';
-    if(!gerMap[ger]) gerMap[ger]={plan:0,exec:0,unis:{}};
-    if(!gerMap[ger].unis[uni]) gerMap[ger].unis[uni]={plan:0,exec:0};
-    gerMap[ger].plan++;
-    gerMap[ger].unis[uni].plan++;
-    // Ejecutado: en Reporte es Vigente y fechaVig >= inicio del mes de fechaProg
-    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
-    if(rep&&rep.estadoVig==='Vigente'&&rep.fechaVig&&p.fechaProg){
-      const fVig=new Date(rep.fechaVig);
-      const fProg=new Date(p.fechaProg);
-      if(!isNaN(fVig)&&!isNaN(fProg)){
-        // ejecutado si fechaVig >= primer día del mes de fechaProg
-        const inicioPlanMes=new Date(fProg.getFullYear(),fProg.getMonth(),1);
-        if(fVig>=inicioPlanMes){
-          gerMap[ger].exec++;
-          gerMap[ger].unis[uni].exec++;
-        }
-      }
+    if(!gerMap[ger]) gerMap[ger]={act:0,nue:0,exec:0,unis:{}};
+    if(!gerMap[ger].unis[uni]) gerMap[ger].unis[uni]={act:0,nue:0,exec:0};
+    gerMap[ger].act++;
+    gerMap[ger].unis[uni].act++;
+  });
+
+  // Contar Nuevos por gerencia/unidad — siempre se suman al total planificado
+  const fEmps=getEdEmpSel();
+  nuevos.forEach(n=>{
+    const ger=n.gerencia||'Sin gerencia';
+    const uni=n.unidad||'Sin unidad';
+    if(!gerMap[ger]) gerMap[ger]={act:0,nue:0,exec:0,unis:{}};
+    if(!gerMap[ger].unis[uni]) gerMap[ger].unis[uni]={act:0,nue:0,exec:0};
+    gerMap[ger].nue++;
+    gerMap[ger].unis[uni].nue++;
+  });
+
+  // Contar Ejecutados: TODOS los docs del Reporte con estadoVig=Vigente y fechaVig >= 1 Enero año actual
+  const fEmpsSet=new Set(fEmps);
+  REPORTE_DATA.forEach(r=>{
+    // Filtrar por empresa si aplica
+    if(fEmps.length>0){
+      const emp=r.empresa||'';
+      if(!fEmpsSet.has(emp)&&!(fEmpsSet.has('__sin__')&&(!emp||emp==='-'))) return;
     }
+    if(r.estadoVig!=='Vigente'||!r.fechaVig) return;
+    const fVig=new Date(r.fechaVig);
+    if(isNaN(fVig)||fVig<INICIO_ANO) return;
+    const ger=r.gerencia||'Sin gerencia';
+    const uni=r.unidad||'Sin unidad';
+    // Solo agregar ejecutados si la gerencia ya existe en el mapa (tiene Actualizar o Nuevos)
+    if(!gerMap[ger]) return;
+    if(!gerMap[ger].unis[uni]) gerMap[ger].unis[uni]={act:0,nue:0,exec:0};
+    gerMap[ger].exec++;
+    gerMap[ger].unis[uni].exec++;
   });
 
   const container=document.getElementById('ed-tree-actualizar');
   if(!container) return;
-  const entries=Object.entries(gerMap).sort((a,b)=>b[1].plan-a[1].plan);
+  const entries=Object.entries(gerMap).filter(([,v])=>v.act>0||v.nue>0||v.exec>0).sort((a,b)=>(b[1].act+b[1].nue)-(a[1].act+a[1].nue));
 
   container.innerHTML=entries.map(([ger,v])=>{
-    const pct=v.plan?Math.round(v.exec/v.plan*100):0;
+    const total=v.act+v.nue;
+    const pct=total?Math.round(v.exec/total*100):0;
     const color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
     const isOpen=edTreeExpanded[ger];
     const shortG=ger.replace('Gerencia de ','').replace('Gerencia ','');
-    const uniRows=isOpen?Object.entries(v.unis).sort((a,b)=>b[1].plan-a[1].plan).map(([uni,u])=>{
-      const up=u.plan?Math.round(u.exec/u.plan*100):0;
+    const uniRows=isOpen?Object.entries(v.unis).sort((a,b)=>(b[1].act+b[1].nue)-(a[1].act+a[1].nue)).map(([uni,u])=>{
+      const utot=u.act+u.nue;
+      const up=utot?Math.round(u.exec/utot*100):0;
       const uc=up>=80?'#27ae60':up>=50?'#e67e22':'#c0392b';
       return `<div style="padding:5px 10px 5px 28px;border-bottom:1px solid #f0f4ff;display:flex;align-items:center;justify-content:space-between;font-size:11px;background:#fafbff">
         <span style="color:var(--text2)">↳ ${uni}</span>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="color:#7c3aed;font-weight:700">${u.plan}</span>
-          <span style="color:#27ae60;font-weight:700">${u.exec}</span>
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px">
+          <span style="color:#3D5BA9" title="Actualizar">${u.act}</span>
+          <span style="color:var(--text3)">+</span>
+          <span style="color:#7c3aed" title="Nuevos">${u.nue}</span>
+          <span style="color:var(--text3)">=</span>
+          <span style="font-weight:700">${utot}</span>
+          <span style="color:#27ae60;font-weight:700;margin-left:4px">${u.exec} ejec</span>
           <span style="font-weight:700;color:${uc};min-width:36px;text-align:right">${up}%</span>
         </div>
       </div>`;
@@ -3369,13 +3403,17 @@ function renderTreeActualizar(){
           <span style="font-size:10px;color:var(--text3)">${isOpen?'▾':'▸'}</span>
           <span style="font-size:12px;font-weight:600;color:var(--text)">${shortG}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:11px;color:#7c3aed;font-weight:700" title="A actualizar">${v.plan}</span>
-          <span style="font-size:11px;color:#27ae60;font-weight:700" title="Ejecutados">${v.exec}</span>
-          <div style="width:50px;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px">
+          <span style="color:#3D5BA9;font-weight:700" title="Actualizar">${v.act}</span>
+          <span style="color:var(--text3);font-size:10px">+</span>
+          <span style="color:#7c3aed;font-weight:700" title="Nuevos">${v.nue}</span>
+          <span style="color:var(--text3);font-size:10px">=</span>
+          <span style="font-weight:800;color:var(--text)">${total}</span>
+          <span style="margin-left:6px;color:#27ae60;font-weight:700">${v.exec} ejec</span>
+          <div style="width:40px;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin-left:4px">
             <div style="width:${pct}%;height:100%;background:${color};border-radius:3px"></div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${color};min-width:32px">${pct}%</span>
+          <span style="font-weight:700;color:${color};min-width:32px">${pct}%</span>
         </div>
       </div>
       ${uniRows}
@@ -3386,53 +3424,105 @@ function renderTreeActualizar(){
 // ── PLANIFICADO vs EJECUTADO POR MES ─────────────────────────────────────
 function renderPlanifVsEjecMes(){
   const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const ANO_ACTUAL=new Date().getFullYear();
+  const INICIO_ANO=new Date(ANO_ACTUAL,0,1);
   const mesMap={};
+  const fEmps=getEdEmpSel();
+  const fEmpsSet=new Set(fEmps);
 
-  DOCS.forEach(d=>{
+  let docsBase=getDocsEDCatalogo();
+  if(edCross.gerencia) docsBase=docsBase.filter(d=>d.gerencia===edCross.gerencia);
+
+  // Planificados (Actualizar) — solo este año
+  docsBase.forEach(d=>{
     const p=getP(d.cod);
-    if(!p.accion||p.accion==='Pendiente'||!p.fechaProg) return;
-    const fP=new Date(p.fechaProg); if(isNaN(fP)) return;
+    if(!p.accion||p.accion!=='Actualizar'||!p.fechaProg) return;
+    const fP=new Date(p.fechaProg); if(isNaN(fP)||fP.getFullYear()<ANO_ACTUAL) return;
     const key=fP.getFullYear()+'-'+String(fP.getMonth()).padStart(2,'0');
-    if(!mesMap[key]) mesMap[key]={plan:0,exec:0,y:fP.getFullYear(),m:fP.getMonth()};
+    if(!mesMap[key]) mesMap[key]={plan:0,nue:0,exec:0,y:fP.getFullYear(),m:fP.getMonth()};
     mesMap[key].plan++;
-    // Ejecutado: mismo doc en Reporte con estadoVig=Vigente y fechaVig >= inicio del mes de fechaProg
-    const rep=REPORTE_DATA.find(r=>r.cod===d.cod);
-    if(rep&&rep.estadoVig==='Vigente'&&rep.fechaVig){
-      const fV=new Date(rep.fechaVig); if(isNaN(fV)) return;
-      const inicioMes=new Date(fP.getFullYear(),fP.getMonth(),1);
-      if(fV>=inicioMes) mesMap[key].exec++;
+  });
+
+  // Nuevos por mes — solo este año
+  nuevos.forEach(n=>{
+    if(!n.fecha) return;
+    const fN=new Date(n.fecha); if(isNaN(fN)||fN.getFullYear()<ANO_ACTUAL) return;
+    if(edCross.gerencia&&n.gerencia!==edCross.gerencia) return;
+    const key=fN.getFullYear()+'-'+String(fN.getMonth()).padStart(2,'0');
+    if(!mesMap[key]) mesMap[key]={plan:0,nue:0,exec:0,y:fN.getFullYear(),m:fN.getMonth()};
+    mesMap[key].nue++;
+  });
+
+  // Ejecutados: docs de Reporte que pasaron a Vigente en ese mes (desde Enero año actual)
+  REPORTE_DATA.forEach(r=>{
+    if(fEmps.length>0){
+      const emp=r.empresa||'';
+      if(!fEmpsSet.has(emp)&&!(fEmpsSet.has('__sin__')&&(!emp||emp==='-'))) return;
     }
+    if(r.estadoVig!=='Vigente'||!r.fechaVig) return;
+    const fV=new Date(r.fechaVig); if(isNaN(fV)||fV<INICIO_ANO) return;
+    if(edCross.gerencia&&r.gerencia!==edCross.gerencia) return;
+    const key=fV.getFullYear()+'-'+String(fV.getMonth()).padStart(2,'0');
+    if(!mesMap[key]) mesMap[key]={plan:0,nue:0,exec:0,y:fV.getFullYear(),m:fV.getMonth()};
+    mesMap[key].exec++;
   });
 
   const sorted=Object.entries(mesMap).sort((a,b)=>a[0].localeCompare(b[0]));
-  const maxVal=Math.max(...sorted.map(([,v])=>v.plan),1);
+  const maxVal=Math.max(...sorted.map(([,v])=>v.plan+v.nue),1);
+  const maxExec=Math.max(...sorted.map(([,v])=>v.exec),1);
+  const maxAll=Math.max(maxVal,maxExec,1);
   const container=document.getElementById('ed-chart-mes-planif');
   if(!container) return;
 
   container.innerHTML=sorted.length?sorted.map(([key,v])=>{
     const label=MESES_N[v.m]+' '+v.y;
-    const pPlan=Math.round(v.plan/maxVal*100);
-    const pExec=Math.round(v.exec/maxVal*100);
-    const pct=v.plan?Math.round(v.exec/v.plan*100):0;
-    return `<div style="margin-bottom:4px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
-        <span style="color:var(--text2);font-weight:500">${label}</span>
-        <span style="color:var(--text3)"><b style="color:var(--blue)">${v.plan}</b> plan · <b style="color:#27ae60">${v.exec}</b> ejec · <b style="color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</b></span>
+    const totalPlan=v.plan+v.nue;
+    const pPlan=Math.round(v.plan/maxAll*100);
+    const pNue=Math.round(v.nue/maxAll*100);
+    const pExec=Math.round(v.exec/maxAll*100);
+    const pct=totalPlan?Math.round(v.exec/totalPlan*100):0;
+    const isSelMes=edCross.mes===key;
+    return `<div style="margin-bottom:6px;cursor:pointer;border-radius:6px;padding:4px 8px;transition:background .15s;background:${isSelMes?'#eef2ff':''};border-left:3px solid ${isSelMes?'var(--blue)':'transparent'}"
+      onclick="setEdCross('mes','${key}')"
+      onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='${isSelMes?'#eef2ff':''}'">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="color:var(--text2);font-weight:${isSelMes?'700':'500'}">${label}${isSelMes?' ✓':''}</span>
+        <span style="font-size:10px;color:var(--text3)">
+          <b style="color:#3D5BA9">${v.plan}</b> act
+          ${v.nue>0?`+ <b style="color:#7c3aed">${v.nue}</b> nue`:''}
+          = <b>${totalPlan}</b> plan ·
+          <b style="color:#27ae60">${v.exec}</b> ejec ·
+          <b style="color:${pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b'}">${pct}%</b>
+        </span>
       </div>
-      <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden;position:relative">
-        <div style="position:absolute;height:100%;width:${pPlan}%;background:var(--blue);border-radius:4px;opacity:.3"></div>
-        <div style="position:absolute;height:100%;width:${pExec}%;background:#27ae60;border-radius:4px"></div>
+      <div style="height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex">
+        <div style="width:${pPlan}%;background:#3D5BA9;opacity:.5" title="Actualizar"></div>
+        <div style="width:${pNue}%;background:#7c3aed;opacity:.5" title="Nuevos"></div>
+      </div>
+      <div style="height:4px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-top:2px">
+        <div style="width:${pExec}%;height:100%;background:#27ae60;border-radius:4px"></div>
       </div>
     </div>`;
-  }).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Sin datos de planificación</div>';
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Sin datos de planificación este año</div>';
 }
 
 // ── DOCS VENCIDOS POR GERENCIA ────────────────────────────────────────────
+let edVencidosData={};  // para clic en gerencia
+
 function renderVencidosPorGerencia(){
   const hoy=new Date(); hoy.setHours(0,0,0,0);
   const gerVenc={};
-
-  DOCS.forEach(d=>{
+  edVencidosData={};
+  let docsBase=getDocsEDCatalogo();
+  if(edCross.mes){
+    const [y,m]=edCross.mes.split('-');
+    docsBase=docsBase.filter(d=>{
+      const p=getP(d.cod); if(!p.fechaProg) return false;
+      const f=new Date(p.fechaProg);
+      return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m;
+    });
+  }
+  docsBase.forEach(d=>{
     const p=getP(d.cod);
     if(!p.accion||p.accion!=='Actualizar'||!p.fechaProg) return;
     const fP=new Date(p.fechaProg); if(isNaN(fP)) return;
@@ -3442,6 +3532,8 @@ function renderVencidosPorGerencia(){
     if(rep&&rep.estadoVig==='Vigente') return; // ya ejecutado
     const ger=d.gerencia||'Sin gerencia';
     gerVenc[ger]=(gerVenc[ger]||0)+1;
+    if(!edVencidosData[ger]) edVencidosData[ger]=[];
+    edVencidosData[ger].push(d);
   });
 
   const container=document.getElementById('ed-chart-vencidos');
@@ -3452,10 +3544,13 @@ function renderVencidosPorGerencia(){
   container.innerHTML=entries.length?entries.map(([ger,n])=>{
     const shortG=ger.replace('Gerencia de ','').replace('Gerencia ','');
     const pct=Math.round(n/maxV*100);
-    return `<div style="margin-bottom:6px">
+    return `<div style="margin-bottom:6px;cursor:pointer;border-radius:6px;padding:4px 6px;transition:background .15s"
+      onclick="setEdCross('gerencia','${ger.replace(/'/g,"\'")}')"
+      style="background:${edCross.gerencia===ger?'#fdecea':''};border-left:${edCross.gerencia===ger?'3px solid #c0392b':'3px solid transparent'}"
+      onmouseover="this.style.background='#fdecea'" onmouseout="this.style.background='${edCross.gerencia===ger?'#fdecea':''}'">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="color:var(--text2)">${shortG}</span>
-        <span style="font-weight:700;color:#c0392b">${n} vencido${n>1?'s':''}</span>
+        <span style="color:var(--text2);font-weight:500">${shortG}</span>
+        <span style="font-weight:700;color:#c0392b">${n} vencido${n>1?'s':''} <span style="font-size:10px;opacity:.7">ver →</span></span>
       </div>
       <div style="height:7px;background:#fdecea;border-radius:4px;overflow:hidden">
         <div style="height:100%;width:${pct}%;background:#c0392b;border-radius:4px"></div>
@@ -3466,6 +3561,14 @@ function renderVencidosPorGerencia(){
 
 // ── FLUJO DE TRABAJO POR GERENCIA ─────────────────────────────────────────
 function renderWFPorGerencia(docs){
+  // Aplicar filtros cruzados
+  if(edCross.gerencia) docs=docs.filter(d=>d.gerencia===edCross.gerencia);
+  if(edCross.mes){
+    const [y,m]=edCross.mes.split('-');
+    docs=docs.filter(d=>{
+      const f=new Date(d.fechaVig||''); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m;
+    });
+  }
   const gerWF={};
   docs.forEach(d=>{
     const wf=d.estadoWF||d.estadoActual||'Sin estado';
@@ -3476,7 +3579,14 @@ function renderWFPorGerencia(docs){
 
   // Obtener todos los estados únicos
   const allStates=[...new Set(docs.map(d=>d.estadoWF||d.estadoActual||'Sin estado'))].sort();
-  const STATE_COLORS={'REVISION DE VIGENCIA':'#27ae60','Completada':'#3D5BA9','ELABORACION':'#e67e22','APROBACION':'#7c3aed','Sin estado':'#aaa'};
+  // Excluir estados relacionados con revisión de vigencia y completada
+  const EXCLUIR_WF=['REVISION DE VIGENCIA','Completada','REVISIÓN DE VIGENCIA',
+    'REVISION ANUAL DE VIGENCIA','REVISIÓN ANUAL DE VIGENCIA','revision de vigencia',
+    'revisión de vigencia','Revision de Vigencia','Revisión de Vigencia'];
+  docs=docs.filter(d=>!EXCLUIR_WF.some(e=>(d.estadoWF||d.estadoActual||'').toUpperCase().includes(e.toUpperCase())||
+    (d.estadoWF||d.estadoActual||'')==='Completada'));
+  const STATE_COLORS={'ELABORACION':'#e67e22','APROBACION':'#7c3aed','APROBACIÓN 1':'#7c3aed',
+    'PRIMERA REVISION':'#3D5BA9','Sin estado':'#aaa'};
 
   const container=document.getElementById('ed-chart-wf');
   if(!container) return;
@@ -3508,6 +3618,126 @@ function renderWFPorGerencia(docs){
         </div>
       </div>`;
     }).join('')}`;
+}
+
+// ── MOSTRAR VENCIDOS DE UNA GERENCIA ─────────────────────────────────────
+function mostrarVencidosGerencia(ger){
+  const docs=edVencidosData[ger]||[];
+  const tbody=document.getElementById('ed-tbody');
+  const titulo=document.getElementById('ed-tabla-titulo');
+  if(!tbody) return;
+  // Scroll a la tabla
+  setTimeout(()=>document.getElementById('ed-tbody')?.closest('.table-wrap')?.scrollIntoView({behavior:'smooth'}),100);
+  const hoy=new Date();
+  const COLORS={Actualizar:'#3D5BA9',Mantener:'#27ae60',Transferir:'#e67e22',Eliminar:'#c0392b',Pendiente:'#999'};
+  if(titulo) titulo.textContent=`⚠️ Documentos vencidos — ${ger.replace('Gerencia de ','').replace('Gerencia ','')} (${docs.length})`;
+  const rows=docs.map(d=>{
+    const p=getP(d.cod);
+    const fP=new Date(p.fechaProg);
+    const diasVenc=isNaN(fP)?'—':Math.floor((hoy-fP)/(1000*60*60*24))+' días';
+    return `<tr style="border-bottom:1px solid var(--border);background:#fff8f8">
+      <td style="padding:6px 8px;text-align:center"><span class="semaforo sem-rojo"></span></td>
+      <td style="padding:6px 8px;font-family:monospace;font-size:11px;color:var(--blue);font-weight:700">${d.cod}</td>
+      <td style="padding:6px 8px;font-size:11px">${d.desc||''}</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text2)">${d.ver||''}</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text2)">${d.tipo||''}</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text2)">${(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','')}</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text2)">${d.fechaVig||''}</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text3)">—</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text2)">—</td>
+      <td style="padding:6px 8px;font-size:11px;color:var(--text3)">—</td>
+      <td style="padding:6px 8px;font-size:11px"><span style="background:#fdecea;color:#c0392b;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">Actualizar</span></td>
+      <td style="padding:6px 8px;font-size:11px;color:#c0392b;font-weight:700">${p.fechaProg||'—'} <span style="font-size:10px;opacity:.7">(${diasVenc})</span></td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML=rows||'<tr><td colspan="12" class="empty">Sin docs vencidos en esta gerencia</td></tr>';
+}
+
+// ── FILTROS CRUZADOS ENTRE GRÁFICOS (Estado Docs) ────────────────────────
+let edCross = {
+  gerencia: null,  // click en árbol o vencidos
+  mes:      null,  // click en planif vs ejec
+  wfEstado: null,  // click en flujo de trabajo
+};
+
+function setEdCross(campo, valor){
+  // Toggle: si ya está seleccionado, quitar
+  if(edCross[campo]===valor){
+    edCross[campo]=null;
+  } else {
+    // Al seleccionar uno, limpiar los otros
+    Object.keys(edCross).forEach(k=>edCross[k]=null);
+    edCross[campo]=valor;
+  }
+  actualizarIndicadorCruzado();
+  renderEstadoDocs();
+}
+
+function limpiarFiltrosCruzadosED(){
+  Object.keys(edCross).forEach(k=>edCross[k]=null);
+  actualizarIndicadorCruzado();
+  renderEstadoDocs();
+}
+
+function actualizarIndicadorCruzado(){
+  const ind=document.getElementById('ed-cross-indicator');
+  const lbl=document.getElementById('ed-cross-label');
+  if(!ind||!lbl) return;
+  const activo=Object.entries(edCross).find(([,v])=>v!==null);
+  if(activo){
+    const labels={gerencia:'Gerencia',mes:'Mes',wfEstado:'Estado flujo'};
+    lbl.textContent=`${labels[activo[0]]}: ${activo[1]}`;
+    ind.style.display='flex';
+  } else {
+    ind.style.display='none';
+  }
+}
+
+// Aplicar filtros cruzados a un array de docs del catálogo
+function aplicarCrossFiltrosCatalogo(docs){
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  if(edCross.gerencia) docs=docs.filter(d=>d.gerencia===edCross.gerencia);
+  if(edCross.mes){
+    const [y,m]=edCross.mes.split('-');
+    docs=docs.filter(d=>{
+      const p=getP(d.cod);
+      if(!p.fechaProg) return false;
+      const f=new Date(p.fechaProg);
+      return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m;
+    });
+  }
+  return docs;
+}
+
+// Aplicar filtros cruzados a docs del Reporte
+function aplicarCrossFiltrosReporte(docs){
+  if(edCross.gerencia) docs=docs.filter(d=>d.gerencia===edCross.gerencia);
+  if(edCross.wfEstado) docs=docs.filter(d=>(d.estadoWF||d.estadoActual||'')=== edCross.wfEstado);
+  if(edCross.mes){
+    const [y,m]=edCross.mes.split('-');
+    // Para filtro por mes: mostrar tanto docs planificados en ese mes
+    // como docs que pasaron a vigente en ese mes
+    const codsEnMes=new Set();
+    // Planificados en ese mes (Actualizar)
+    getDocsEDCatalogo().forEach(d=>{
+      const p=getP(d.cod); if(!p.fechaProg) return;
+      const f=new Date(p.fechaProg);
+      if(!isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m) codsEnMes.add(d.cod);
+    });
+    // Nuevos en ese mes
+    nuevos.forEach(n=>{
+      if(!n.fecha) return;
+      const f=new Date(n.fecha);
+      if(!isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m) codsEnMes.add(n.titulo);
+    });
+    // Ejecutados en ese mes (vigentes ese mes)
+    REPORTE_DATA.filter(r=>r.estadoVig==='Vigente'&&r.fechaVig).forEach(r=>{
+      const f=new Date(r.fechaVig);
+      if(!isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m) codsEnMes.add(r.cod);
+    });
+    docs=docs.filter(d=>codsEnMes.has(d.cod));
+  }
+  return docs;
 }
 </script>
 </body>
