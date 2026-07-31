@@ -478,9 +478,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
       <!-- En circuito activo -->
       <div id="kpi-circ-card" onclick="setEdNewCross('circuito')" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;border-top:4px solid #e67e22;transition:box-shadow .15s" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow=''">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px">🔄 En circuito activo</div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px">🔄 En elaboración</div>
         <div style="font-size:32px;font-weight:800;color:#e67e22" id="kpi-circuito">—</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:4px">en proceso de publicación</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">en elaboración (hoja vigentes)</div>
       </div>
       <!-- No planificadas del mes -->
       <div id="kpi-nplan-card" onclick="setEdNewCross('noplanificado')" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;border-top:4px solid #7c3aed;transition:box-shadow .15s" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow=''">
@@ -490,53 +490,55 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- GRÁFICOS FILA 1: Barras por mes + Dona -->
-    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px">
-      <!-- Barra apilada por mes -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Evolución mensual</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en un mes para filtrar el listado</div>
-        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:10px">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>A tiempo / Ejecutado</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencido</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>No planificado</span>
-        </div>
-        <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto"></div>
+    <!-- GRÁFICO: Evolución mensual (ancho completo) -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Evolución mensual — Planificados vs Vigentes</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en las barras para filtrar el listado</div>
+      <div style="display:flex;gap:16px;font-size:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Planificados (sin vencer)</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencidos</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Vigentes planificados</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Vigentes no planificados</span>
       </div>
-      <!-- Dona: distribución vigencia -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Estado de Vigencia</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Distribución del catálogo actual</div>
-        <div id="ednew-chart-dona" style="display:flex;flex-direction:column;gap:8px"></div>
-      </div>
+      <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
     </div>
 
-    <!-- GRÁFICOS FILA 2: Ranking gerencias + Top vencidos -->
+    <!-- GRÁFICOS FILA 2: Tabla gerencias + Top vencidos -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <!-- Ranking % cumplimiento por gerencia -->
+      <!-- Tabla por gerencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">% Cumplimiento por gerencia</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic para filtrar el listado</div>
-        <div id="ednew-chart-ranking" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en una fila para filtrar el listado</div>
+        <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
+          <div id="ednew-chart-ranking"></div>
+        </div>
       </div>
       <!-- Top vencidos -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Ordenados por días de atraso</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Ordenados por días de atraso · clic para ver en listado</div>
         <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
           <table style="width:100%;border-collapse:collapse;font-size:11px">
             <thead style="position:sticky;top:0;background:#fff3f3">
               <tr>
                 <th style="padding:6px 8px;text-align:left;color:#c0392b">Código</th>
                 <th style="padding:6px 8px;text-align:left;color:#c0392b">Descripción</th>
-                <th style="padding:6px 8px;text-align:left;color:#c0392b">Responsable</th>
-                <th style="padding:6px 8px;text-align:center;color:#c0392b">Días atraso</th>
+                <th style="padding:6px 8px;text-align:left;color:#c0392b">Gerencia</th>
+                <th style="padding:6px 8px;text-align:left;color:#c0392b">Unidad</th>
+                <th style="padding:6px 8px;text-align:center;color:#c0392b">Días</th>
               </tr>
             </thead>
             <tbody id="ednew-tbody-vencidos"></tbody>
           </table>
         </div>
       </div>
+    </div>
+
+    <!-- En elaboración por gerencia -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Docs en elaboración de la hoja Vigentes · clic para filtrar</div>
+      <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto"></div>
     </div>
 
     <!-- LISTADO DE DOCUMENTOS -->
@@ -3766,10 +3768,11 @@ async function cargarDashboardED(){
 
 // ── Poblar filtros Empresa y Gerencia ─────────────────────────────────────
 function poblarFiltrosEdNew(){
+  // Empresas desde ambas fuentes — campo empresa correcto
   const empresas = [...new Set([
-    ...PLAN_DATA.map(d=>d.empresa),
-    ...VIGENTES_DATA.map(d=>d.empresa)
-  ].filter(e=>e&&e!=='-'))].sort();
+    ...PLAN_DATA.map(d=>d.empresa||''),
+    ...VIGENTES_DATA.map(d=>d.empresa||'')
+  ].filter(e=>e&&e!=='-'&&e!=='Vigente'&&e!=='En elaboración'&&e!=='Obsoleto'))].sort();
 
   const menuEmp = document.getElementById('ednew-emp-menu');
   if(menuEmp) menuEmp.innerHTML = empresas.map(e=>`
@@ -3786,9 +3789,9 @@ function getEdNewGerSel(){ return [...document.querySelectorAll('#ednew-ger-menu
 function onEdNewEmpChange(){
   const emps = getEdNewEmpSel();
   const gers = [...new Set([
-    ...PLAN_DATA.filter(d=>emps.length===0||emps.includes(d.empresa)).map(d=>d.gerencia),
-    ...VIGENTES_DATA.filter(d=>emps.length===0||emps.includes(d.empresa)).map(d=>d.gerencia)
-  ].filter(g=>g&&g!=='-'))].sort();
+    ...PLAN_DATA.filter(d=>emps.length===0||emps.includes(d.empresa||'')).map(d=>d.gerencia),
+    ...VIGENTES_DATA.filter(d=>emps.length===0||emps.includes(d.empresa||'')).map(d=>d.gerencia)
+  ].filter(g=>g&&g!=='-'&&g!=='Vigente'&&g!=='En elaboración'))].sort();
 
   const menuGer = document.getElementById('ednew-ger-menu');
   if(menuGer) menuGer.innerHTML = gers.map(g=>`
@@ -3825,189 +3828,202 @@ function renderDashboardED(){
   renderKPIsED(plan, vigentes);
   renderChartMesED(plan, vigentes);
   renderDonaED(vigentes);
-  renderRankingED(plan);
+  renderRankingED(plan, vigentes);
   renderTopVencidosED(plan);
+  renderElaboracionPorGerencia(vigentes);
   renderEdNewListado();
 }
 
 // ── KPIs ──────────────────────────────────────────────────────────────────
 function renderKPIsED(plan, vigentes){
+  const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const hoy = new Date();
+  const mesActual = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0');
+
   // 1. % Cumplimiento = Ejecutado ✅ / total con Acción=Actualizar
-  const planAct  = plan.filter(d=>d.accion==='Actualizar');
-  const ejecutados = planAct.filter(d=>d.enPlazo && d.enPlazo.includes('Ejecutado'));
+  const planAct    = plan.filter(d=>d.accion==='Actualizar');
+  const ejecutados = planAct.filter(d=>d.enPlazo&&d.enPlazo.includes('Ejecutado'));
   const pct = planAct.length ? Math.round(ejecutados.length/planAct.length*100) : 0;
   document.getElementById('kpi-cumpl-pct').textContent   = pct+'%';
   document.getElementById('kpi-cumpl-num').textContent   = ejecutados.length;
   document.getElementById('kpi-cumpl-total').textContent = planAct.length;
   document.getElementById('kpi-cumpl-bar').style.width   = pct+'%';
 
-  // 2. Vencidos = En plazo=Vencido ⛔ + (estado=Pendiente o En proceso circuito)
-  const vencidos = plan.filter(d=>
-    d.enPlazo && d.enPlazo.includes('Vencido') &&
-    (d.estado.includes('Pendiente') || d.estado.includes('En proceso'))
-  );
+  // 2. Vencidos = En plazo contiene "Vencido"
+  const vencidos = plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido'));
   document.getElementById('kpi-vencidos').textContent = vencidos.length;
 
-  // 3. En circuito activo
-  const circuito = plan.filter(d=>d.estado && d.estado.includes('En proceso'));
-  document.getElementById('kpi-circuito').textContent = circuito.length;
+  // 3. En elaboración = estadoVig='En elaboración' en hoja vigentes
+  const elaboracion = vigentes.filter(d=>d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci'));
+  document.getElementById('kpi-circuito').textContent = elaboracion.length;
 
   // 4. No planificadas del mes actual
-  const hoy = new Date();
-  const mesActual = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0');
   const noplanif = vigentes.filter(d=>{
-    if(!d.planificado || !d.planificado.includes('No planificado')) return false;
-    if(!d.fechaPub) return false;
+    if(!d.planificado) return false;
+    const esNoPlan = d.planificado.toLowerCase().includes('no planificado') || d.planificado.includes('⚠️');
+    if(!esNoPlan||!d.fechaPub) return false;
     return d.fechaPub.substring(0,7)===mesActual;
   });
   document.getElementById('kpi-noplanif').textContent = noplanif.length;
 }
 
-// ── Gráfico barras por mes ────────────────────────────────────────────────
+// ── Gráfico: Planificados vs Vigentes por mes ─────────────────────────────
 function renderChartMesED(plan, vigentes){
   const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const mesMap = {};
 
-  // A tiempo/Ejecutado y Vencido desde Planificacion
+  // Planificados por mes (fechaProg) — con vencidos marcados
   plan.filter(d=>d.accion==='Actualizar'&&d.fechaProg).forEach(d=>{
     const f=new Date(d.fechaProg); if(isNaN(f)) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
-    if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),atiempo:0,vencido:0,noplan:0};
-    if(d.enPlazo && (d.enPlazo.includes('Ejecutado')||d.enPlazo.includes('Dentro'))) mesMap[key].atiempo++;
-    else if(d.enPlazo && d.enPlazo.includes('Vencido')) mesMap[key].vencido++;
+    if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,venc:0,vigPlan:0,vigNoPlan:0};
+    mesMap[key].plan++;
+    if(d.enPlazo&&d.enPlazo.includes('Vencido')) mesMap[key].venc++;
   });
 
-  // No planificado desde Vigentes
-  vigentes.filter(d=>d.planificado&&d.planificado.includes('No planificado')&&d.fechaPub).forEach(d=>{
+  // Vigentes por mes (fechaPub) — diferenciados por campo planificado (col J)
+  vigentes.filter(d=>d.fechaPub&&d.estadoVig&&d.estadoVig.toLowerCase().includes('vigente')&&!d.estadoVig.toLowerCase().includes('no')).forEach(d=>{
     const f=new Date(d.fechaPub); if(isNaN(f)) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
-    if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),atiempo:0,vencido:0,noplan:0};
-    mesMap[key].noplan++;
+    if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,venc:0,vigPlan:0,vigNoPlan:0};
+    const esNoPlan=d.planificado&&(d.planificado.toLowerCase().includes('no planificado')||d.planificado.includes('⚠️'));
+    if(esNoPlan) mesMap[key].vigNoPlan++;
+    else mesMap[key].vigPlan++;
   });
 
   const sorted = Object.entries(mesMap).sort((a,b)=>a[0].localeCompare(b[0]));
+  const maxVal = Math.max(...sorted.map(([,v])=>Math.max(v.plan,v.vigPlan+v.vigNoPlan)),1);
   const container = document.getElementById('ednew-chart-mes');
   if(!container) return;
 
   container.innerHTML = sorted.length ? sorted.map(([key,v])=>{
-    const total = v.atiempo+v.vencido+v.noplan||1;
-    const pA = Math.round(v.atiempo/total*100);
-    const pV = Math.round(v.vencido/total*100);
-    const pN = Math.round(v.noplan/total*100);
     const label = MESES[v.m]+' '+v.y;
-    const isSel = edNewCross?.tipo==='mes'&&edNewCross?.valor===key;
-    return `<div style="cursor:pointer;border-radius:6px;padding:4px 6px;transition:background .15s;background:${isSel?'#eef2ff':''};border-left:3px solid ${isSel?'var(--blue)':'transparent'}"
-      onclick="setEdNewCross('mes','${key}','${label}')">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="color:var(--text2);font-weight:${isSel?'700':'400'}">${label}${isSel?' ✓':''}</span>
+    // Barra planificados: sin vencer (azul) + vencidos (rojo)
+    const pPlan = Math.round((v.plan-v.venc)/maxVal*100);
+    const pVenc = Math.round(v.venc/maxVal*100);
+    // Barra vigentes: planificados (verde) + no planificados (morado)
+    const pVigP = Math.round(v.vigPlan/maxVal*100);
+    const pVigN = Math.round(v.vigNoPlan/maxVal*100);
+    const isSelMes = edNewCross?.tipo==='mes'&&edNewCross?.valor===key;
+    const isSelPlan = edNewCross?.tipo==='mes-plan'&&edNewCross?.valor===key;
+    const isSelVig  = edNewCross?.tipo==='mes-vig'&&edNewCross?.valor===key;
+
+    return `<div style="border-radius:6px;padding:5px 8px;margin-bottom:4px;background:${isSelMes||isSelPlan||isSelVig?'#eef2ff':''};border-left:3px solid ${isSelMes||isSelPlan||isSelVig?'var(--blue)':'transparent'}">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+        <span style="font-weight:600;color:var(--text2)">${label}</span>
         <span style="font-size:10px;color:var(--text3)">
-          <b style="color:#27ae60">${v.atiempo}</b> ok · <b style="color:#c0392b">${v.vencido}</b> venc · <b style="color:#7c3aed">${v.noplan}</b> nplan
+          <b style="color:#3D5BA9">${v.plan}</b> plan (<b style="color:#c0392b">${v.venc}</b> venc) ·
+          <b style="color:#27ae60">${v.vigPlan}</b> pub plan ·
+          <b style="color:#7c3aed">${v.vigNoPlan}</b> pub nplan
         </span>
       </div>
-      <div style="height:8px;border-radius:4px;overflow:hidden;display:flex;background:#f0f0f0">
-        <div style="width:${pA}%;background:#27ae60"></div>
-        <div style="width:${pV}%;background:#c0392b"></div>
-        <div style="width:${pN}%;background:#7c3aed"></div>
+      <!-- Barra planificados -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <span style="font-size:9px;color:var(--text3);min-width:60px">Planificados</span>
+        <div style="flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex;cursor:pointer"
+          onclick="setEdNewCross('mes-plan','${key}','📋 Planif. ${label}')">
+          <div style="width:${pPlan}%;background:#3D5BA9;opacity:.8" title="Sin vencer: ${v.plan-v.venc}"></div>
+          <div style="width:${pVenc}%;background:#c0392b" title="Vencidos: ${v.venc}"></div>
+        </div>
+        <span style="font-size:9px;color:#3D5BA9;min-width:20px;text-align:right">${v.plan}</span>
+      </div>
+      <!-- Barra vigentes -->
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:9px;color:var(--text3);min-width:60px">Vigentes</span>
+        <div style="flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex;cursor:pointer"
+          onclick="setEdNewCross('mes-vig','${key}','📗 Vigentes ${label}')">
+          <div style="width:${pVigP}%;background:#27ae60" title="Planificados: ${v.vigPlan}"></div>
+          <div style="width:${pVigN}%;background:#7c3aed" title="No planificados: ${v.vigNoPlan}"></div>
+        </div>
+        <span style="font-size:9px;color:#27ae60;min-width:20px;text-align:right">${v.vigPlan+v.vigNoPlan}</span>
       </div>
     </div>`;
   }).join('') : '<div style="text-align:center;padding:20px;color:var(--text3)">Sin datos</div>';
 }
 
-// ── Dona: distribución vigencia ───────────────────────────────────────────
-function renderDonaED(vigentes){
-  const cnt = {Vigente:0,'En elaboración':0,Obsoleto:0,Otro:0};
-  vigentes.forEach(d=>{ const k=d.planificado&&d.planificado.includes('No planificado')?'No planificado':d.planificado||'Otro'; });
-
-  // Usar REPORTE_DATA si disponible, si no contar vigentes
-  const base = REPORTE_DATA.length ? REPORTE_DATA : vigentes;
-  base.forEach(d=>{
-    const ev = d.estadoVig||d.planificado||'';
-    if(ev.includes('Vigente')&&!ev.includes('No')) cnt['Vigente']++;
-    else if(ev.includes('elabor')) cnt['En elaboración']++;
-    else if(ev.includes('Obsoleto')) cnt['Obsoleto']++;
-  });
-
-  const total = cnt.Vigente+cnt['En elaboración']+cnt.Obsoleto||1;
-  const items = [
-    {label:'Vigente',n:cnt.Vigente,color:'#27ae60'},
-    {label:'En elaboración',n:cnt['En elaboración'],color:'#e67e22'},
-    {label:'Obsoleto',n:cnt.Obsoleto,color:'#c0392b'}
-  ];
-
-  const container = document.getElementById('ednew-chart-dona');
-  if(!container) return;
-  container.innerHTML = items.map(it=>{
-    const pct = Math.round(it.n/total*100);
-    return `<div style="margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="display:flex;align-items:center;gap:6px">
-          <span style="width:10px;height:10px;border-radius:50%;background:${it.color};display:inline-block"></span>
-          ${it.label}
-        </span>
-        <span style="font-weight:700;color:${it.color}">${it.n} <span style="color:var(--text3);font-weight:400">(${pct}%)</span></span>
-      </div>
-      <div style="height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden">
-        <div style="width:${pct}%;height:100%;background:${it.color};border-radius:4px"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── Ranking % cumplimiento por gerencia ───────────────────────────────────
-function renderRankingED(plan){
+// ── Tabla por gerencia: avance + vencidos ─────────────────────────────────
+function renderRankingED(plan, vigentes){
   const gerMap = {};
   plan.filter(d=>d.accion==='Actualizar').forEach(d=>{
-    const g = d.gerencia||'Sin gerencia';
-    if(!gerMap[g]) gerMap[g]={plan:0,exec:0};
+    const g=d.gerencia||'Sin gerencia';
+    if(!gerMap[g]) gerMap[g]={plan:0,pub:0,venc:0,elab:0};
     gerMap[g].plan++;
-    if(d.enPlazo&&d.enPlazo.includes('Ejecutado')) gerMap[g].exec++;
+    if(d.enPlazo&&d.enPlazo.includes('Ejecutado')) gerMap[g].pub++;
+    if(d.enPlazo&&d.enPlazo.includes('Vencido'))   gerMap[g].venc++;
+  });
+  // En elaboración desde vigentes por gerencia
+  vigentes.filter(d=>d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci')).forEach(d=>{
+    const g=d.gerencia||'Sin gerencia';
+    if(!gerMap[g]) gerMap[g]={plan:0,pub:0,venc:0,elab:0};
+    gerMap[g].elab++;
   });
 
-  const entries = Object.entries(gerMap).map(([g,v])=>({g,pct:v.plan?Math.round(v.exec/v.plan*100):0,plan:v.plan,exec:v.exec}))
-    .sort((a,b)=>b.pct-a.pct);
-
+  const entries = Object.entries(gerMap).sort((a,b)=>(b[1].plan)-(a[1].plan));
   const container = document.getElementById('ednew-chart-ranking');
   if(!container) return;
-  container.innerHTML = entries.length ? entries.map(it=>{
-    const shortG = it.g.replace('Gerencia de ','').replace('Gerencia ','');
-    const color = it.pct>=80?'#27ae60':it.pct>=50?'#e67e22':'#c0392b';
-    const isSel = edNewCross?.tipo==='gerencia'&&edNewCross?.valor===it.g;
-    return `<div style="cursor:pointer;border-radius:6px;padding:4px 6px;transition:background .15s;background:${isSel?'#eef2ff':''};border-left:3px solid ${isSel?color:'transparent'}"
-      onclick="setEdNewCross('gerencia','${it.g.replace(/'/g,"\'")}','${shortG}')">
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
-        <span style="color:var(--text2);font-weight:${isSel?'700':'400'}">${shortG}${isSel?' ✓':''}</span>
-        <span style="font-weight:700;color:${color}">${it.pct}% <span style="color:var(--text3);font-weight:400;font-size:10px">(${it.exec}/${it.plan})</span></span>
-      </div>
-      <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden">
-        <div style="width:${it.pct}%;height:100%;background:${color};border-radius:3px"></div>
-      </div>
-    </div>`;
-  }).join('') : '<div style="text-align:center;padding:20px;color:var(--text3)">Sin datos</div>';
+
+  container.innerHTML = entries.length ? `
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead style="position:sticky;top:0;background:#f0f4ff">
+        <tr>
+          <th style="padding:6px 8px;text-align:left;color:var(--blue)">Gerencia</th>
+          <th style="padding:6px 8px;text-align:center;color:var(--blue)">Planif.</th>
+          <th style="padding:6px 8px;text-align:center;color:#27ae60">Publicados</th>
+          <th style="padding:6px 8px;text-align:center;color:var(--blue)">% Avance</th>
+          <th style="padding:6px 8px;text-align:center;color:#c0392b">Vencidos</th>
+          <th style="padding:6px 8px;text-align:center;color:#e67e22">En elab.</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(([g,v])=>{
+          const pct=v.plan?Math.round(v.pub/v.plan*100):0;
+          const color=pct>=80?'#27ae60':pct>=50?'#e67e22':'#c0392b';
+          const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+          const isSel=edNewCross?.tipo==='gerencia'&&edNewCross?.valor===g;
+          return `<tr style="border-bottom:1px solid var(--border);cursor:pointer;background:${isSel?'#eef2ff':''}"
+            onclick="setEdNewCross('gerencia','${g.replace(/'/g,"\'")}','${shortG}')"
+            onmouseover="this.style.background='#f5f8ff'" onmouseout="this.style.background='${isSel?'#eef2ff':''}'">
+            <td style="padding:6px 8px;font-weight:${isSel?'700':'400'}">${shortG}${isSel?' ✓':''}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:700;color:var(--blue)">${v.plan}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:700;color:#27ae60">${v.pub}</td>
+            <td style="padding:6px 8px;text-align:center">
+              <span style="font-weight:700;color:${color}">${pct}%</span>
+              <div style="height:4px;background:#f0f0f0;border-radius:2px;margin-top:2px;overflow:hidden">
+                <div style="width:${pct}%;height:100%;background:${color}"></div>
+              </div>
+            </td>
+            <td style="padding:6px 8px;text-align:center;font-weight:700;color:${v.venc>0?'#c0392b':'#ccc'}">${v.venc||'—'}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:700;color:${v.elab>0?'#e67e22':'#ccc'}">${v.elab||'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>` : '<div style="text-align:center;padding:20px;color:var(--text3)">Sin datos</div>';
 }
 
-// ── Top vencidos ──────────────────────────────────────────────────────────
+// ── Top vencidos (con Unidad y Gerencia) ──────────────────────────────────
 function renderTopVencidosED(plan){
-  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
   const vencidos = plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido')&&d.fechaProg)
-    .map(d=>{
-      const f=new Date(d.fechaProg);
-      const dias=isNaN(f)?0:Math.floor((hoy-f)/(1000*60*60*24));
-      return {...d,dias};
-    }).sort((a,b)=>b.dias-a.dias).slice(0,10);
+    .map(d=>{ const f=new Date(d.fechaProg); return {...d,dias:isNaN(f)?0:Math.floor((hoy-f)/(86400000))}; })
+    .sort((a,b)=>b.dias-a.dias).slice(0,10);
 
-  const tbody = document.getElementById('ednew-tbody-vencidos');
+  const tbody=document.getElementById('ednew-tbody-vencidos');
   if(!tbody) return;
-  tbody.innerHTML = vencidos.length ? vencidos.map(d=>`
-    <tr style="border-bottom:1px solid var(--border)">
+  tbody.innerHTML = vencidos.length ? vencidos.map(d=>{
+    const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
+    return `<tr style="border-bottom:1px solid var(--border);cursor:pointer"
+      onclick="setEdNewCross('cod','${d.cod}','📄 ${d.cod}')"
+      onmouseover="this.style.background='#fff8f8'" onmouseout="this.style.background=''">
       <td style="padding:5px 8px;font-family:monospace;color:var(--blue);font-size:10px">${d.cod}</td>
-      <td style="padding:5px 8px;font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc}">${d.desc}</td>
-      <td style="padding:5px 8px;font-size:10px;color:var(--text2)">${d.responsable||'—'}</td>
+      <td style="padding:5px 8px;font-size:10px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc}">${d.desc}</td>
+      <td style="padding:5px 8px;font-size:10px;color:var(--text2)">${shortG||'—'}</td>
+      <td style="padding:5px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
       <td style="padding:5px 8px;text-align:center;font-weight:700;color:#c0392b">${d.dias}d</td>
-    </tr>`).join('')
-    : '<tr><td colspan="4" style="text-align:center;padding:16px;color:#27ae60">✅ Sin documentos vencidos</td></tr>';
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
 }
 
-// ── Listado de documentos (filtra según cross filter) ─────────────────────
+// ── Listado de documentos ─────────────────────────────────────────────────
 function renderEdNewListado(){
   let plan     = getEdNewPlanFiltrado();
   let vigentes = getEdNewVigentesFiltrado();
@@ -4016,87 +4032,103 @@ function renderEdNewListado(){
   const tbody  = document.getElementById('ednew-tbody-listado');
   if(!tbody) return;
 
-  // Aplicar cross filter
-  let docsListado = [];
-  let labelFiltro = 'Todos los documentos';
+  let docsListado=[], usaVigentes=false, labelFiltro='Todos los documentos';
 
   if(edNewCross){
-    const {tipo,valor,label} = edNewCross;
+    const {tipo,valor,label}=edNewCross;
     if(tipo==='cumplimiento'){
-      docsListado = plan.filter(d=>d.accion==='Actualizar'&&d.enPlazo&&d.enPlazo.includes('Ejecutado'));
-      labelFiltro = '✅ Publicados / Ejecutados';
+      docsListado=plan.filter(d=>d.accion==='Actualizar'&&d.enPlazo&&d.enPlazo.includes('Ejecutado'));
+      labelFiltro='✅ Publicados / Ejecutados';
     } else if(tipo==='vencidos'){
-      docsListado = plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido')&&(d.estado.includes('Pendiente')||d.estado.includes('En proceso')));
-      labelFiltro = '⛔ Vencidos';
+      docsListado=plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido'));
+      labelFiltro='⛔ Vencidos';
     } else if(tipo==='circuito'){
-      docsListado = plan.filter(d=>d.estado&&d.estado.includes('En proceso'));
-      labelFiltro = '🔄 En circuito activo';
+      // En elaboración desde vigentes
+      usaVigentes=true;
+      docsListado=vigentes.filter(d=>d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci'));
+      labelFiltro='🔄 En elaboración (vigentes)';
     } else if(tipo==='noplanificado'){
-      // Mostrar vigentes no planificadas
-      const hoy=new Date(); const mesActual=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0');
-      const vNP=vigentes.filter(d=>d.planificado&&d.planificado.includes('No planificado')&&d.fechaPub&&d.fechaPub.substring(0,7)===mesActual);
-      tbody.innerHTML = vNP.length ? vNP.map(d=>`
-        <tr style="border-bottom:1px solid var(--border)">
-          <td style="padding:6px 8px;font-family:monospace;color:var(--blue);font-size:10px">${d.cod}</td>
-          <td style="padding:6px 8px;font-size:11px">${d.desc}</td>
-          <td style="padding:6px 8px;font-size:10px;color:var(--text2)">—</td>
-          <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${(d.gerencia||'').replace('Gerencia de ','')}</td>
-          <td style="padding:6px 8px;font-size:10px">—</td>
-          <td style="padding:6px 8px;text-align:center"><span style="background:#f5e6ff;color:#7c3aed;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">No planificado</span></td>
-          <td style="padding:6px 8px;text-align:center;color:var(--text3)">${d.fechaPub||'—'}</td>
-          <td style="padding:6px 8px">—</td>
-          <td style="padding:6px 8px">—</td>
-        </tr>`).join('')
-        : '<tr><td colspan="9" style="text-align:center;padding:16px;color:var(--text3)">Sin docs no planificadas este mes</td></tr>';
-      if(titulo) titulo.textContent = `⚠️ No planificadas del mes (${vNP.length})`;
-      return;
+      usaVigentes=true;
+      const hoy=new Date(); const mes=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0');
+      docsListado=vigentes.filter(d=>d.planificado&&d.planificado.includes('No planificado')&&d.fechaPub&&d.fechaPub.substring(0,7)===mes);
+      labelFiltro='⚠️ No planificadas del mes';
+    } else if(tipo==='mes-plan'){
+      const [y,m]=valor.split('-');
+      docsListado=plan.filter(d=>{ if(!d.fechaProg) return false; const f=new Date(d.fechaProg); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
+      labelFiltro=label;
+    } else if(tipo==='mes-vig'){
+      usaVigentes=true;
+      const [y,m]=valor.split('-');
+      docsListado=vigentes.filter(d=>{ if(!d.fechaPub) return false; const f=new Date(d.fechaPub); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
+      labelFiltro=label;
     } else if(tipo==='mes'){
-      const [y,m] = valor.split('-');
-      docsListado = plan.filter(d=>{
-        if(!d.fechaProg) return false;
-        const f=new Date(d.fechaProg);
-        return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m;
-      });
-      labelFiltro = '📅 '+label;
+      const [y,m]=valor.split('-');
+      docsListado=plan.filter(d=>{ if(!d.fechaProg) return false; const f=new Date(d.fechaProg); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
+      labelFiltro='📅 '+label;
     } else if(tipo==='gerencia'){
-      docsListado = plan.filter(d=>d.gerencia===valor);
-      labelFiltro = '🏢 '+label;
+      docsListado=plan.filter(d=>d.gerencia===valor);
+      labelFiltro='🏢 '+label;
+    } else if(tipo==='elab-ger'){
+      usaVigentes=true;
+      docsListado=vigentes.filter(d=>d.gerencia===valor&&d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci'));
+      labelFiltro=label;
+    } else if(tipo==='cod'){
+      docsListado=plan.filter(d=>d.cod===valor);
+      labelFiltro='📄 '+valor;
     }
   } else {
-    docsListado = plan;
+    docsListado=plan;
   }
 
-  // Aplicar búsqueda
-  if(bus) docsListado = docsListado.filter(d=>d.cod.toLowerCase().includes(bus)||d.desc.toLowerCase().includes(bus));
+  if(bus) docsListado=docsListado.filter(d=>(d.cod||'').toLowerCase().includes(bus)||(d.desc||'').toLowerCase().includes(bus));
+  if(titulo) titulo.textContent=`${labelFiltro} (${docsListado.length})`;
 
-  if(titulo) titulo.textContent = `${labelFiltro} (${docsListado.length} documentos)`;
+  if(usaVigentes){
+    // Render desde vigentes
+    tbody.innerHTML=docsListado.length?docsListado.map(d=>{
+      const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
+      const esNoPlan=d.planificado&&d.planificado.includes('No planificado');
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:6px 8px;font-family:monospace;color:var(--blue);font-size:10px">${d.cod}</td>
+        <td style="padding:6px 8px;font-size:11px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc}">${d.desc}</td>
+        <td style="padding:6px 8px;font-size:10px;color:var(--text2)">—</td>
+        <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${shortG}</td>
+        <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
+        <td style="padding:6px 8px;text-align:center">—</td>
+        <td style="padding:6px 8px;text-align:center;font-size:10px">${d.fechaVig||d.fechaPub||'—'}</td>
+        <td style="padding:6px 8px;font-size:10px">—</td>
+        <td style="padding:6px 8px;text-align:center">
+          <span style="background:${esNoPlan?'#f5e6ff':'#e8f8f0'};color:${esNoPlan?'#7c3aed':'#27ae60'};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">
+            ${esNoPlan?'No planif.':'Planificado'}
+          </span>
+        </td>
+      </tr>`;
+    }).join(''):'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
+    return;
+  }
 
-  const ENPLAZO_COLORS = {'Ejecutado ✅':'#27ae60','Dentro de plazo 🟢':'#3D5BA9','Vencido ⛔':'#c0392b'};
-  tbody.innerHTML = docsListado.length ? docsListado.map(d=>{
-    const epColor = ENPLAZO_COLORS[d.enPlazo]||'#999';
-    const shortG = (d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
+  const EP={'Ejecutado ✅':'#27ae60','Dentro de plazo 🟢':'#3D5BA9','Vencido ⛔':'#c0392b'};
+  tbody.innerHTML=docsListado.length?docsListado.map(d=>{
+    const epColor=EP[d.enPlazo]||'#999';
+    const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
     return `<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:6px 8px;font-family:monospace;color:var(--blue);font-size:10px;white-space:nowrap">${d.cod}</td>
       <td style="padding:6px 8px;font-size:11px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc}">${d.desc}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.tipo||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${shortG||'—'}</td>
-      <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.responsable||'—'}</td>
+      <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${d.accion||'—'}</span></td>
-      <td style="padding:6px 8px;text-align:center;font-size:10px;color:var(--text2);white-space:nowrap">${d.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaProg||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:${epColor}22;color:${epColor};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap">${d.enPlazo||'—'}</span></td>
     </tr>`;
-  }).join('') : '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos con estos filtros</td></tr>';
+  }).join(''):'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
 }
 
 // ── Cross filter ──────────────────────────────────────────────────────────
-function setEdNewCross(tipo, valor, label){
-  if(edNewCross?.tipo===tipo&&edNewCross?.valor===valor){
-    edNewCross=null;
-  } else {
-    edNewCross={tipo,valor,label:label||valor};
-  }
-  // Mostrar/ocultar indicador
+function setEdNewCross(tipo,valor,label){
+  if(edNewCross?.tipo===tipo&&edNewCross?.valor===valor){ edNewCross=null; }
+  else { edNewCross={tipo,valor,label:label||valor}; }
   const ind=document.getElementById('ednew-cross-indicator');
   const lbl=document.getElementById('ednew-cross-label');
   if(ind&&lbl){
@@ -4115,6 +4147,35 @@ function limpiarCrossED(){
 
 // ── Hook: cargar cuando se entra a Estado Docs ────────────────────────────
 const _origShowPage = typeof showPage==='function' ? showPage : null;
+
+// ── En elaboración por gerencia ───────────────────────────────────────────
+function renderElaboracionPorGerencia(vigentes){
+  const gerMap={};
+  vigentes.filter(d=>d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci')).forEach(d=>{
+    const g=d.gerencia||'Sin gerencia';
+    gerMap[g]=(gerMap[g]||0)+1;
+  });
+  const entries=Object.entries(gerMap).sort((a,b)=>b[1]-a[1]);
+  const maxN=Math.max(...entries.map(([,v])=>v),1);
+  const container=document.getElementById('ednew-chart-elab');
+  if(!container) return;
+  container.innerHTML=entries.length?entries.map(([g,n])=>{
+    const shortG=g.replace('Gerencia de ','').replace('Gerencia ','');
+    const pct=Math.round(n/maxN*100);
+    const isSel=edNewCross?.tipo==='elab-ger'&&edNewCross?.valor===g;
+    return `<div style="cursor:pointer;border-radius:6px;padding:4px 8px;transition:background .15s;background:${isSel?'#fff8f0':''};border-left:3px solid ${isSel?'#e67e22':'transparent'}"
+      onclick="setEdNewCross('elab-ger','${g.replace(/'/g,"\'")}','🔄 En elab. - ${shortG}')"
+      onmouseover="this.style.background='#fff8f0'" onmouseout="this.style.background='${isSel?'#fff8f0':''}'">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="color:var(--text2);font-weight:${isSel?'700':'400'}">${shortG}${isSel?' ✓':''}</span>
+        <span style="font-weight:700;color:#e67e22">${n} docs</span>
+      </div>
+      <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:#e67e22;border-radius:4px"></div>
+      </div>
+    </div>`;
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--text3)">Sin documentos en elaboración</div>';
+}
 </script>
 </body>
 </html>
