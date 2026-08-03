@@ -490,47 +490,47 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- LAYOUT: Evolución mensual izquierda + 3 cuadros derecha -->
-    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px;align-items:start">
-
-      <!-- Evolución mensual -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Evolución mensual — Planificados vs Vigentes</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic en las barras para filtrar el listado</div>
-        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:10px;flex-wrap:wrap">
+    <!-- Evolución mensual — arriba ancho completo, más compacto -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Evolución mensual — Planificados vs Publicados 2026</div>
+        <div style="display:flex;gap:10px;font-size:10px;flex-wrap:wrap">
           <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Planificados</span>
           <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencidos</span>
           <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Pub. planificados</span>
           <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Pub. no planificados</span>
         </div>
-        <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:6px;max-height:480px;overflow-y:auto"></div>
+      </div>
+      <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto"></div>
+    </div>
+
+    <!-- Fila 2: Avance gerencia (izq) + Top vencidos y En elaboración (der) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+
+      <!-- Avance por gerencia -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic para filtrar</div>
+        <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
+          <div id="ednew-chart-ranking"></div>
+        </div>
       </div>
 
-      <!-- Columna derecha: 3 cuadros apilados -->
+      <!-- Columna derecha: Top vencidos + En elaboración apilados -->
       <div style="display:flex;flex-direction:column;gap:14px">
-
-        <!-- Avance por gerencia -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic para filtrar</div>
-          <div style="overflow-x:auto;max-height:180px;overflow-y:auto">
-            <div id="ednew-chart-ranking"></div>
-          </div>
-        </div>
-
         <!-- Top vencidos -->
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Por días de atraso · clic para ver</div>
-          <div style="overflow-x:auto;max-height:180px;overflow-y:auto">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Por días de atraso · clic para ver</div>
+          <div style="overflow-x:auto;max-height:160px;overflow-y:auto">
             <table style="width:100%;border-collapse:collapse;font-size:10px">
               <thead style="position:sticky;top:0;background:#fff3f3">
                 <tr>
-                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Código</th>
-                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Descripción</th>
-                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Gerencia</th>
-                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Unidad</th>
-                  <th style="padding:5px 6px;text-align:center;color:#c0392b">Días</th>
+                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Código</th>
+                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Descripción</th>
+                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Estado actual</th>
+                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Responsable</th>
+                  <th style="padding:4px 5px;text-align:center;color:#c0392b">Días</th>
                 </tr>
               </thead>
               <tbody id="ednew-tbody-vencidos"></tbody>
@@ -541,10 +541,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         <!-- En elaboración por gerencia -->
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Hoja Vigentes · clic para filtrar</div>
-          <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto"></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Hoja Vigentes · clic para filtrar</div>
+          <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto"></div>
         </div>
-
       </div>
     </div>
 
@@ -3878,18 +3877,18 @@ function renderChartMesED(plan, vigentes){
   const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const mesMap = {};
 
-  // Planificados por mes (fechaProg) — con vencidos marcados
-  plan.filter(d=>d.accion==='Actualizar'&&d.fechaProg).forEach(d=>{
-    const f=new Date(d.fechaProg); if(isNaN(f)) return;
+  // Planificados por mes (col I: fechaProg) — todos los docs planificados, solo 2026
+  plan.filter(d=>d.fechaProg).forEach(d=>{
+    const f=new Date(d.fechaProg); if(isNaN(f)||f.getFullYear()!==2026) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
     if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,venc:0,vigPlan:0,vigNoPlan:0};
     mesMap[key].plan++;
-    if(d.enPlazo&&d.enPlazo.includes('Vencido')) mesMap[key].venc++;
+    if(d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔'))) mesMap[key].venc++;
   });
 
-  // Vigentes por mes (fechaPub) — diferenciados por campo planificado (col J)
-  vigentes.filter(d=>d.fechaPub&&d.estadoVig&&d.estadoVig.toLowerCase().includes('vigente')&&!d.estadoVig.toLowerCase().includes('no')).forEach(d=>{
-    const f=new Date(d.fechaPub); if(isNaN(f)) return;
+  // Publicados desde vigentes: col H='Vigente', col K=fechaPub, col J=planificado — solo 2026
+  vigentes.filter(d=>d.fechaPub&&d.estadoVig&&d.estadoVig.trim()==='Vigente').forEach(d=>{
+    const f=new Date(d.fechaPub); if(isNaN(f)||f.getFullYear()!==2026) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
     if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,venc:0,vigPlan:0,vigNoPlan:0};
     const esNoPlan=d.planificado&&(d.planificado.toLowerCase().includes('no planificado')||d.planificado.includes('⚠️'));
@@ -4016,15 +4015,16 @@ function renderTopVencidosED(plan){
   const tbody=document.getElementById('ednew-tbody-vencidos');
   if(!tbody) return;
   tbody.innerHTML = vencidos.length ? vencidos.map(d=>{
-    const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
+    const shortDesc=(d.desc||'').length>30?d.desc.substring(0,30)+'…':d.desc||'';
+    const shortResp=(d.responsable||'—').split('(')[0].trim();
     return `<tr style="border-bottom:1px solid var(--border);cursor:pointer"
       onclick="setEdNewCross('cod','${d.cod}','📄 ${d.cod}')"
       onmouseover="this.style.background='#fff8f8'" onmouseout="this.style.background=''">
-      <td style="padding:5px 8px;font-family:monospace;color:var(--blue);font-size:10px">${d.cod}</td>
-      <td style="padding:5px 8px;font-size:10px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc}">${d.desc}</td>
-      <td style="padding:5px 8px;font-size:10px;color:var(--text2)">${shortG||'—'}</td>
-      <td style="padding:5px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
-      <td style="padding:5px 8px;text-align:center;font-weight:700;color:#c0392b">${d.dias}d</td>
+      <td style="padding:4px 5px;font-family:monospace;color:var(--blue);font-size:10px;white-space:nowrap">${d.cod}</td>
+      <td style="padding:4px 5px;font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc||''}">${shortDesc}</td>
+      <td style="padding:4px 5px;font-size:10px;color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.estadoActual||''}">${d.estadoActual||'—'}</td>
+      <td style="padding:4px 5px;font-size:10px;color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.responsable||''}">${shortResp}</td>
+      <td style="padding:4px 5px;text-align:center;font-weight:700;color:#c0392b;white-space:nowrap">${d.dias}d</td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
 }
