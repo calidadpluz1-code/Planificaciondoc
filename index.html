@@ -490,60 +490,61 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- Evolución mensual — arriba ancho completo, más compacto -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
-        <div style="font-size:13px;font-weight:700;color:var(--text)">Evolución mensual — Planificados vs Publicados 2026</div>
-        <div style="display:flex;gap:10px;font-size:10px;flex-wrap:wrap">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Planificados</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencidos</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Pub. planificados</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Pub. no planificados</span>
-        </div>
-      </div>
-      <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto"></div>
-    </div>
+    <!-- Fila 1: Evolución mensual (izq) + Avance por gerencia (der) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:start">
 
-    <!-- Fila 2: Avance gerencia (izq) + Top vencidos y En elaboración (der) -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <!-- Evolución mensual -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">Evolución mensual 2026</div>
+        <div style="display:flex;gap:10px;font-size:10px;margin-bottom:8px;flex-wrap:wrap">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Plan.</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Venc.</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Pub. plan.</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Pub. no plan.</span>
+        </div>
+        <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto"></div>
+      </div>
 
       <!-- Avance por gerencia -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic para filtrar</div>
-        <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
+        <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
           <div id="ednew-chart-ranking"></div>
         </div>
       </div>
+    </div>
 
-      <!-- Columna derecha: Top vencidos + En elaboración apilados -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <!-- Top vencidos -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Por días de atraso · clic para ver</div>
-          <div style="overflow-x:auto;max-height:160px;overflow-y:auto">
-            <table style="width:100%;border-collapse:collapse;font-size:10px">
-              <thead style="position:sticky;top:0;background:#fff3f3">
-                <tr>
-                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Código</th>
-                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Descripción</th>
-                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Estado actual</th>
-                  <th style="padding:4px 5px;text-align:left;color:#c0392b">Responsable</th>
-                  <th style="padding:4px 5px;text-align:center;color:#c0392b">Días</th>
-                </tr>
-              </thead>
-              <tbody id="ednew-tbody-vencidos"></tbody>
-            </table>
-          </div>
-        </div>
+    <!-- Fila 2: Top vencidos (izq) + En elaboración (der) -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
 
-        <!-- En elaboración por gerencia -->
-        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Hoja Vigentes · clic para filtrar</div>
-          <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto"></div>
+      <!-- Top vencidos -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Por días de atraso · clic para ver</div>
+        <div style="overflow-x:auto;max-height:260px;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:10px">
+            <thead style="position:sticky;top:0;background:#fff3f3">
+              <tr>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Código</th>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Descripción</th>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Estado</th>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Gerencia</th>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Unidad</th>
+                <th style="padding:5px 6px;text-align:left;color:#c0392b">Responsable</th>
+                <th style="padding:5px 6px;text-align:center;color:#c0392b">Días</th>
+              </tr>
+            </thead>
+            <tbody id="ednew-tbody-vencidos"></tbody>
+          </table>
         </div>
+      </div>
+
+      <!-- En elaboración por gerencia -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Hoja Vigentes · clic para filtrar</div>
+        <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:4px;max-height:260px;overflow-y:auto"></div>
       </div>
     </div>
 
@@ -565,6 +566,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
                 <th style="padding:7px 8px;text-align:left;color:var(--blue)">Responsable</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Acción</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Prog.</th>
+                <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado actual</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">En plazo</th>
               </tr>
@@ -3897,18 +3899,19 @@ function renderChartMesED(plan, vigentes){
   });
 
   const sorted = Object.entries(mesMap).sort((a,b)=>a[0].localeCompare(b[0]));
-  const maxVal = Math.max(...sorted.map(([,v])=>Math.max(v.plan,v.vigPlan+v.vigNoPlan)),1);
   const container = document.getElementById('ednew-chart-mes');
   if(!container) return;
 
   container.innerHTML = sorted.length ? sorted.map(([key,v])=>{
     const label = MESES[v.m]+' '+v.y;
-    // Barra planificados: sin vencer (azul) + vencidos (rojo)
-    const pPlan = Math.round((v.plan-v.venc)/maxVal*100);
-    const pVenc = Math.round(v.venc/maxVal*100);
-    // Barra vigentes: planificados (verde) + no planificados (morado)
-    const pVigP = Math.round(v.vigPlan/maxVal*100);
-    const pVigN = Math.round(v.vigNoPlan/maxVal*100);
+    // Barra planificados: ocupa 100%, dividida entre sin vencer y vencidos
+    const totalPlan = v.plan || 1;
+    const pPlan = Math.round((v.plan-v.venc)/totalPlan*100);
+    const pVenc = Math.round(v.venc/totalPlan*100);
+    // Barra vigentes: ocupa 100%, dividida entre planificados y no planificados
+    const totalVig = (v.vigPlan+v.vigNoPlan) || 1;
+    const pVigP = Math.round(v.vigPlan/totalVig*100);
+    const pVigN = Math.round(v.vigNoPlan/totalVig*100);
     const isSelMes = edNewCross?.tipo==='mes'&&edNewCross?.valor===key;
     const isSelPlan = edNewCross?.tipo==='mes-plan'&&edNewCross?.valor===key;
     const isSelVig  = edNewCross?.tipo==='mes-vig'&&edNewCross?.valor===key;
@@ -4010,23 +4013,26 @@ function renderTopVencidosED(plan){
   const hoy=new Date(); hoy.setHours(0,0,0,0);
   const vencidos = plan.filter(d=>d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔'))&&d.fechaProg)
     .map(d=>{ const f=new Date(d.fechaProg); return {...d,dias:isNaN(f)?0:Math.floor((hoy-f)/(86400000))}; })
-    .sort((a,b)=>b.dias-a.dias).slice(0,10);
+    .sort((a,b)=>b.dias-a.dias);
 
   const tbody=document.getElementById('ednew-tbody-vencidos');
   if(!tbody) return;
   tbody.innerHTML = vencidos.length ? vencidos.map(d=>{
-    const shortDesc=(d.desc||'').length>30?d.desc.substring(0,30)+'…':d.desc||'';
+    const shortDesc=(d.desc||'').length>28?d.desc.substring(0,28)+'…':d.desc||'';
+    const shortG=(d.gerencia||'').replace('Gerencia de ','').replace('Gerencia ','');
     const shortResp=(d.responsable||'—').split('(')[0].trim();
     return `<tr style="border-bottom:1px solid var(--border);cursor:pointer"
       onclick="setEdNewCross('cod','${d.cod}','📄 ${d.cod}')"
       onmouseover="this.style.background='#fff8f8'" onmouseout="this.style.background=''">
-      <td style="padding:4px 5px;font-family:monospace;color:var(--blue);font-size:10px;white-space:nowrap">${d.cod}</td>
-      <td style="padding:4px 5px;font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc||''}">${shortDesc}</td>
-      <td style="padding:4px 5px;font-size:10px;color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.estadoActual||''}">${d.estadoActual||'—'}</td>
-      <td style="padding:4px 5px;font-size:10px;color:var(--text2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.responsable||''}">${shortResp}</td>
-      <td style="padding:4px 5px;text-align:center;font-weight:700;color:#c0392b;white-space:nowrap">${d.dias}d</td>
+      <td style="padding:5px 6px;font-family:monospace;color:var(--blue);font-size:10px;white-space:nowrap">${d.cod}</td>
+      <td style="padding:5px 6px;font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.desc||''}">${shortDesc}</td>
+      <td style="padding:5px 6px;font-size:10px;color:var(--text2);white-space:nowrap">${d.estado||'—'}</td>
+      <td style="padding:5px 6px;font-size:10px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.gerencia||''}">${shortG||'—'}</td>
+      <td style="padding:5px 6px;font-size:10px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.unidad||''}">${d.unidad||'—'}</td>
+      <td style="padding:5px 6px;font-size:10px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.responsable||''}">${shortResp}</td>
+      <td style="padding:5px 6px;text-align:center;font-weight:700;color:#c0392b;white-space:nowrap">${d.dias}d</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="5" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
 }
 
 // ── Listado de documentos ─────────────────────────────────────────────────
@@ -4125,6 +4131,7 @@ function renderEdNewListado(){
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${d.accion||'—'}</span></td>
       <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;font-size:10px;color:var(--text2);white-space:nowrap">${d.estado||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:${epColor}22;color:${epColor};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap">${d.enPlazo||'—'}</span></td>
     </tr>`;
