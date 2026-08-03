@@ -490,55 +490,62 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       </div>
     </div>
 
-    <!-- GRÁFICO: Evolución mensual (ancho completo) -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
-      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Evolución mensual — Planificados vs Vigentes</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en las barras para filtrar el listado</div>
-      <div style="display:flex;gap:16px;font-size:10px;margin-bottom:10px;flex-wrap:wrap">
-        <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Planificados (sin vencer)</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencidos</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Vigentes planificados</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Vigentes no planificados</span>
-      </div>
-      <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
-    </div>
+    <!-- LAYOUT: Evolución mensual izquierda + 3 cuadros derecha -->
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px;align-items:start">
 
-    <!-- GRÁFICOS FILA 2: Tabla gerencias + Top vencidos -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <!-- Tabla por gerencia -->
+      <!-- Evolución mensual -->
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Haz clic en una fila para filtrar el listado</div>
-        <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
-          <div id="ednew-chart-ranking"></div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Evolución mensual — Planificados vs Vigentes</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic en las barras para filtrar el listado</div>
+        <div style="display:flex;gap:12px;font-size:10px;margin-bottom:10px;flex-wrap:wrap">
+          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Planificados</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;border-radius:2px;margin-right:3px"></span>Vencidos</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Pub. planificados</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Pub. no planificados</span>
         </div>
+        <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:6px;max-height:480px;overflow-y:auto"></div>
       </div>
-      <!-- Top vencidos -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Ordenados por días de atraso · clic para ver en listado</div>
-        <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <thead style="position:sticky;top:0;background:#fff3f3">
-              <tr>
-                <th style="padding:6px 8px;text-align:left;color:#c0392b">Código</th>
-                <th style="padding:6px 8px;text-align:left;color:#c0392b">Descripción</th>
-                <th style="padding:6px 8px;text-align:left;color:#c0392b">Gerencia</th>
-                <th style="padding:6px 8px;text-align:left;color:#c0392b">Unidad</th>
-                <th style="padding:6px 8px;text-align:center;color:#c0392b">Días</th>
-              </tr>
-            </thead>
-            <tbody id="ednew-tbody-vencidos"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- En elaboración por gerencia -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
-      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Docs en elaboración de la hoja Vigentes · clic para filtrar</div>
-      <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto"></div>
+      <!-- Columna derecha: 3 cuadros apilados -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <!-- Avance por gerencia -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Avance por gerencia</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Haz clic para filtrar</div>
+          <div style="overflow-x:auto;max-height:180px;overflow-y:auto">
+            <div id="ednew-chart-ranking"></div>
+          </div>
+        </div>
+
+        <!-- Top vencidos -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">⛔ Top documentos vencidos</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Por días de atraso · clic para ver</div>
+          <div style="overflow-x:auto;max-height:180px;overflow-y:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:10px">
+              <thead style="position:sticky;top:0;background:#fff3f3">
+                <tr>
+                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Código</th>
+                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Descripción</th>
+                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Gerencia</th>
+                  <th style="padding:5px 6px;text-align:left;color:#c0392b">Unidad</th>
+                  <th style="padding:5px 6px;text-align:center;color:#c0392b">Días</th>
+                </tr>
+              </thead>
+              <tbody id="ednew-tbody-vencidos"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- En elaboración por gerencia -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🔄 En elaboración por gerencia</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Hoja Vigentes · clic para filtrar</div>
+          <div id="ednew-chart-elab" style="display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto"></div>
+        </div>
+
+      </div>
     </div>
 
     <!-- LISTADO DE DOCUMENTOS -->
