@@ -3834,7 +3834,6 @@ function renderDashboardED(){
   const vigentes = getEdNewVigentesFiltrado();
   renderKPIsED(plan, vigentes);
   renderChartMesED(plan, vigentes);
-  renderDonaED(vigentes);
   renderRankingED(plan, vigentes);
   renderTopVencidosED(plan);
   renderElaboracionPorGerencia(vigentes);
@@ -3849,7 +3848,7 @@ function renderKPIsED(plan, vigentes){
 
   // 1. % Cumplimiento = Ejecutado ✅ / total con Acción=Actualizar
   const planAct    = plan.filter(d=>d.accion==='Actualizar');
-  const ejecutados = planAct.filter(d=>d.enPlazo&&d.enPlazo.includes('Ejecutado'));
+  const ejecutados = planAct.filter(d=>d.enPlazo&&(d.enPlazo.includes('Ejecutado')||d.enPlazo.toLowerCase().includes('ejecutado')||d.enPlazo.includes('✅')));
   const pct = planAct.length ? Math.round(ejecutados.length/planAct.length*100) : 0;
   document.getElementById('kpi-cumpl-pct').textContent   = pct+'%';
   document.getElementById('kpi-cumpl-num').textContent   = ejecutados.length;
@@ -3857,7 +3856,7 @@ function renderKPIsED(plan, vigentes){
   document.getElementById('kpi-cumpl-bar').style.width   = pct+'%';
 
   // 2. Vencidos = En plazo contiene "Vencido"
-  const vencidos = plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido'));
+  const vencidos = plan.filter(d=>d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔')||d.enPlazo.toLowerCase().includes('vencido')));
   document.getElementById('kpi-vencidos').textContent = vencidos.length;
 
   // 3. En elaboración = estadoVig='En elaboración' en hoja vigentes
@@ -3955,8 +3954,8 @@ function renderRankingED(plan, vigentes){
     const g=d.gerencia||'Sin gerencia';
     if(!gerMap[g]) gerMap[g]={plan:0,pub:0,venc:0,elab:0};
     gerMap[g].plan++;
-    if(d.enPlazo&&d.enPlazo.includes('Ejecutado')) gerMap[g].pub++;
-    if(d.enPlazo&&d.enPlazo.includes('Vencido'))   gerMap[g].venc++;
+    if(d.enPlazo&&(d.enPlazo.includes('Ejecutado')||d.enPlazo.includes('✅'))) gerMap[g].pub++;
+    if(d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔')))   gerMap[g].venc++;
   });
   // En elaboración desde vigentes por gerencia
   vigentes.filter(d=>d.estadoVig&&d.estadoVig.toLowerCase().includes('elaboraci')).forEach(d=>{
@@ -4010,7 +4009,7 @@ function renderRankingED(plan, vigentes){
 // ── Top vencidos (con Unidad y Gerencia) ──────────────────────────────────
 function renderTopVencidosED(plan){
   const hoy=new Date(); hoy.setHours(0,0,0,0);
-  const vencidos = plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido')&&d.fechaProg)
+  const vencidos = plan.filter(d=>d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔'))&&d.fechaProg)
     .map(d=>{ const f=new Date(d.fechaProg); return {...d,dias:isNaN(f)?0:Math.floor((hoy-f)/(86400000))}; })
     .sort((a,b)=>b.dias-a.dias).slice(0,10);
 
@@ -4044,10 +4043,10 @@ function renderEdNewListado(){
   if(edNewCross){
     const {tipo,valor,label}=edNewCross;
     if(tipo==='cumplimiento'){
-      docsListado=plan.filter(d=>d.accion==='Actualizar'&&d.enPlazo&&d.enPlazo.includes('Ejecutado'));
+      docsListado=plan.filter(d=>d.accion==='Actualizar'&&d.enPlazo&&(d.enPlazo.includes('Ejecutado')||d.enPlazo.includes('✅')));
       labelFiltro='✅ Publicados / Ejecutados';
     } else if(tipo==='vencidos'){
-      docsListado=plan.filter(d=>d.enPlazo&&d.enPlazo.includes('Vencido'));
+      docsListado=plan.filter(d=>d.enPlazo&&(d.enPlazo.includes('Vencido')||d.enPlazo.includes('⛔')));
       labelFiltro='⛔ Vencidos';
     } else if(tipo==='circuito'){
       // En elaboración desde vigentes
