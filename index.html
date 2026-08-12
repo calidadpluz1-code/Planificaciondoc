@@ -497,9 +497,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">Evolución mensual 2026</div>
         <div style="display:flex;gap:10px;font-size:10px;margin-bottom:8px;flex-wrap:wrap">
-          <span><span style="display:inline-block;width:10px;height:10px;background:#3D5BA9;border-radius:2px;margin-right:3px;opacity:.8"></span>Plan.</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--blue);border-radius:2px;margin-right:3px"></span>Plan.</span>
           <span><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:2px;margin-right:3px"></span>Pub. plan.</span>
-          <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:3px"></span>Pub. no plan.</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--yellow);border-radius:2px;margin-right:3px"></span>Pub. no plan.</span>
         </div>
         <div id="ednew-chart-mes" style="display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto"></div>
       </div>
@@ -3866,8 +3866,8 @@ function renderKPIsED(plan, vigentes){
   const noplanif = vigentes.filter(d=>{
     if(!d.planificado) return false;
     const esNoPlan = d.planificado.toLowerCase().includes('no planificado') || d.planificado.includes('⚠️');
-    if(!esNoPlan||!d.fechaPub) return false;
-    return d.fechaPub.substring(0,7)===mesActual;
+    if(!esNoPlan||!d.fechaVig) return false;
+    return d.fechaVig.substring(0,7)===mesActual;
   });
   document.getElementById('kpi-noplanif').textContent = noplanif.length;
 }
@@ -3877,19 +3877,18 @@ function renderChartMesED(plan, vigentes){
   const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const mesMap = {};
 
-  // Planificados por mes: prioriza fecha reprogramada (col P) si existe, si no fecha prog. (col I) — solo 2026
+  // Planificados por mes: solo columna I (Fecha Prog.) — es la planificación inicial, solo 2026
   plan.forEach(d=>{
-    const fechaEfectiva = d.fechaReprog || d.fechaProg;
-    if(!fechaEfectiva) return;
-    const f=new Date(fechaEfectiva); if(isNaN(f)||f.getFullYear()!==2026) return;
+    if(!d.fechaProg) return;
+    const f=new Date(d.fechaProg); if(isNaN(f)||f.getFullYear()!==2026) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
     if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,vigPlan:0,vigNoPlan:0};
     mesMap[key].plan++;
   });
 
-  // Publicados desde vigentes: col H='Vigente', col K=fechaPub, col J=planificado — solo 2026
-  vigentes.filter(d=>d.fechaPub&&d.estadoVig&&d.estadoVig.trim()==='Vigente').forEach(d=>{
-    const f=new Date(d.fechaPub); if(isNaN(f)||f.getFullYear()!==2026) return;
+  // Publicados desde vigentes: col H='Vigente', col D=fechaVig, col J=planificado — solo 2026
+  vigentes.filter(d=>d.fechaVig&&d.estadoVig&&d.estadoVig.trim()==='Vigente').forEach(d=>{
+    const f=new Date(d.fechaVig); if(isNaN(f)||f.getFullYear()!==2026) return;
     const key=f.getFullYear()+'-'+String(f.getMonth()).padStart(2,'0');
     if(!mesMap[key]) mesMap[key]={y:f.getFullYear(),m:f.getMonth(),plan:0,vigPlan:0,vigNoPlan:0};
     const esNoPlan=d.planificado&&(d.planificado.toLowerCase().includes('no planificado')||d.planificado.includes('⚠️'));
@@ -3909,24 +3908,28 @@ function renderChartMesED(plan, vigentes){
     const pVigN = Math.round(v.vigNoPlan/totalVig*100);
     const isSelPlan = edNewCross?.tipo==='mes-plan'&&edNewCross?.valor===key;
     const isSelVig  = edNewCross?.tipo==='mes-vig'&&edNewCross?.valor===key;
+    // Barra de planificados: si no hay nada planificado ese mes, se deja en blanco con borde
+    const barraPlan = v.plan>0
+      ? `<div style="width:100%;background:var(--blue)" title="Planificados: ${v.plan}"></div>`
+      : '';
 
     return `<div style="border-radius:6px;padding:5px 8px;margin-bottom:4px;background:${isSelPlan||isSelVig?'#eef2ff':''};border-left:3px solid ${isSelPlan||isSelVig?'var(--blue)':'transparent'}">
       <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
         <span style="font-weight:600;color:var(--text2)">${label}</span>
         <span style="font-size:10px;color:var(--text3)">
-          <b style="color:#3D5BA9">${v.plan}</b> plan ·
+          <b style="color:var(--blue)">${v.plan}</b> plan ·
           <b style="color:#27ae60">${v.vigPlan}</b> pub plan ·
-          <b style="color:#7c3aed">${v.vigNoPlan}</b> pub nplan
+          <b style="color:#c9960c">${v.vigNoPlan}</b> pub nplan
         </span>
       </div>
       <!-- Barra planificados -->
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
         <span style="font-size:9px;color:var(--text3);min-width:60px">Planificados</span>
-        <div style="flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex;cursor:pointer"
+        <div style="flex:1;height:9px;background:#fff;border:${v.plan>0?'none':'1px solid #333'};border-radius:4px;overflow:hidden;display:flex;cursor:pointer"
           onclick="setEdNewCross('mes-plan','${key}','📋 Planif. ${label}')">
-          <div style="width:100%;background:#3D5BA9;opacity:.8" title="Planificados: ${v.plan}"></div>
+          ${barraPlan}
         </div>
-        <span style="font-size:9px;color:#3D5BA9;min-width:20px;text-align:right">${v.plan}</span>
+        <span style="font-size:9px;color:var(--blue);min-width:20px;text-align:right">${v.plan}</span>
       </div>
       <!-- Barra publicados -->
       <div style="display:flex;align-items:center;gap:6px">
@@ -3934,7 +3937,7 @@ function renderChartMesED(plan, vigentes){
         <div style="flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden;display:flex;cursor:pointer"
           onclick="setEdNewCross('mes-vig','${key}','📗 Publicados ${label}')">
           <div style="width:${pVigP}%;background:#27ae60" title="Planificados: ${v.vigPlan}"></div>
-          <div style="width:${pVigN}%;background:#7c3aed" title="No planificados: ${v.vigNoPlan}"></div>
+          <div style="width:${pVigN}%;background:var(--yellow)" title="No planificados: ${v.vigNoPlan}"></div>
         </div>
         <span style="font-size:9px;color:#27ae60;min-width:20px;text-align:right">${v.vigPlan+v.vigNoPlan}</span>
       </div>
@@ -4053,16 +4056,16 @@ function renderEdNewListado(){
     } else if(tipo==='noplanificado'){
       usaVigentes=true;
       const hoy=new Date(); const mes=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0');
-      docsListado=vigentes.filter(d=>d.planificado&&d.planificado.includes('No planificado')&&d.fechaPub&&d.fechaPub.substring(0,7)===mes);
+      docsListado=vigentes.filter(d=>d.planificado&&d.planificado.includes('No planificado')&&d.fechaVig&&d.fechaVig.substring(0,7)===mes);
       labelFiltro='⚠️ No planificadas del mes';
     } else if(tipo==='mes-plan'){
       const [y,m]=valor.split('-');
-      docsListado=plan.filter(d=>{ const fe=d.fechaReprog||d.fechaProg; if(!fe) return false; const f=new Date(fe); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
+      docsListado=plan.filter(d=>{ if(!d.fechaProg) return false; const f=new Date(d.fechaProg); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
       labelFiltro=label;
     } else if(tipo==='mes-vig'){
       usaVigentes=true;
       const [y,m]=valor.split('-');
-      docsListado=vigentes.filter(d=>{ if(!d.fechaPub) return false; const f=new Date(d.fechaPub); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
+      docsListado=vigentes.filter(d=>{ if(!d.fechaVig) return false; const f=new Date(d.fechaVig); return !isNaN(f)&&f.getFullYear()===+y&&f.getMonth()===+m; });
       labelFiltro=label;
     } else if(tipo==='mes'){
       const [y,m]=valor.split('-');
@@ -4096,7 +4099,7 @@ function renderEdNewListado(){
       const esNoPlan=d.planificado&&d.planificado.includes('No planificado');
       const pInfo=planByCod[d.cod];
       const accion=pInfo?.accion||'—';
-      const fechaEf=pInfo?(pInfo.fechaReprog||pInfo.fechaProg):'';
+      const fechaEf=pInfo?pInfo.fechaProg:'';
       const estado=pInfo?.estado||'—';
       const estadoActual=pInfo?.estadoActual||'—';
       const enPlazo=pInfo?.enPlazo||'';
