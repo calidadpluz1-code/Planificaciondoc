@@ -561,11 +561,13 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
                 <th style="padding:7px 10px;text-align:left;color:var(--blue)">Descripción</th>
                 <th style="padding:7px 8px;text-align:left;color:var(--blue)">Tipo</th>
                 <th style="padding:7px 8px;text-align:left;color:var(--blue)">Gerencia</th>
-                <th style="padding:7px 8px;text-align:left;color:var(--blue)">Responsable</th>
+                <th style="padding:7px 8px;text-align:left;color:var(--blue)">Unidad</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Acción</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Prog.</th>
+                <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Vigencia</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado actual</th>
+                <th style="padding:7px 8px;text-align:left;color:var(--blue)">Responsable</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">En plazo</th>
               </tr>
             </thead>
@@ -4099,9 +4101,9 @@ function renderEdNewListado(){
       const esNoPlan=d.planificado&&d.planificado.includes('No planificado');
       const pInfo=planByCod[d.cod];
       const accion=pInfo?.accion||'—';
-      const fechaEf=pInfo?pInfo.fechaProg:'';
       const estado=pInfo?.estado||'—';
       const estadoActual=pInfo?.estadoActual||'—';
+      const responsable=pInfo?.responsable||'—';
       const enPlazo=pInfo?.enPlazo||'';
       const epColor=EP[enPlazo]||'#999';
       const estadoBadge = enPlazo
@@ -4114,12 +4116,14 @@ function renderEdNewListado(){
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${shortG}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
         <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${accion}</span></td>
-        <td style="padding:6px 8px;text-align:center;font-size:10px">${fechaEf||d.fechaVig||d.fechaPub||'—'}</td>
+        <td style="padding:6px 8px;text-align:center;font-size:10px">${pInfo?.fechaProg||'—'}</td>
+        <td style="padding:6px 8px;text-align:center;font-size:10px">${d.fechaVig||'—'}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${estado}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${estadoActual}</td>
+        <td style="padding:6px 8px;font-size:10px;color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${responsable}">${responsable}</td>
         <td style="padding:6px 8px;text-align:center">${estadoBadge}</td>
       </tr>`;
-    }).join(''):'<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
+    }).join(''):'<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
     return;
   }
 
@@ -4135,11 +4139,13 @@ function renderEdNewListado(){
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${d.accion||'—'}</span></td>
       <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaVig||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2);white-space:nowrap">${d.estado||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
+      <td style="padding:6px 8px;font-size:10px;color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.responsable||''}">${d.responsable||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:${epColor}22;color:${epColor};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap">${d.enPlazo||'—'}</span></td>
     </tr>`;
-  }).join(''):'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
+  }).join(''):'<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
 }
 
 // ── Cross filter ──────────────────────────────────────────────────────────
