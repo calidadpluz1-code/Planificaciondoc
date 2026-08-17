@@ -451,6 +451,27 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
         </button>
         <div id="ednew-ger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:260px;max-height:240px;overflow-y:auto"></div>
       </div>
+      <label class="flbl">Subgerencia</label>
+      <div id="ednew-subger-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('ednew-subger')" style="min-width:210px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;display:flex;justify-content:space-between;align-items:center">
+          <span id="ednew-subger-label">Todas las subgerencias</span><span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="ednew-subger-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:260px;max-height:240px;overflow-y:auto"></div>
+      </div>
+      <label class="flbl">Unidad</label>
+      <div id="ednew-uni-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('ednew-uni')" style="min-width:210px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;display:flex;justify-content:space-between;align-items:center">
+          <span id="ednew-uni-label">Todas las unidades</span><span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="ednew-uni-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:260px;max-height:240px;overflow-y:auto"></div>
+      </div>
+      <label class="flbl">Estado</label>
+      <div id="ednew-estado-dropdown" style="position:relative;display:inline-block">
+        <button onclick="toggleDropdown('ednew-estado')" style="min-width:210px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;display:flex;justify-content:space-between;align-items:center">
+          <span id="ednew-estado-label">Todos los estados</span><span style="font-size:10px;color:var(--text3)">▾</span>
+        </button>
+        <div id="ednew-estado-menu" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:260px;max-height:240px;overflow-y:auto"></div>
+      </div>
       <!-- Indicador filtro activo -->
       <div id="ednew-cross-indicator" style="display:none;align-items:center;gap:8px">
         <span id="ednew-cross-label" style="font-size:12px;color:var(--blue);font-weight:600;background:#eef2ff;padding:3px 10px;border-radius:20px"></span>
@@ -564,6 +585,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
                 <th style="padding:7px 8px;text-align:left;color:var(--blue)">Unidad</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Acción</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Prog.</th>
+                <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Reprog.</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Fecha Vigencia</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado</th>
                 <th style="padding:7px 8px;text-align:center;color:var(--blue)">Estado actual</th>
@@ -1658,7 +1680,7 @@ function goToResumen(ger){
 function toggleDropdown(prefix){
   const menu=document.getElementById(prefix+'-menu');
   // Cerrar todos los demás
-  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes','ednew-emp','ednew-ger'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes','ednew-emp','ednew-ger','ednew-subger','ednew-uni','ednew-estado'].forEach(p=>{
     if(p!==prefix){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
   if(menu) menu.style.display=menu.style.display==='none'?'block':'none';
@@ -1670,7 +1692,8 @@ function updateDropdownLabel(prefix, noun){
   const sel=getChecked(prefix);
   const lbl=document.getElementById(prefix+'-label');
   if(!lbl) return;
-  lbl.textContent = sel.length===0 ? 'Todas las '+noun : sel.length===1 ? sel[0] : sel.length+' selec.';
+  const articulo = noun==='estados' ? 'Todos los ' : 'Todas las ';
+  lbl.textContent = sel.length===0 ? articulo+noun : sel.length===1 ? sel[0] : sel.length+' selec.';
 }
 function buildCheckboxMenu(menuId, items, onChangeFn){
   const menu=document.getElementById(menuId);
@@ -1683,7 +1706,7 @@ function buildCheckboxMenu(menuId, items, onChangeFn){
 }
 // Cerrar dropdowns al click fuera
 document.addEventListener('click',e=>{
-  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes','ednew-emp','ednew-ger'].forEach(p=>{
+  ['r-ger','r-uni','r-accion','r-emp','r-avance','rd-ger','rd-uni','rd-accion','g-ger','g-uni','g-mes','g-emp','dash-emp','ed-emp','ed-ger','ed-uni','ed-cat','ed-vig','pve-mes','cat-bar-mes','ednew-emp','ednew-ger','ednew-subger','ednew-uni','ednew-estado'].forEach(p=>{
     const dd=document.getElementById(p+'-dropdown');
     if(dd&&!dd.contains(e.target)){ const m=document.getElementById(p+'-menu'); if(m) m.style.display='none'; }
   });
@@ -3774,7 +3797,7 @@ async function cargarDashboardED(){
   renderDashboardED();
 }
 
-// ── Poblar filtros Empresa y Gerencia ─────────────────────────────────────
+// ── Poblar filtros Empresa, Gerencia, Subgerencia, Unidad y Estado ────────
 function poblarFiltrosEdNew(){
   // Empresas desde ambas fuentes — campo empresa correcto
   const empresas = [...new Set([
@@ -3788,11 +3811,22 @@ function poblarFiltrosEdNew(){
       <input type="checkbox" value="${e}" onchange="onEdNewEmpChange();updateDropdownLabel('ednew-emp','empresas')"> ${e}
     </label>`).join('');
 
+  // Estado (solo de Planificación) — no depende de cascada, valores fijos del flujo documental
+  const estados = [...new Set(PLAN_DATA.map(d=>d.estado||'').filter(e=>e&&e!=='-'))].sort();
+  const menuEstado = document.getElementById('ednew-estado-menu');
+  if(menuEstado) menuEstado.innerHTML = estados.map(e=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+      <input type="checkbox" value="${e}" onchange="updateDropdownLabel('ednew-estado','estados');renderDashboardED()"> ${e}
+    </label>`).join('');
+
   onEdNewEmpChange();
 }
 
 function getEdNewEmpSel(){ return [...document.querySelectorAll('#ednew-emp-menu input:checked')].map(c=>c.value); }
 function getEdNewGerSel(){ return [...document.querySelectorAll('#ednew-ger-menu input:checked')].map(c=>c.value); }
+function getEdNewSubgerSel(){ return [...document.querySelectorAll('#ednew-subger-menu input:checked')].map(c=>c.value); }
+function getEdNewUniSel(){ return [...document.querySelectorAll('#ednew-uni-menu input:checked')].map(c=>c.value); }
+function getEdNewEstadoSel(){ return [...document.querySelectorAll('#ednew-estado-menu input:checked')].map(c=>c.value); }
 
 function onEdNewEmpChange(){
   const emps = getEdNewEmpSel();
@@ -3804,27 +3838,75 @@ function onEdNewEmpChange(){
   const menuGer = document.getElementById('ednew-ger-menu');
   if(menuGer) menuGer.innerHTML = gers.map(g=>`
     <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
-      <input type="checkbox" value="${g}" onchange="updateDropdownLabel('ednew-ger','gerencias');renderDashboardED()"> ${g.replace('Gerencia de ','').replace('Gerencia ','')}
+      <input type="checkbox" value="${g}" onchange="onEdNewGerChange();updateDropdownLabel('ednew-ger','gerencias')"> ${g.replace('Gerencia de ','').replace('Gerencia ','')}
+    </label>`).join('');
+  onEdNewGerChange();
+}
+
+function onEdNewGerChange(){
+  const emps = getEdNewEmpSel();
+  const gers = getEdNewGerSel();
+  const filtEmpGer = (d)=> (emps.length===0||emps.includes(d.empresa||'')) && (gers.length===0||gers.includes(d.gerencia||''));
+  const subgers = [...new Set([
+    ...PLAN_DATA.filter(filtEmpGer).map(d=>d.subgerencia),
+    ...VIGENTES_DATA.filter(filtEmpGer).map(d=>d.subger)
+  ].filter(s=>s&&s!=='-'))].sort();
+
+  const menuSubger = document.getElementById('ednew-subger-menu');
+  if(menuSubger) menuSubger.innerHTML = subgers.map(s=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+      <input type="checkbox" value="${s}" onchange="onEdNewSubgerChange();updateDropdownLabel('ednew-subger','subgerencias')"> ${s}
+    </label>`).join('');
+  onEdNewSubgerChange();
+}
+
+function onEdNewSubgerChange(){
+  const emps    = getEdNewEmpSel();
+  const gers    = getEdNewGerSel();
+  const subgers = getEdNewSubgerSel();
+  const filtEmpGerSub = (subgerField)=> (d)=>
+    (emps.length===0||emps.includes(d.empresa||'')) &&
+    (gers.length===0||gers.includes(d.gerencia||'')) &&
+    (subgers.length===0||subgers.includes(d[subgerField]||''));
+  const unis = [...new Set([
+    ...PLAN_DATA.filter(filtEmpGerSub('subgerencia')).map(d=>d.unidad),
+    ...VIGENTES_DATA.filter(filtEmpGerSub('subger')).map(d=>d.unidad)
+  ].filter(u=>u&&u!=='-'))].sort();
+
+  const menuUni = document.getElementById('ednew-uni-menu');
+  if(menuUni) menuUni.innerHTML = unis.map(u=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;font-size:12px">
+      <input type="checkbox" value="${u}" onchange="updateDropdownLabel('ednew-uni','unidades');renderDashboardED()"> ${u}
     </label>`).join('');
   renderDashboardED();
 }
 
 // ── Filtrar datos según filtros activos ───────────────────────────────────
 function getEdNewPlanFiltrado(){
-  const emps = getEdNewEmpSel();
-  const gers = getEdNewGerSel();
+  const emps    = getEdNewEmpSel();
+  const gers    = getEdNewGerSel();
+  const subgers = getEdNewSubgerSel();
+  const unis    = getEdNewUniSel();
+  const estados = getEdNewEstadoSel();
   return PLAN_DATA.filter(d=>{
     if(emps.length>0 && !emps.includes(d.empresa)) return false;
     if(gers.length>0 && !gers.includes(d.gerencia)) return false;
+    if(subgers.length>0 && !subgers.includes(d.subgerencia)) return false;
+    if(unis.length>0 && !unis.includes(d.unidad)) return false;
+    if(estados.length>0 && !estados.includes(d.estado)) return false;
     return true;
   });
 }
 function getEdNewVigentesFiltrado(){
-  const emps = getEdNewEmpSel();
-  const gers = getEdNewGerSel();
+  const emps    = getEdNewEmpSel();
+  const gers    = getEdNewGerSel();
+  const subgers = getEdNewSubgerSel();
+  const unis    = getEdNewUniSel();
   return VIGENTES_DATA.filter(d=>{
     if(emps.length>0 && !emps.includes(d.empresa)) return false;
     if(gers.length>0 && !gers.includes(d.gerencia)) return false;
+    if(subgers.length>0 && !subgers.includes(d.subger)) return false;
+    if(unis.length>0 && !unis.includes(d.unidad)) return false;
     return true;
   });
 }
@@ -4117,13 +4199,14 @@ function renderEdNewListado(){
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
         <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${accion}</span></td>
         <td style="padding:6px 8px;text-align:center;font-size:10px">${pInfo?.fechaProg||'—'}</td>
+        <td style="padding:6px 8px;text-align:center;font-size:10px">${pInfo?.fechaReprog||'—'}</td>
         <td style="padding:6px 8px;text-align:center;font-size:10px">${d.fechaVig||'—'}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${estado}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${estadoActual}</td>
         <td style="padding:6px 8px;font-size:10px;color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${responsable}">${responsable}</td>
         <td style="padding:6px 8px;text-align:center">${estadoBadge}</td>
       </tr>`;
-    }).join(''):'<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
+    }).join(''):'<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
     return;
   }
 
@@ -4139,13 +4222,14 @@ function renderEdNewListado(){
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.unidad||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:#3D5BA922;color:#3D5BA9;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${d.accion||'—'}</span></td>
       <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaReprog||'—'}</td>
       <td style="padding:6px 8px;text-align:center;font-size:10px;white-space:nowrap">${d.fechaVig||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2);white-space:nowrap">${d.estado||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2)">${d.estadoActual||'—'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.responsable||''}">${d.responsable||'—'}</td>
       <td style="padding:6px 8px;text-align:center"><span style="background:${epColor}22;color:${epColor};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap">${d.enPlazo||'—'}</span></td>
     </tr>`;
-  }).join(''):'<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
+  }).join(''):'<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--text3)">Sin documentos</td></tr>';
 }
 
 // ── Cross filter ──────────────────────────────────────────────────────────
