@@ -551,6 +551,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
                 <th style="padding:5px 6px;text-align:left;color:#c0392b">Estado</th>
                 <th style="padding:5px 6px;text-align:left;color:#c0392b">Gerencia</th>
                 <th style="padding:5px 6px;text-align:left;color:#c0392b">Unidad</th>
+                <th style="padding:5px 6px;text-align:center;color:#c0392b">Fecha Reprog.</th>
                 <th style="padding:5px 6px;text-align:center;color:#c0392b">Días</th>
               </tr>
             </thead>
@@ -846,6 +847,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
                 <th style="padding:8px 10px;text-align:left;font-size:11px;color:var(--blue);width:140px">Unidad</th>
                 <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue);white-space:nowrap;width:100px">Acción</th>
                 <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue);white-space:nowrap;width:90px">Fecha Prog.</th>
+                <th style="padding:8px 10px;text-align:center;font-size:11px;color:var(--blue);white-space:nowrap;width:90px">Fecha Reprog.</th>
               </tr>
             </thead>
             <tbody id="res-docs-tbody"></tbody>
@@ -2745,8 +2747,10 @@ function renderEstadoTabla(){
 function exportReporteDashboard(){
   if(!DOCS||!DOCS.length){ showToast('No hay datos cargados','#c0392b'); return; }
   const acciones=['Actualizar','Mantener','Transferir','Eliminar'];
-  const headers=['Gerencia','Unidad','Código','Descripción','Tipo','Acción','Fecha Programada','Observación'];
+  const headers=['Gerencia','Unidad','Código','Descripción','Tipo','Acción','Fecha Programada','Observación','Cantidad de Reprog.'];
   const rows=[headers];
+  const planFullByCod={};
+  (typeof PLAN_DATA!=='undefined'?PLAN_DATA:[]).forEach(d=>{ if(d.cod && !planFullByCod[d.cod]) planFullByCod[d.cod]=d; });
   getGers().forEach(g=>{
     getUnis(g).forEach(u=>{
       getDocs(g,u).forEach(d=>{
@@ -2754,14 +2758,15 @@ function exportReporteDashboard(){
         if(!acciones.includes(p.accion)) return; // excluye Pendientes
         rows.push([
           g, u, d.cod, d.desc, d.tipo||'',
-          p.accion, p.fechaProg||'', p.obs||''
+          p.accion, p.fechaProg||'', p.obs||'',
+          planFullByCod[d.cod]?.cantReprog||'0'
         ]);
       });
       // Nuevos documentos propuestos por esta unidad
       nuevos.filter(n=>n.gerencia===g&&n.unidad===u).forEach(n=>{
         rows.push([
           g, u, 'NUEVO', n.titulo, n.tipo||'',
-          'Nuevo', n.fecha||'', n.just||''
+          'Nuevo', n.fecha||'', n.just||'', ''
         ]);
       });
     });
@@ -2770,7 +2775,7 @@ function exportReporteDashboard(){
   const wb=XLSX.utils.book_new();
   const ws=XLSX.utils.aoa_to_sheet(rows);
   // Anchos de columna
-  ws['!cols']=[{wch:32},{wch:26},{wch:14},{wch:48},{wch:18},{wch:14},{wch:18},{wch:32}];
+  ws['!cols']=[{wch:32},{wch:26},{wch:14},{wch:48},{wch:18},{wch:14},{wch:18},{wch:32},{wch:16}];
   // Estilo de cabecera (color azul)
   const range=XLSX.utils.decode_range(ws['!ref']);
   for(let c=range.s.c;c<=range.e.c;c++){
@@ -3225,9 +3230,10 @@ function renderResumenDocsTable(filteredDocs){
         <span style="padding:2px 8px;border-radius:10px;background:${color}22;color:${color};border:1px solid ${color}44;font-weight:700;font-size:10px">${ac}</span>
       </td>
       <td style="padding:6px 8px;text-align:center;color:var(--text2);white-space:nowrap;width:90px">${p.fechaProg||'—'}</td>
+      <td style="padding:6px 8px;text-align:center;color:#e67e22;font-weight:600;white-space:nowrap;width:90px">${reprog[d.cod]?.fechaReprog||'—'}</td>
     </tr>`;
   }).join('');
-  tbody.innerHTML=rows||`<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3)">Sin documentos con estos filtros</td></tr>`;
+  tbody.innerHTML=rows||`<tr><td colspan="8" style="text-align:center;padding:16px;color:var(--text3)">Sin documentos con estos filtros</td></tr>`;
   if(titulo) titulo.textContent=`Listado de documentos (${docs.length} de ${base.length})`;
 }
 
@@ -4108,9 +4114,10 @@ function renderTopVencidosED(plan){
       <td style="padding:5px 6px;font-size:10px;color:var(--text2);white-space:nowrap">${d.estado||'—'}</td>
       <td style="padding:5px 6px;font-size:10px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.gerencia||''}">${shortG||'—'}</td>
       <td style="padding:5px 6px;font-size:10px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.unidad||''}">${d.unidad||'—'}</td>
+      <td style="padding:5px 6px;text-align:center;font-size:10px;color:#e67e22;font-weight:600;white-space:nowrap">${d.fechaReprog||'—'}</td>
       <td style="padding:5px 6px;text-align:center;font-weight:700;color:#c0392b;white-space:nowrap">${d.dias}d</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:16px;color:#27ae60">✅ Sin vencidos</td></tr>';
 }
 
 // ── Listado de documentos ─────────────────────────────────────────────────
