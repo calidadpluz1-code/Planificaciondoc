@@ -16,6 +16,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.mini-spin{width:14px;height:14px;border:2px solid #c9d3ee;border-top-color:#3D5BA9;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
 
 /* LOGIN */
@@ -201,7 +202,6 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   border-top:4px solid var(--yellow)}
 .saving-spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--blue);
   border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 .toast{position:fixed;bottom:28px;right:28px;background:var(--green);color:#fff;
   padding:13px 22px;border-radius:10px;font-size:13px;font-weight:700;z-index:2000;
@@ -262,6 +262,7 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div class="login-title">Planificación Documental</div>
       <div class="login-sub">Selecciona tu empresa, gerencia y unidad para acceder</div>
       <div class="login-year">2026</div>
+      <div id="login-estado" style="display:none"></div>
       <div class="fg">
         <label>Empresa</label>
         <select id="login-emp" onchange="onLoginEmp()">
@@ -968,30 +969,83 @@ const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwV02NH4ppCZchvBvm45
 let DOCS_ALL = []; // se llena al cargar la app
 let CATALOGO_LOADED = false;
 
-async function cargarCatalogo(){
-  if(SHEETS_URL==='REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT') return;
-  try {
-    const res = await fetch(SHEETS_URL+'?action=obtener_catalogo');
-    const json = await res.json();
-    if(json.ok && json.data){
-      DOCS_ALL = json.data.map(d=>({
-        cod:        d.cod,
-        desc:       d.desc,
-        ver:        d.ver,
-        fechaVig:   d.fechaVig,
-        gerencia:   d.gerencia,
-        subger:     d.subger,
-        unidad:     d.unidad,
-        elaborador: d.elaborador,
-        estadoWF:   d.estadoWF,
-        empresa:    d.empresa,
-        tipo:       d.tipodoc,
-        estadoActual: d.estadoWF,
-        responsable:  d.elaborador
-      }));
-      CATALOGO_LOADED = true;
+// ── CONEXIÓN ROBUSTA CON APPS SCRIPT ────────────────────────────────────
+// Apps Script "se duerme" cuando nadie lo usa (ej. en la noche). La primera
+// consulta de la mañana puede tardar o fallar. Por eso: tiempo límite,
+// reintentos automáticos y avisos en pantalla en vez de fallar en silencio.
+async function fetchSheets(params, opts={}){
+  const intentos  = opts.intentos  || 3;
+  const timeoutMs = opts.timeoutMs || 30000;
+  const qs = new URLSearchParams(params).toString();
+  let ultimoError;
+  for(let i=1;i<=intentos;i++){
+    if(opts.onIntento) opts.onIntento(i,intentos);
+    const ctrl = new AbortController();
+    const timer = setTimeout(()=>ctrl.abort(), timeoutMs);
+    try{
+      const res = await fetch(`${SHEETS_URL}?${qs}&_=${Date.now()}`, {signal:ctrl.signal, cache:'no-store'});
+      clearTimeout(timer);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const json = await res.json();
+      if(json && json.ok===false) throw new Error(json.msg||'El servidor respondió con error');
+      return json;
+    }catch(e){
+      clearTimeout(timer);
+      ultimoError = e.name==='AbortError' ? new Error('El servidor tardó demasiado en responder') : e;
+      console.warn(`Intento ${i}/${intentos} (${params.action}) falló:`, ultimoError.message);
+      if(i<intentos) await new Promise(r=>setTimeout(r, 2000*i));
     }
-  } catch(e){ console.log('Error cargando catálogo:', e); }
+  }
+  throw ultimoError;
+}
+
+// Copia local del catálogo: la pantalla de ingreso funciona al instante,
+// aunque el servidor todavía esté despertando.
+const CATALOGO_LS_KEY = 'pluz_planif_catalogo_v1';
+function guardarCatalogoLocal(data){
+  try{ localStorage.setItem(CATALOGO_LS_KEY, JSON.stringify({t:Date.now(), data})); }catch(e){}
+}
+function leerCatalogoLocal(){
+  try{ const raw=localStorage.getItem(CATALOGO_LS_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+}
+function aplicarCatalogo(data){
+  DOCS_ALL = (data||[]).map(d=>({
+    cod:d.cod, desc:d.desc, ver:d.ver, fechaVig:d.fechaVig, gerencia:d.gerencia,
+    subger:d.subger, unidad:d.unidad, elaborador:d.elaborador, estadoWF:d.estadoWF,
+    empresa:d.empresa, tipo:d.tipodoc, estadoActual:d.estadoWF, responsable:d.elaborador
+  }));
+  CATALOGO_LOADED = DOCS_ALL.length>0;
+}
+
+async function cargarCatalogo(onIntento){
+  try {
+    const json = await fetchSheets({action:'obtener_catalogo'}, {onIntento});
+    if(json.data && json.data.length){
+      aplicarCatalogo(json.data);
+      guardarCatalogoLocal(json.data);
+      return true;
+    }
+    return false;
+  } catch(e){ console.log('Error cargando catálogo:', e); return false; }
+}
+
+function setEstadoLogin(tipo, html){
+  const el=document.getElementById('login-estado');
+  if(!el) return;
+  const estilos={
+    cargando:'background:#eef1f9;color:#3D5BA9;border:1px solid #c9d3ee',
+    aviso:'background:#fff8e6;color:#8a6100;border:1px solid #f5d27a',
+    error:'background:#fdecea;color:#c0392b;border:1px solid #f1b0a8'
+  };
+  if(!tipo){ el.style.display='none'; el.innerHTML=''; return; }
+  el.style.cssText='display:flex;align-items:center;gap:8px;font-size:12px;padding:9px 12px;border-radius:6px;margin-bottom:16px;line-height:1.4;'+estilos[tipo];
+  el.innerHTML=(tipo==='cargando'?'<span class="mini-spin"></span>':'')+'<span>'+html+'</span>';
+}
+function poblarEmpresasLogin(){
+  const se=document.getElementById('login-emp');
+  const empresas=[...new Set(DOCS_ALL.map(d=>d.empresa).filter(e=>e&&e!=='-'))].sort();
+  se.innerHTML='<option value="">— Selecciona tu empresa —</option>'+empresas.map(e=>`<option value="${e}">${e}</option>`).join('');
+  se.disabled=false;
 }
 let DOCS = []; // se filtra por empresa+gerencia+unidad al hacer doLogin
 
@@ -1013,10 +1067,30 @@ function getDocs(ger,uni){ return DOCS.filter(d=>d.gerencia===ger&&d.unidad===un
 
 // LOGIN
 async function initLogin(){
-  await cargarCatalogo();
-  const empresas=[...new Set(DOCS_ALL.map(d=>d.empresa).filter(e=>e&&e!=='-'))].sort();
   const se=document.getElementById('login-emp');
-  se.innerHTML='<option value="">— Selecciona tu empresa —</option>'+empresas.map(e=>`<option value="${e}">${e}</option>`).join('');
+  const cache=leerCatalogoLocal();
+  if(cache && cache.data && cache.data.length){
+    // Mostrar al instante lo último guardado; se actualiza en segundo plano
+    aplicarCatalogo(cache.data);
+    poblarEmpresasLogin();
+  } else {
+    se.disabled=true;
+    se.innerHTML='<option value="">— Conectando con la base de datos… —</option>';
+    setEstadoLogin('cargando','Conectando con la base de datos…');
+  }
+  const ok = await cargarCatalogo((i,n)=>{
+    if(!cache && i>1) setEstadoLogin('cargando',`El servidor se está activando, un momento… (intento ${i} de ${n})`);
+  });
+  if(ok){
+    if(!se.value) poblarEmpresasLogin(); // no borrar lo que el usuario ya eligió
+    setEstadoLogin(null);
+  } else if(cache && cache.data && cache.data.length){
+    const f=new Date(cache.t).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    setEstadoLogin('aviso',`Usando la lista guardada del ${f}. <a href="#" onclick="initLogin();return false" style="color:inherit;font-weight:700">Reintentar</a>`);
+  } else {
+    se.innerHTML='<option value="">— Sin conexión —</option>';
+    setEstadoLogin('error','No se pudo conectar con la base de datos. <button type="button" onclick="initLogin()" style="margin-left:auto;border:1px solid #c0392b;background:#fff;color:#c0392b;border-radius:5px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer">Reintentar</button>');
+  }
 }
 function onLoginEmp(){
   const emp=document.getElementById('login-emp').value;
@@ -1045,6 +1119,7 @@ function doLogin(){
   const emp=document.getElementById('login-emp').value;
   const ger=document.getElementById('login-ger').value;
   const uni=document.getElementById('login-uni').value;
+  if(!CATALOGO_LOADED){ showToast('Aún se está conectando con la base de datos, espera un momento…','#e67e22'); return; }
   if(!emp){ alert('Por favor selecciona una empresa.'); return; }
   if(!ger||!uni){ showToast('Selecciona gerencia y unidad','#c0392b'); return; }
   CUR_GER=ger; CUR_UNI=uni; IS_ADMIN=false;
@@ -1063,50 +1138,51 @@ async function doAdmin(){
   closeModal('modal-admin');
   IS_ADMIN=true; CUR_GER=''; CUR_UNI='';
   // Asegurar catálogo cargado antes de cargar planificaciones
-  if(!CATALOGO_LOADED) await cargarCatalogo();
+  if(!CATALOGO_LOADED){
+    showSaving('Conectando con la base de datos...');
+    const ok = await cargarCatalogo(mensajeIntento('Conectando con la base de datos...'));
+    hideSaving();
+    if(!ok){ IS_ADMIN=false; showToast('No se pudo conectar con la base de datos. Intenta de nuevo.','#c0392b'); return; }
+  }
   cargarTodasLasPlanificaciones();
+}
+
+function procesarPlanificacion(rows){
+  (rows||[]).forEach(r=>{
+    plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',
+      gerencia:r.gerencia||'',unidad:r.unidad||'',yaGuardado:true};
+  });
+}
+function procesarNuevos(rows){
+  (rows||[]).forEach(r=>{
+    const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
+    if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
+  });
+}
+function procesarReprog(rows){
+  (rows||[]).forEach(r=>{
+    reprog[r.cod]={fechaReprog:r.fechaReprog||'',motivo:r.motivo||'',fechaOrig:r.fechaOrig||''};
+  });
+}
+function mensajeIntento(base){
+  return (i,n)=>showSaving(i===1?base:`El servidor se está activando… intento ${i} de ${n}`);
 }
 
 async function cargarPlanDesdeSheets(ger, uni){
   showSaving('Cargando tu planificación...');
   try {
-    if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-      // Una sola llamada que trae planificacion + nuevos + reporte juntos
-      const url = `${SHEETS_URL}?action=obtener_todo&gerencia=${encodeURIComponent(ger)}&unidad=${encodeURIComponent(uni)}`;
-      const res = await fetch(url, {mode:'cors'});
-      const data = await res.json();
-
-      // Procesar planificacion
-      if(data.planificacion?.ok && data.planificacion?.data){
-        data.planificacion.data.forEach(r=>{
-          plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
-        });
-        // Cargar reprogramaciones en lookup por código
-        if(data.reprogramaciones && data.reprogramaciones.data){
-          data.reprogramaciones.data.forEach(r=>{
-            // Guardar la más reciente (última entrada por código)
-            reprog[r.cod]={fechaReprog:r.fechaReprog||'',motivo:r.motivo||'',fechaOrig:r.fechaOrig||''};
-          });
-        }
-      }
-      // Procesar nuevos
-      if(data.nuevos?.ok && data.nuevos?.data){
-        data.nuevos.data.forEach(r=>{
-          const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
-          if(!existe){
-            nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
-          }
-        });
-      }
-      // Procesar reporte (para Estado Docs)
-      if(data.reporte?.ok && data.reporte?.data){
-        REPORTE_DATA = data.reporte.data;
-        poblarFiltrosED(); // poblar filtros superiores con los datos recién cargados
-      }
-    }
-  } catch(e){ console.log('Sin conexión a Sheets, modo offline'); }
-  // Cargar datos del nuevo módulo Estado Docs
-  cargarDashboardED();
+    const params={action:'obtener_unidad', gerencia:ger, unidad:uni};
+    let data = await fetchSheets(params, {onIntento:mensajeIntento('Cargando tu planificación...')});
+    // Compatibilidad: si el Apps Script aún no tiene "obtener_unidad"
+    if(!data.planificacion) data = await fetchSheets({...params, action:'obtener_todo'});
+    procesarPlanificacion(data.planificacion?.data);
+    procesarReprog(data.reprogramaciones?.data);
+    procesarNuevos(data.nuevos?.data);
+  } catch(e){
+    hideSaving();
+    showToast('No se pudo cargar tu planificación. Revisa tu conexión e intenta de nuevo.','#c0392b');
+    return; // no entrar con datos vacíos (parecería que no hay nada guardado)
+  }
   hideSaving();
   launchApp();
 }
@@ -1114,55 +1190,25 @@ async function cargarPlanDesdeSheets(ger, uni){
 async function cargarTodasLasPlanificaciones(){
   showSaving('Cargando planificaciones de todas las unidades...');
   try {
-    if(SHEETS_URL !== 'REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
-      // 1. Planificacion completa (sin filtro de ger/uni)
-      try {
-        const res1 = await fetch(`${SHEETS_URL}?action=obtener_planificacion&gerencia=&unidad=`,{mode:'cors'});
-        const data1 = await res1.json();
-        if(data1.ok && data1.data){
-          data1.data.forEach(r=>{
-            plan[r.cod]={accion:r.accion||'Pendiente',fechaProg:r.fechaProg||'',obs:r.obs||'',yaGuardado:true};
-          });
-        }
-      } catch(e1){ console.log('Error cargando planificacion:', e1); }
-
-      // 2. Nuevos documentos
-      try {
-        const res2 = await fetch(`${SHEETS_URL}?action=obtener_nuevos&gerencia=&unidad=`,{mode:'cors'});
-        const data2 = await res2.json();
-        if(data2.ok && data2.data){
-          data2.data.forEach(r=>{
-            const existe = nuevos.find(n=>n.titulo===r.titulo && n.unidad===r.unidad && n.gerencia===r.gerencia);
-            if(!existe) nuevos.push({gerencia:r.gerencia, unidad:r.unidad, titulo:r.titulo, tipo:r.tipo, fecha:r.fecha, just:r.just, yaGuardado:true});
-          });
-        }
-      } catch(e2){ console.log('Error cargando nuevos:', e2); }
-
-      // 3. Reporte (Estado Docs)
-      try {
-        const res3 = await fetch(`${SHEETS_URL}?action=obtener_reporte`,{mode:'cors'});
-        const data3 = await res3.json();
-        if(data3.ok && data3.data){
-          REPORTE_DATA = data3.data;
-          poblarFiltrosED();
-        }
-      } catch(e3){ console.log('Error cargando reporte:', e3); }
-
-      // 4. Reprogramaciones
-      try {
-        const res4 = await fetch(`${SHEETS_URL}?action=obtener_todo&gerencia=&unidad=`,{mode:'cors'});
-        const data4 = await res4.json();
-        if(data4.reprogramaciones?.data){
-          data4.reprogramaciones.data.forEach(r=>{
-            reprog[r.cod]={fechaReprog:r.fechaReprog||'',motivo:r.motivo||'',fechaOrig:r.fechaOrig||''};
-          });
-        }
-      } catch(e4){ console.log('Error cargando reprogramaciones:', e4); }
-
-      // 5. Poblar DOCS con DOCS_ALL completo (admin ve todo)
-      DOCS.splice(0, DOCS.length, ...DOCS_ALL);
-    }
-  } catch(e){ console.log('Error general admin Sheets:', e); }
+    // Las dos consultas en paralelo (antes eran 4 seguidas)
+    const [dash, nue] = await Promise.all([
+      fetchSheets({action:'obtener_todo_dashboard'}, {onIntento:mensajeIntento('Cargando planificaciones de todas las unidades...'), timeoutMs:45000}),
+      fetchSheets({action:'obtener_nuevos'})
+    ]);
+    procesarPlanificacion(dash.planificacion?.data);
+    procesarReprog(dash.reprogramaciones?.data);
+    procesarNuevos(nue.data);
+    // Se reutilizan para Estado Docs (ya no hay que volver a pedirlos)
+    PLAN_DATA     = dash.planificacion?.data || [];
+    VIGENTES_DATA = dash.vigentes?.data      || [];
+    edNewFiltrosListos = false;
+    DOCS.splice(0, DOCS.length, ...DOCS_ALL);
+  } catch(e){
+    hideSaving();
+    IS_ADMIN=false;
+    showToast('No se pudo cargar la información. Intenta nuevamente en unos segundos.','#c0392b');
+    return;
+  }
   hideSaving();
   launchApp();
 }
@@ -1352,7 +1398,8 @@ function handleAccion(sel,cod){
 }
 
 function marcarTodos(ac){
-  getDocs(CUR_GER,CUR_UNI).forEach(d=>{ if(!plan[d.cod]) plan[d.cod]={accion:'Pendiente',fechaProg:'',obs:''}; plan[d.cod].accion=ac; });
+  // Solo afecta a los Pendientes; los ya guardados se cambian con "Editar"
+  getDocs(CUR_GER,CUR_UNI).filter(d=>getP(d.cod).accion==='Pendiente').forEach(d=>{ setP(d.cod,'accion',ac); });
   renderPlanTable(); updateUnitProg(); updateHeroBadges();
 }
 
@@ -2104,13 +2151,14 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  const idx={planificacion:0,dashboard:1,gantt:2,resumen:3,seguimiento:4};
+  const idx={planificacion:0,dashboard:1,gantt:2,resumen:3,estadodocs:4};
   document.querySelectorAll('.nav-tab')[idx[id]]?.classList.add('active');
   if(id==='gantt') renderGantt();
   if(id==='resumen') renderResumen();
   if(id==='dashboard') renderDash();
   if(id==='estadodocs'){
     if(PLAN_DATA.length===0) cargarDashboardED();
+    else if(!edNewFiltrosListos){ edNewFiltrosListos=true; poblarFiltrosEdNew(); }
     else renderDashboardED();
   }
 }
@@ -3134,13 +3182,14 @@ async function guardarEdicion(){
   // Guardar en Sheets
   if(SHEETS_URL!=='REEMPLAZAR_CON_TU_URL_DE_APPS_SCRIPT'){
     try{
-      const ger=plan[cod].gerencia||CUR_GER;
-      const uni=plan[cod].unidad||CUR_UNI;
+      const doc=DOCS.find(x=>x.cod===cod)||DOCS_ALL.find(x=>x.cod===cod)||{};
+      const ger=plan[cod].gerencia||doc.gerencia||CUR_GER;
+      const uni=plan[cod].unidad||doc.unidad||CUR_UNI;
       postToSheets({action:'editar_planificacion',gerencia:ger,unidad:uni,cod,accion,fechaProg,obs});
     }catch(e){ console.log('Error guardando edición:', e); }
   }
   closeEditModal();
-  renderPlan();
+  if(!IS_ADMIN){ renderPlanTable(); updateUnitProg(); updateHeroBadges(); }
   showToast('✅ Planificación actualizada');
 }
 
@@ -3782,14 +3831,14 @@ function aplicarCrossFiltrosReporte(docs){
 let PLAN_DATA    = []; // hoja Planificacion completa
 let VIGENTES_DATA= []; // hoja vigentes
 let edNewCross   = null; // filtro cruzado activo: {tipo, valor, label}
+let edNewFiltrosListos = false;
 
 // ── Carga datos desde Sheets ──────────────────────────────────────────────
 async function cargarDashboardED(){
   const btn = document.getElementById('ed-refresh-icon');
   if(btn) btn.style.animation='spin 1s linear infinite';
   try {
-    const res = await fetch(`${SHEETS_URL}?action=obtener_todo_dashboard`, {mode:'cors'});
-    const json = await res.json();
+    const json = await fetchSheets({action:'obtener_todo_dashboard'}, {timeoutMs:45000});
     if(json.ok){
       PLAN_DATA     = json.planificacion?.data || [];
       VIGENTES_DATA = json.vigentes?.data      || [];
@@ -3797,8 +3846,9 @@ async function cargarDashboardED(){
       const el = document.getElementById('ed-ultima-act');
       if(el) el.textContent = `Actualizado ${ts} · ${PLAN_DATA.length} plan · ${VIGENTES_DATA.length} vigentes`;
     }
-  } catch(e){ console.log('Error cargando dashboard ED:', e); }
+  } catch(e){ console.log('Error cargando dashboard ED:', e); showToast('No se pudo actualizar Estado Docs. Intenta de nuevo.','#c0392b'); }
   if(btn) btn.style.animation='';
+  edNewFiltrosListos = true;
   poblarFiltrosEdNew();
   renderDashboardED();
 }
